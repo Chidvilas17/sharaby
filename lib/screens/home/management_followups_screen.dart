@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'maintenance_screen.dart';
+import 'counter_activity_screen.dart';
+import 'staff_screen.dart';
 
 class ManagementFollowupsScreen extends StatelessWidget {
   const ManagementFollowupsScreen({super.key});
@@ -31,7 +34,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Maintenance',
                 icon: Icons.build_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MaintenanceScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -43,7 +51,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Counter Activity',
                 icon: Icons.point_of_sale_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CounterActivityScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -55,7 +68,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Staff',
                 icon: Icons.groups_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StaffScreen(),
+                    ),
+                  );
                 },
               ),
 
