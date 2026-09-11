@@ -6,6 +6,8 @@ import 'general_expenses_screen.dart';
 import 'sterilization_screen.dart';
 import 'oxygen_screen.dart';
 import 'management_inpatient_screen.dart';
+import 'nursery_screen.dart';
+import 'statements_screen.dart';
 
 
 class ManagementFollowupsScreen extends StatelessWidget {
@@ -171,7 +173,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Nursery',
                 icon: Icons.child_care_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NurseryScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -183,7 +190,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Statements',
                 icon: Icons.receipt_long_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StatementsScreen(),
+                    ),
+                  );
                 },
               ),
             ],
