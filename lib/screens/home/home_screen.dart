@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'medical_followups_screen.dart';
 import 'user_screen.dart';
 import 'screening_data_screen.dart';
+import 'nursery_rates_screen.dart';
+import 'salaries_screen.dart';
+import 'other_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -135,7 +138,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'Nursery Rates',
                 icon: Icons.child_care_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Nursery Rates');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NurseryRatesScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -153,7 +161,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'Salaries',
                 icon: Icons.payments_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Salaries');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SalariesScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -162,7 +175,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'Other',
                 icon: Icons.more_horiz,
                 onPressed: () {
-                  _showComingSoon(context, 'Other');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OtherScreen(),
+                    ),
+                  );
                 },
               ),
 
