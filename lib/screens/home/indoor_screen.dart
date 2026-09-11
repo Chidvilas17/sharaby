@@ -1,70 +1,50 @@
 import 'package:flutter/material.dart';
-import 'incubator_screen.dart';
-import 'detection_screen.dart';
-import 'indoor_screen.dart';
 
-class MedicalFollowupsScreen extends StatelessWidget {
-  const MedicalFollowupsScreen({super.key});
+class IndoorScreen extends StatelessWidget {
+  const IndoorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Medical Follow-ups',
+          'Indoor',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
-              // Incubator
+              // Add New
               _menuButton(
-                title: 'Incubator',
-                icon: Icons.child_care_outlined,
+                title: 'Add New',
+                icon: Icons.add_circle_outline,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const IncubatorScreen(),
-                    ),
-                  );
+                  // We will build Add New next
                 },
               ),
 
-              // Detection
+              // View Current
               _menuButton(
-                title: 'Detection',
-                icon: Icons.search_outlined,
+                title: 'View Current',
+                icon: Icons.visibility_outlined,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DetectionScreen(),
-                    ),
-                  );
+                  // We will build View Current next
                 },
               ),
 
-              // Indoor
+              // View History
               _menuButton(
-                title: 'Indoor',
-                icon: Icons.local_hospital_outlined,
+                title: 'View History',
+                icon: Icons.history,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const IndoorScreen(),
-                    ),
-                  );
+                  // We will build View History next
                 },
               ),
             ],
@@ -99,9 +79,7 @@ class MedicalFollowupsScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
-
             const SizedBox(width: 18),
-
             Text(
               title,
               style: const TextStyle(
@@ -109,9 +87,7 @@ class MedicalFollowupsScreen extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-
             const Spacer(),
-
             const Icon(
               Icons.arrow_forward_ios,
               size: 18,
