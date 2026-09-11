@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'medical_followups_screen.dart';
+import 'user_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -105,7 +106,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'User',
                 icon: Icons.person_outline,
                 onPressed: () {
-                  _showComingSoon(context, 'User');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserScreen(),
+                    ),
+                  );
                 },
               ),
 
