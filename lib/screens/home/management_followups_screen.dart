@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'maintenance_screen.dart';
 import 'counter_activity_screen.dart';
 import 'staff_screen.dart';
+import 'general_expenses_screen.dart';
+import 'sterilization_screen.dart';
 
 class ManagementFollowupsScreen extends StatelessWidget {
   const ManagementFollowupsScreen({super.key});
@@ -97,7 +99,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'General Expenses',
                 icon: Icons.money_off_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GeneralExpensesScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -109,7 +116,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Sterilization',
                 icon: Icons.clean_hands_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SterilizationScreen(),
+                    ),
+                  );
                 },
               ),
 
