@@ -5,6 +5,7 @@ import 'screening_data_screen.dart';
 import 'nursery_rates_screen.dart';
 import 'salaries_screen.dart';
 import 'other_screen.dart';
+import 'management_followups_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -79,9 +80,12 @@ class HomeScreen extends StatelessWidget {
                       title: 'Management\nFollow-ups',
                       icon: Icons.manage_accounts_outlined,
                       onPressed: () {
-                        _showComingSoon(
+                        Navigator.push(
                           context,
-                          'Management Follow-ups',
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const ManagementFollowupsScreen(),
+                          ),
                         );
                       },
                     ),
