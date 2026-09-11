@@ -4,6 +4,8 @@ import 'counter_activity_screen.dart';
 import 'staff_screen.dart';
 import 'general_expenses_screen.dart';
 import 'sterilization_screen.dart';
+import 'oxygen_screen.dart';
+
 
 class ManagementFollowupsScreen extends StatelessWidget {
   const ManagementFollowupsScreen({super.key});
