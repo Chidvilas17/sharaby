@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'doctor_screen.dart';
+import 'secretary_screen.dart';
+import 'admin_screen.dart';
 
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
@@ -7,48 +10,51 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'User',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        title: const Text('User'),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Doctors
-              _menuButton(
-                title: 'Doctors',
-                icon: Icons.medical_services_outlined,
-                onPressed: () {
-                  // We will build Doctors next
-                },
-              ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _menuButton(
+              title: 'Doctors',
+              icon: Icons.medical_services_outlined,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DoctorScreen(),
+                  ),
+                );
+              },
+            ),
 
-              // Secretary
-              _menuButton(
-                title: 'Secretary',
-                icon: Icons.assignment_ind_outlined,
-                onPressed: () {
-                  // We will build Secretary next
-                },
-              ),
+            _menuButton(
+              title: 'Secretary',
+              icon: Icons.person_outline,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SecretaryScreen(),
+                  ),
+                );
+              },
+            ),
 
-              // Admin
-              _menuButton(
-                title: 'Admin',
-                icon: Icons.admin_panel_settings_outlined,
-                onPressed: () {
-                  // We will build Admin next
-                },
-              ),
-            ],
-          ),
+            _menuButton(
+              title: 'Admin',
+              icon: Icons.admin_panel_settings_outlined,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -59,45 +65,27 @@ class UserScreen extends StatelessWidget {
     required IconData icon,
     required VoidCallback onPressed,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      height: 75,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: SizedBox(
+        width: double.infinity,
+        height: 58,
+        child: ElevatedButton.icon(
+          onPressed: onPressed,
+          icon: Icon(icon),
+          label: Text(
+            title,
+            style: const TextStyle(fontSize: 17),
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 32,
-            ),
+      ),
+    );
+  }
 
-            const SizedBox(width: 18),
-
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-            const Spacer(),
-
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 18,
-            ),
-          ],
-        ),
+  void _showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('This section will be added next.'),
       ),
     );
   }
