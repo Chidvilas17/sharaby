@@ -1,64 +1,41 @@
 import 'package:flutter/material.dart';
-import 'incubator_screen.dart';
-import 'detection_screen.dart';
 
-class MedicalFollowupsScreen extends StatelessWidget {
-  const MedicalFollowupsScreen({super.key});
+class DetectionScreen extends StatelessWidget {
+  const DetectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Medical Follow-ups',
+          'Detection',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
-              // Incubator
+              // New
               _menuButton(
-                title: 'Incubator',
-                icon: Icons.child_care_outlined,
+                title: 'New',
+                icon: Icons.add_circle_outline,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const IncubatorScreen(),
-                    ),
-                  );
+                  // We will build New next
                 },
               ),
 
-              // Detection
+              // History
               _menuButton(
-                title: 'Detection',
-                icon: Icons.search_outlined,
+                title: 'History',
+                icon: Icons.history,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DetectionScreen(),
-                    ),
-                  );
-                },
-              ),
-
-              // Indoor
-              _menuButton(
-                title: 'Indoor',
-                icon: Icons.local_hospital_outlined,
-                onPressed: () {
-                  // We will build this next
+                  // We will build History next
                 },
               ),
             ],
