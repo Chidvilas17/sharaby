@@ -5,6 +5,7 @@ import 'staff_screen.dart';
 import 'general_expenses_screen.dart';
 import 'sterilization_screen.dart';
 import 'oxygen_screen.dart';
+import 'management_inpatient_screen.dart';
 
 
 class ManagementFollowupsScreen extends StatelessWidget {
@@ -129,15 +130,21 @@ class ManagementFollowupsScreen extends StatelessWidget {
 
               // ==========================================
               // 7. OXYGEN
-              // ==========================================
-
               _menuButton(
                 title: 'Oxygen',
                 icon: Icons.air_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OxygenScreen(),
+                    ),
+                  );
                 },
               ),
+              // ==========================================
+
+
 
               // ==========================================
               // 8. INPATIENT
@@ -147,7 +154,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                 title: 'Inpatient',
                 icon: Icons.local_hospital_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ManagementInpatientScreen(),
+                    ),
+                  );
                 },
               ),
 
