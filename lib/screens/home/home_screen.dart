@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'medical_followups_screen.dart';
 import 'user_screen.dart';
+import 'screening_data_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -120,7 +121,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'Screening Data',
                 icon: Icons.screen_search_desktop_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Screening Data');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScreeningDataScreen(),
+                    ),
+                  );
                 },
               ),
 
