@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'devices_screen.dart';
+
 
 class NurseryRatesScreen extends StatelessWidget {
   const NurseryRatesScreen({super.key});
@@ -25,7 +27,12 @@ class NurseryRatesScreen extends StatelessWidget {
                 title: 'Devices',
                 icon: Icons.devices_outlined,
                 onPressed: () {
-                  // We will build Devices next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DevicesScreen(),
+                    ),
+                  );
                 },
               ),
             ],
