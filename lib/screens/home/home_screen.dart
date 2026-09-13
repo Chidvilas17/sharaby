@@ -6,6 +6,7 @@ import 'nursery_rates_screen.dart';
 import 'salaries_screen.dart';
 import 'other_screen.dart';
 import 'management_followups_screen.dart';
+import 'inpatient_rates_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -156,7 +157,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'Inpatient Rates',
                 icon: Icons.local_hospital_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Inpatient Rates');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const InpatientRatesScreen(),
+                    ),
+                  );
                 },
               ),
 
