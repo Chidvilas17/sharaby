@@ -8,6 +8,7 @@ import 'other_screen.dart';
 import 'management_followups_screen.dart';
 import 'inpatient_rates_screen.dart';
 import 'screening_time_screen.dart';
+import 'screen_data_edit_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -221,9 +222,14 @@ class HomeScreen extends StatelessWidget {
               // Screen Data
               _menuButton(
                 title: 'Screen Data',
-                icon: Icons.data_object_outlined,
+                icon: Icons.edit_note_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Screen Data');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScreenDataEditScreen(),
+                    ),
+                  );
                 },
               ),
             ],
