@@ -7,6 +7,7 @@ import 'salaries_screen.dart';
 import 'other_screen.dart';
 import 'management_followups_screen.dart';
 import 'inpatient_rates_screen.dart';
+import 'screening_time_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -199,7 +200,12 @@ class HomeScreen extends StatelessWidget {
                 title: 'Screening Time',
                 icon: Icons.access_time_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Screening Time');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScreeningTimeScreen(),
+                    ),
+                  );
                 },
               ),
 
