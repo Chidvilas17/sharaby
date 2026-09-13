@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'current_doctors_screen.dart';
+import 'current_nurses_screen.dart';
+import 'discounts_screen.dart';
+import 'rates_screen.dart';
+import 'total_salaries_screen.dart';
 
 class SalariesScreen extends StatelessWidget {
   const SalariesScreen({super.key});
@@ -27,43 +32,68 @@ class SalariesScreen extends StatelessWidget {
                 title: 'Current for Doctors',
                 icon: Icons.medical_services_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CurrentDoctorsScreen(),
+                    ),
+                  );
                 },
               ),
 
               // Current for Nurses
               _menuButton(
                 title: 'Current for Nurses',
-                icon: Icons.local_hospital_outlined,
+                icon: Icons.person_outline,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CurrentNursesScreen(),
+                    ),
+                  );
                 },
               ),
 
               // Discounts
               _menuButton(
                 title: 'Discounts',
-                icon: Icons.discount_outlined,
+                icon: Icons.money_off_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DiscountsScreen(),
+                    ),
+                  );
                 },
               ),
 
               // Rates
               _menuButton(
                 title: 'Rates',
-                icon: Icons.price_check_outlined,
+                icon: Icons.attach_money_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RatesScreen(),
+                    ),
+                  );
                 },
               ),
 
               // Total Salaries
               _menuButton(
                 title: 'Total Salaries',
-                icon: Icons.payments_outlined,
+                icon: Icons.calculate_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TotalSalariesScreen(),
+                    ),
+                  );
                 },
               ),
             ],
