@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'oxygen_sterilization_screen.dart';
 
 class OtherScreen extends StatelessWidget {
   const OtherScreen({super.key});
@@ -23,9 +24,14 @@ class OtherScreen extends StatelessWidget {
             children: [
               _menuButton(
                 title: 'Oxygen & Sterilization',
-                icon: Icons.air_outlined,
+                icon: Icons.medical_services_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OxygenSterilizationScreen(),
+                    ),
+                  );
                 },
               ),
             ],
