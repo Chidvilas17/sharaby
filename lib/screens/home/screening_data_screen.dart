@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'diagnosis_screen.dart';
+import 'treatment_screen.dart';
+import 'co_screen.dart';
+import 'pays_screen.dart';
 
 class ScreeningDataScreen extends StatelessWidget {
   const ScreeningDataScreen({super.key});
@@ -26,16 +30,26 @@ class ScreeningDataScreen extends StatelessWidget {
                 title: 'Diagnosis',
                 icon: Icons.medical_information_outlined,
                 onPressed: () {
-                  // We will build Diagnosis next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DiagnosisScreen(),
+                    ),
+                  );
                 },
               ),
 
               // Treatment
               _menuButton(
                 title: 'Treatment',
-                icon: Icons.healing_outlined,
+                icon: Icons.medication_outlined,
                 onPressed: () {
-                  // We will build Treatment next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TreatmentScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -44,7 +58,12 @@ class ScreeningDataScreen extends StatelessWidget {
                 title: 'C/O',
                 icon: Icons.description_outlined,
                 onPressed: () {
-                  // We will build C/O next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CoScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -53,7 +72,12 @@ class ScreeningDataScreen extends StatelessWidget {
                 title: 'Payes',
                 icon: Icons.payments_outlined,
                 onPressed: () {
-                  // We will build Payes next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PaysScreen(),
+                    ),
+                  );
                 },
               ),
             ],
