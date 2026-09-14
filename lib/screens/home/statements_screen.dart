@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'statements_today_account_screen.dart';
+import 'statements_edit_data_screen.dart';
+import 'statements_delete_list_screen.dart';
 
 class StatementsScreen extends StatelessWidget {
   const StatementsScreen({super.key});
@@ -17,7 +20,13 @@ class StatementsScreen extends StatelessWidget {
               title: 'Today\'s Account',
               icon: Icons.today_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const StatementsTodayAccountScreen(),
+                  ),
+                );
               },
             ),
 
@@ -25,7 +34,13 @@ class StatementsScreen extends StatelessWidget {
               title: 'Edit Data',
               icon: Icons.edit_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const StatementsEditDataScreen(),
+                  ),
+                );
               },
             ),
 
@@ -33,7 +48,13 @@ class StatementsScreen extends StatelessWidget {
               title: 'Delete List',
               icon: Icons.delete_outline,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const StatementsDeleteListScreen(),
+                  ),
+                );
               },
             ),
 
