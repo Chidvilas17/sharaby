@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'household_expenses_screen.dart';
+import 'supplies_expenses_screen.dart';
+import 'electricity_water_expenses_screen.dart';
+import 'cleaning_supplies_expenses_screen.dart';
+import 'other_expenses_screen.dart';
+
 
 class GeneralExpensesScreen extends StatelessWidget {
   const GeneralExpensesScreen({super.key});
@@ -26,7 +32,13 @@ class GeneralExpensesScreen extends StatelessWidget {
                 title: 'Household',
                 icon: Icons.home_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const HouseholdExpensesScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -35,7 +47,13 @@ class GeneralExpensesScreen extends StatelessWidget {
                 title: 'Supplies',
                 icon: Icons.inventory_2_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const SuppliesExpensesScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -44,16 +62,28 @@ class GeneralExpensesScreen extends StatelessWidget {
                 title: 'Electricity & Water',
                 icon: Icons.water_drop_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ElectricityWaterExpensesScreen(),
+                    ),
+                  );
                 },
               ),
 
               // Cleaning Supply
               _menuButton(
-                title: 'Cleaning Supply',
+                title: 'Cleaning Supplies',
                 icon: Icons.cleaning_services_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const CleaningSuppliesExpensesScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -62,7 +92,13 @@ class GeneralExpensesScreen extends StatelessWidget {
                 title: 'Other',
                 icon: Icons.more_horiz,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const OtherExpensesScreen(),
+                    ),
+                  );
                 },
               ),
             ],
