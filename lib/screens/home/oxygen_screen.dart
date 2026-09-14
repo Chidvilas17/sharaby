@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'oxygen_intake_screen.dart';
 
 class OxygenScreen extends StatelessWidget {
   const OxygenScreen({super.key});
@@ -24,9 +25,15 @@ class OxygenScreen extends StatelessWidget {
               // Oxygen Intake
               _menuButton(
                 title: 'Oxygen Intake',
-                icon: Icons.input_outlined,
+                icon: Icons.air_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const OxygenIntakeScreen(),
+                    ),
+                  );
                 },
               ),
 
