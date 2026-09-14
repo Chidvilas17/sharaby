@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'staff_doctors_screen.dart';
+import 'staff_nurses_screen.dart';
+import 'staff_accountants_laborers_screen.dart';
+import 'staff_add_edit_screen.dart';
+import 'staff_discounts_screen.dart';
 
 class StaffScreen extends StatelessWidget {
   const StaffScreen({super.key});
@@ -39,27 +43,43 @@ class StaffScreen extends StatelessWidget {
               // 2. Nurses
               _menuButton(
                 title: 'Nurses',
-                icon: Icons.local_hospital_outlined,
+                icon: Icons.people_outline,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StaffNursesScreen(),
+                    ),
+                  );
                 },
               ),
 
               // 3. Accounts and Laborers
               _menuButton(
-                title: 'Accounts and Laborers',
+                title: 'Accountants and Laborers',
                 icon: Icons.groups_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const StaffAccountantsLaborersScreen(),
+                    ),
+                  );
                 },
               ),
 
               // 4. Adding and Editing Data
               _menuButton(
                 title: 'Adding and Editing Data',
-                icon: Icons.edit_note_outlined,
+                icon: Icons.person_add_alt_1_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StaffAddEditScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -68,7 +88,12 @@ class StaffScreen extends StatelessWidget {
                 title: 'Discounts',
                 icon: Icons.discount_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StaffDiscountsScreen(),
+                    ),
+                  );
                 },
               ),
             ],
