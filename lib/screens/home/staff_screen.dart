@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'staff_doctors_screen.dart';
 
 class StaffScreen extends StatelessWidget {
   const StaffScreen({super.key});
@@ -26,7 +27,12 @@ class StaffScreen extends StatelessWidget {
                 title: 'Doctors',
                 icon: Icons.medical_services_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StaffDoctorsScreen(),
+                    ),
+                  );
                 },
               ),
 
