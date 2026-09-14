@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'management_inpatient_new_case_screen.dart';
+import 'management_inpatient_admission_accounts_screen.dart';
+import 'management_inpatient_today_accounts_screen.dart';
+import 'management_inpatient_discharged_screen.dart';
+import 'management_inpatient_data_edits_screen.dart';
 
 class ManagementInpatientScreen extends StatelessWidget {
   const ManagementInpatientScreen({super.key});
@@ -25,45 +30,75 @@ class ManagementInpatientScreen extends StatelessWidget {
               // 1. New Case
               _menuButton(
                 title: 'New Case',
-                icon: Icons.add_circle_outline,
+                icon: Icons.person_add_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ManagementInpatientNewCaseScreen(),
+                    ),
+                  );
                 },
               ),
 
               // 2. Admission Accounts
               _menuButton(
                 title: 'Admission Accounts',
-                icon: Icons.receipt_long_outlined,
+                icon: Icons.account_balance_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ManagementInpatientAdmissionAccountsScreen(),
+                    ),
+                  );
                 },
               ),
 
               // 3. Today's Accounts
               _menuButton(
-                title: "Today's Accounts",
+                title: 'Today\'s Accounts',
                 icon: Icons.today_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ManagementInpatientTodayAccountsScreen(),
+                    ),
+                  );
                 },
               ),
 
               // 4. Discharged Case
               _menuButton(
-                title: 'Discharged Case',
+                title: 'Discharged Cases',
                 icon: Icons.exit_to_app_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ManagementInpatientDischargedScreen(),
+                    ),
+                  );
                 },
               ),
 
               // 5. Data Edits
               _menuButton(
                 title: 'Data Edits',
-                icon: Icons.edit_note_outlined,
+                icon: Icons.edit_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const ManagementInpatientDataEditsScreen(),
+                    ),
+                  );
                 },
               ),
             ],
