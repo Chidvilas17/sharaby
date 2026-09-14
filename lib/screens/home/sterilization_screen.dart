@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'sterilization_material_income_screen.dart';
+import 'sterilization_material_accounts_screen.dart';
 
 class SterilizationScreen extends StatelessWidget {
   const SterilizationScreen({super.key});
@@ -23,10 +25,16 @@ class SterilizationScreen extends StatelessWidget {
             children: [
               // Sterilization Material → Income
               _menuButton(
-                title: 'Sterilization Material → Income',
-                icon: Icons.arrow_forward_outlined,
+                title: 'Sterilization Material income',
+                icon: Icons.medical_services_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const SterilizationMaterialIncomeScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -35,7 +43,13 @@ class SterilizationScreen extends StatelessWidget {
                 title: 'Sterilization Material Accounts',
                 icon: Icons.account_balance_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const SterilizationMaterialAccountsScreen(),
+                    ),
+                  );
                 },
               ),
             ],
