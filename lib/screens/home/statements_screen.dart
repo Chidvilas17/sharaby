@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'statements_today_account_screen.dart';
 import 'statements_edit_data_screen.dart';
 import 'statements_delete_list_screen.dart';
+import 'statements_screen_data_screen.dart';
+import 'statements_discover_screen.dart';
+
 
 class StatementsScreen extends StatelessWidget {
   const StatementsScreen({super.key});
@@ -60,9 +63,15 @@ class StatementsScreen extends StatelessWidget {
 
             _menuButton(
               title: 'Screen Data',
-              icon: Icons.visibility_outlined,
+              icon: Icons.edit_note_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const StatementsScreenDataScreen(),
+                  ),
+                );
               },
             ),
 
@@ -70,7 +79,13 @@ class StatementsScreen extends StatelessWidget {
               title: 'Discover',
               icon: Icons.search_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const StatementsDiscoverScreen(),
+                  ),
+                );
               },
             ),
           ],
