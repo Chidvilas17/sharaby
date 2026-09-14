@@ -34,52 +34,60 @@ class _StaffAccountantsLaborersScreenState
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<int>(
-                    value: tempMonth,
+                    initialValue: tempMonth,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Month',
                       border: OutlineInputBorder(),
                     ),
-                    items: List.generate(12, (index) {
-                      final month = index + 1;
+                    items: List.generate(
+                      12,
+                          (index) {
+                        final month = index + 1;
 
-                      return DropdownMenuItem<int>(
-                        value: month,
-                        child: Text(
-                          month.toString().padLeft(2, '0'),
-                        ),
-                      );
-                    }),
+                        return DropdownMenuItem<int>(
+                          value: month,
+                          child: Text(
+                            month.toString().padLeft(2, '0'),
+                          ),
+                        );
+                      },
+                    ),
                     onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() {
-                          tempMonth = value;
-                        });
-                      }
+                      if (value == null) return;
+
+                      setDialogState(() {
+                        tempMonth = value;
+                      });
                     },
                   ),
-                  const SizedBox(height: 12),
+
+                  const SizedBox(height: 15),
+
                   DropdownButtonFormField<int>(
-                    value: tempYear,
+                    initialValue: tempYear,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Year',
                       border: OutlineInputBorder(),
                     ),
-                    items: List.generate(101, (index) {
-                      final year = 2000 + index;
+                    items: List.generate(
+                      101,
+                          (index) {
+                        final year = 2000 + index;
 
-                      return DropdownMenuItem<int>(
-                        value: year,
-                        child: Text('$year'),
-                      );
-                    }),
+                        return DropdownMenuItem<int>(
+                          value: year,
+                          child: Text('$year'),
+                        );
+                      },
+                    ),
                     onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() {
-                          tempYear = value;
-                        });
-                      }
+                      if (value == null) return;
+
+                      setDialogState(() {
+                        tempYear = value;
+                      });
                     },
                   ),
                 ],
@@ -119,13 +127,43 @@ class _StaffAccountantsLaborersScreenState
     return '${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
   }
 
+  void _showAccountant() {
+    if (selectedAccountant == null) {
+      _message('Please select an accountant.');
+      return;
+    }
+
+    _message(
+      'Showing $selectedAccountant for ${_monthText()}.',
+    );
+  }
+
+  void _showLaborer() {
+    if (selectedLaborer == null) {
+      _message('Please select a laborer.');
+      return;
+    }
+
+    _message(
+      'Showing $selectedLaborer for ${_monthText()}.',
+    );
+  }
+
+  void _message(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
   Widget _personDropdown({
     required String label,
     required String? value,
     required ValueChanged<String?> onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(
         labelText: label,
@@ -135,6 +173,10 @@ class _StaffAccountantsLaborersScreenState
         DropdownMenuItem<String>(
           value: 'SELECT',
           child: Text('Select'),
+        ),
+        DropdownMenuItem<String>(
+          value: 'DATABASE',
+          child: Text('Load from database'),
         ),
       ],
       onChanged: onChanged,
@@ -177,75 +219,89 @@ class _StaffAccountantsLaborersScreenState
     );
   }
 
-  Widget _buildEmployeeSection({
+  Widget _employeeSection({
     required String title,
     required String? selectedPerson,
-    required ValueChanged<String?> onPersonChanged,
+    required ValueChanged<String?> onChanged,
+    required VoidCallback onShow,
   }) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            _personDropdown(
-              label: 'Select Name',
-              value: selectedPerson,
-              onChanged: onPersonChanged,
-            ),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              '--',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
-            ),
-
-            const SizedBox(height: 15),
-
-            _summaryRow(
-              label: 'Total Salary',
-              value: '0',
-              valueColor: Colors.black,
-            ),
-
-            _summaryRow(
-              label: 'Deductions',
-              value: '0',
-              valueColor: Colors.red,
-            ),
-
-            _summaryRow(
-              label: 'Advances',
-              value: '0',
-              valueColor: Colors.red,
-            ),
-
-            _summaryRow(
-              label: 'Bonuses',
-              value: '0',
-              valueColor: Colors.green,
-            ),
-
-            _summaryRow(
-              label: 'Net Salary',
-              value: '0',
-              valueColor: Colors.blue,
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey,
         ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          _personDropdown(
+            label: 'Select Name',
+            value: selectedPerson,
+            onChanged: onChanged,
+          ),
+
+          const SizedBox(height: 12),
+
+          ElevatedButton(
+            onPressed: onShow,
+            child: const Text('Show'),
+          ),
+
+          const SizedBox(height: 12),
+
+          const Text(
+            '--',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          _summaryRow(
+            label: 'Total Salary',
+            value: '0',
+            valueColor: Colors.black,
+          ),
+
+          _summaryRow(
+            label: 'Deductions',
+            value: '0',
+            valueColor: Colors.red,
+          ),
+
+          _summaryRow(
+            label: 'Advances',
+            value: '0',
+            valueColor: Colors.red,
+          ),
+
+          _summaryRow(
+            label: 'Bonuses',
+            value: '0',
+            valueColor: Colors.green,
+          ),
+
+          _summaryRow(
+            label: 'Net Salary',
+            value: '0',
+            valueColor: Colors.blue,
+          ),
+        ],
       ),
     );
   }
@@ -259,24 +315,18 @@ class _StaffAccountantsLaborersScreenState
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Month',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
+            // MONTH
             InkWell(
               onTap: _selectMonth,
               child: InputDecorator(
                 decoration: const InputDecoration(
+                  labelText: 'Month',
                   border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_month),
+                  suffixIcon: Icon(
+                    Icons.calendar_month,
+                  ),
                 ),
                 child: Text(
                   _monthText(),
@@ -287,58 +337,30 @@ class _StaffAccountantsLaborersScreenState
 
             const SizedBox(height: 20),
 
-            LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth < 650) {
-                  return Column(
-                    children: [
-                      _buildEmployeeSection(
-                        title: 'Accountants',
-                        selectedPerson: selectedAccountant,
-                        onPersonChanged: (value) {
-                          setState(() {
-                            selectedAccountant = value;
-                          });
-                        },
-                      ),
-                      const Divider(thickness: 1),
-                      _buildEmployeeSection(
-                        title: 'Laborers',
-                        selectedPerson: selectedLaborer,
-                        onPersonChanged: (value) {
-                          setState(() {
-                            selectedLaborer = value;
-                          });
-                        },
-                      ),
-                    ],
-                  );
-                }
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildEmployeeSection(
-                      title: 'Accountants',
-                      selectedPerson: selectedAccountant,
-                      onPersonChanged: (value) {
-                        setState(() {
-                          selectedAccountant = value;
-                        });
-                      },
-                    ),
-                    _buildEmployeeSection(
-                      title: 'Laborers',
-                      selectedPerson: selectedLaborer,
-                      onPersonChanged: (value) {
-                        setState(() {
-                          selectedLaborer = value;
-                        });
-                      },
-                    ),
-                  ],
-                );
+            // ACCOUNTANTS
+            _employeeSection(
+              title: 'Accountants',
+              selectedPerson: selectedAccountant,
+              onChanged: (value) {
+                setState(() {
+                  selectedAccountant = value;
+                });
               },
+              onShow: _showAccountant,
+            ),
+
+            const SizedBox(height: 20),
+
+            // LABORERS
+            _employeeSection(
+              title: 'Laborers',
+              selectedPerson: selectedLaborer,
+              onChanged: (value) {
+                setState(() {
+                  selectedLaborer = value;
+                });
+              },
+              onShow: _showLaborer,
             ),
           ],
         ),
