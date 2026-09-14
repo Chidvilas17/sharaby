@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'detection_new_screen.dart';
+import 'detection_history_screen.dart';
 
 class DetectionScreen extends StatelessWidget {
   const DetectionScreen({super.key});
@@ -26,7 +28,12 @@ class DetectionScreen extends StatelessWidget {
                 title: 'New',
                 icon: Icons.add_circle_outline,
                 onPressed: () {
-                  // We will build New next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DetectionNewScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -35,7 +42,12 @@ class DetectionScreen extends StatelessWidget {
                 title: 'History',
                 icon: Icons.history,
                 onPressed: () {
-                  // We will build History next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DetectionHistoryScreen(),
+                    ),
+                  );
                 },
               ),
             ],
