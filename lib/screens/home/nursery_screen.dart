@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'nursery_new_screen.dart';
+import 'nursery_reserved_cases_screen.dart';
+import 'nursery_daily_accounts_screen.dart';
+import 'nursery_today_accounts_screen.dart';
+import 'nursery_edit_data_screen.dart';
 
 class NurseryScreen extends StatelessWidget {
   const NurseryScreen({super.key});
@@ -15,33 +20,56 @@ class NurseryScreen extends StatelessWidget {
           children: [
             _menuButton(
               title: 'New',
-              icon: Icons.add_circle_outline,
+              icon: Icons.add,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NurseryNewScreen(),
+                  ),
+                );
               },
             ),
 
             _menuButton(
-              title: 'Cases Reserved',
+              title: 'Reserved Cases',
               icon: Icons.event_available_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const NurseryReservedCasesScreen(),
+                  ),
+                );
               },
             ),
 
             _menuButton(
-              title: 'Cases Discharged',
-              icon: Icons.exit_to_app_outlined,
+              title: 'Discharged Cases',
+              icon: Icons.account_balance_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const NurseryDailyAccountsScreen(),
+                  ),
+                );
               },
             ),
 
             _menuButton(
-              title: 'Today\'s Accounts',
+              title: 'Today\'s Account',
               icon: Icons.today_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const NurseryTodayAccountsScreen(),
+                  ),
+                );
               },
             ),
 
@@ -49,7 +77,13 @@ class NurseryScreen extends StatelessWidget {
               title: 'Edit Data',
               icon: Icons.edit_outlined,
               onPressed: () {
-                _showComingSoon(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const NurseryEditDataScreen(),
+                  ),
+                );
               },
             ),
           ],
