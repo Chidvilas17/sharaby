@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'oxygen_intake_screen.dart';
+import 'oxygen_calculation_screen.dart';
 
 class OxygenScreen extends StatelessWidget {
   const OxygenScreen({super.key});
@@ -42,7 +43,13 @@ class OxygenScreen extends StatelessWidget {
                 title: 'Oxygen Calculation',
                 icon: Icons.calculate_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      const OxygenCalculationScreen(),
+                    ),
+                  );
                 },
               ),
             ],
