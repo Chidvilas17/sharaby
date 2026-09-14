@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'faults_screen.dart';
+import 'faults_archive_screen.dart';
 
 class MaintenanceScreen extends StatelessWidget {
   const MaintenanceScreen({super.key});
@@ -25,7 +27,12 @@ class MaintenanceScreen extends StatelessWidget {
                 title: 'Faults',
                 icon: Icons.build_outlined,
                 onPressed: () {
-                  // We will build Faults next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FaultsScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -33,7 +40,12 @@ class MaintenanceScreen extends StatelessWidget {
                 title: 'Faults Archive',
                 icon: Icons.archive_outlined,
                 onPressed: () {
-                  // We will build Faults Archive next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FaultsArchiveScreen(),
+                    ),
+                  );
                 },
               ),
             ],
