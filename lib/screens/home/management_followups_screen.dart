@@ -8,6 +8,7 @@ import 'oxygen_screen.dart';
 import 'management_inpatient_screen.dart';
 import 'nursery_screen.dart';
 import 'statements_screen.dart';
+import 'other_income_screen.dart';
 
 
 class ManagementFollowupsScreen extends StatelessWidget {
@@ -90,9 +91,14 @@ class ManagementFollowupsScreen extends StatelessWidget {
 
               _menuButton(
                 title: 'Other Income',
-                icon: Icons.account_balance_wallet_outlined,
+                icon: Icons.attach_money_outlined,
                 onPressed: () {
-                  // We will build this next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OtherIncomeScreen(),
+                    ),
+                  );
                 },
               ),
 
