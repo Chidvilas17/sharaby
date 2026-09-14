@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'incubator_add_new_screen.dart';
+import 'incubator_view_current_screen.dart';
+import 'incubator_view_history_screen.dart';
 
 class IncubatorScreen extends StatelessWidget {
   const IncubatorScreen({super.key});
@@ -26,18 +29,28 @@ class IncubatorScreen extends StatelessWidget {
               // Add New
               _menuButton(
                 title: 'Add New',
-                icon: Icons.add_circle_outline,
+                icon: Icons.person_add_outlined,
                 onPressed: () {
-                  // We will build Add New next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const IncubatorAddNewScreen(),
+                    ),
+                  );
                 },
               ),
 
               // View Current
               _menuButton(
                 title: 'View Current',
-                icon: Icons.visibility_outlined,
+                icon: Icons.people_outline,
                 onPressed: () {
-                  // We will build View Current next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const IncubatorViewCurrentScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -46,7 +59,12 @@ class IncubatorScreen extends StatelessWidget {
                 title: 'View History',
                 icon: Icons.history,
                 onPressed: () {
-                  // We will build View History next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const IncubatorViewHistoryScreen(),
+                    ),
+                  );
                 },
               ),
             ],
