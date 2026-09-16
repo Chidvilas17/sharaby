@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/user_api_service.dart';
 
 class SecretaryScreen extends StatefulWidget {
   const SecretaryScreen({super.key});
@@ -17,6 +18,14 @@ class _SecretaryScreenState extends State<SecretaryScreen>
   TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
+  int? loadedUserId;
+
+  bool loadingUsers = false;
+  List<Map<String, dynamic>> secretaryUsers = [];
+
+  // Current test database role mapping.
+  static const int secretaryManageId = 3;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +34,8 @@ class _SecretaryScreenState extends State<SecretaryScreen>
       length: 3,
       vsync: this,
     );
+
+    _loadAllSecretaries();
   }
 
   @override
@@ -37,6 +48,10 @@ class _SecretaryScreenState extends State<SecretaryScreen>
 
     super.dispose();
   }
+
+  // ------------------------------------------------------------
+  // BUILD
+  // ------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +92,34 @@ class _SecretaryScreenState extends State<SecretaryScreen>
   // ------------------------------------------------------------
 
   Widget _buildAllTab() {
+    if (loadingUsers) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (secretaryUsers.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'No secretary users found.',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadAllSecretaries,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -112,14 +155,21 @@ class _SecretaryScreenState extends State<SecretaryScreen>
               ),
             ),
 
-            const Expanded(
-              child: Center(
-                child: Text(
-                  'No user data loaded',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: secretaryUsers.length,
+                itemBuilder: (context, index) {
+                  final user = secretaryUsers[index];
+
+                  return ListTile(
+                    title: Text(
+                      user['log_id']?.toString() ?? '',
+                    ),
+                    subtitle: const Text(
+                      'Password hidden',
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -218,6 +268,45 @@ class _SecretaryScreenState extends State<SecretaryScreen>
               ),
             ],
           ),
+
+          const SizedBox(height: 30),
+
+          if (loadedUserId != null) ...[
+            _buildTextField(
+              controller: loginController,
+              label: 'Log In',
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildTextField(
+              controller: passwordController,
+              label: 'Password',
+              obscureText: true,
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildTextField(
+              controller: confirmPasswordController,
+              label: 'Confirm Password',
+              obscureText: true,
+            ),
+
+            const SizedBox(height: 30),
+
+            SizedBox(
+              width: 130,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _updateUser,
+                child: const Text(
+                  'Save',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -246,41 +335,207 @@ class _SecretaryScreenState extends State<SecretaryScreen>
   }
 
   // ------------------------------------------------------------
-  // SAVE
+  // LOAD ALL SECRETARIES
   // ------------------------------------------------------------
 
-  void _saveUser() {
-    if (loginController.text.trim().isEmpty ||
-        passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
+  Future<void> _loadAllSecretaries() async {
+    setState(() {
+      loadingUsers = true;
+    });
+
+    try {
+      final users = await UserApiService.getUsers();
+
+      final secretaries = users
+          .where(
+            (user) =>
+        user['ManageID'] == secretaryManageId ||
+            user['manageID'] == secretaryManageId,
+      )
+          .map(
+            (user) => Map<String, dynamic>.from(user),
+      )
+          .toList();
+
+      if (!mounted) return;
+
+      setState(() {
+        secretaryUsers = secretaries;
+        loadingUsers = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingUsers = false;
+      });
+
+      _showMessage(
+        'Failed to load secretaries.\n$e',
+      );
+    }
+  }
+
+  // ------------------------------------------------------------
+  // SAVE / ADD USER
+  // ------------------------------------------------------------
+
+  Future<void> _saveUser() async {
+    final login = loginController.text.trim();
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (login.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       _showMessage('Please fill all fields.');
       return;
     }
 
-    if (passwordController.text != confirmPasswordController.text) {
-      _showMessage('Password and Confirm Password do not match.');
+    if (password != confirmPassword) {
+      _showMessage(
+        'Password and Confirm Password do not match.',
+      );
       return;
     }
 
-    // SQL Server database connection will be added later.
-    _showMessage('User is ready to be saved.');
+    try {
+      await UserApiService.addUser(
+        userName: 'Reception',
+        password: password,
+        logId: login,
+        manageId: secretaryManageId,
+      );
+
+      if (!mounted) return;
+
+      _showMessage('Secretary user added successfully.');
+
+      loginController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+
+      await _loadAllSecretaries();
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
   }
 
   // ------------------------------------------------------------
-  // LOAD
+  // LOAD USER FOR EDIT
   // ------------------------------------------------------------
 
-  void _loadUser() {
-    if (searchController.text.trim().isEmpty) {
+  Future<void> _loadUser() async {
+    final login = searchController.text.trim();
+
+    if (login.isEmpty) {
       _showMessage('Please enter a Log in ID.');
       return;
     }
 
-    // SQL Server database search will be added later.
-    _showMessage(
-      'Search is ready. Database connection will be added later.',
-    );
+    try {
+      final user = await UserApiService.searchUser(login);
+
+      final manageId = user['ManageID'] ?? user['manageID'];
+
+      if (manageId != secretaryManageId) {
+        _showMessage(
+          'This user is not a Secretary user.',
+        );
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        loadedUserId = user['user_id'];
+
+        // Windows uses log_id as the Log In ID.
+        loginController.text =
+            user['log_id']?.toString() ?? '';
+
+        passwordController.clear();
+        confirmPasswordController.clear();
+      });
+
+      _showMessage('Secretary user loaded.');
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
   }
+
+  // ------------------------------------------------------------
+  // UPDATE USER
+  // ------------------------------------------------------------
+
+  Future<void> _updateUser() async {
+    if (loadedUserId == null) {
+      _showMessage('Please load a user first.');
+      return;
+    }
+
+    final login = loginController.text.trim();
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (login.isEmpty) {
+      _showMessage('Log in ID is required.');
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showMessage('Please enter a password.');
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showMessage(
+        'Password and Confirm Password do not match.',
+      );
+      return;
+    }
+
+    try {
+      await UserApiService.updateUser(
+        userId: loadedUserId!,
+        userName: 'Reception',
+        password: password,
+        logId: login,
+        manageId: secretaryManageId,
+      );
+
+      if (!mounted) return;
+
+      _showMessage('Secretary user updated successfully.');
+
+      searchController.clear();
+      loginController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+
+      setState(() {
+        loadedUserId = null;
+      });
+
+      await _loadAllSecretaries();
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
+  }
+
+  // ------------------------------------------------------------
+  // MESSAGE
+  // ------------------------------------------------------------
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(

@@ -1,10 +1,51 @@
 import 'package:flutter/material.dart';
+import '../../services/user_api_service.dart';
 import 'doctor_screen.dart';
 import 'secretary_screen.dart';
 import 'admin_screen.dart';
 
-class UserScreen extends StatelessWidget {
+class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
+
+  @override
+  State<UserScreen> createState() => _UserScreenState();
+}
+
+class _UserScreenState extends State<UserScreen> {
+  bool _loadingUsers = true;
+  String? _errorMessage;
+  int _userCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
+
+  Future<void> _loadUsers() async {
+    setState(() {
+      _loadingUsers = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final users = await UserApiService.getUsers();
+
+      if (!mounted) return;
+
+      setState(() {
+        _userCount = users.length;
+        _loadingUsers = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _loadingUsers = false;
+        _errorMessage = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +57,51 @@ class UserScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // API connection test
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.people_outline,
+                      size: 30,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _loadingUsers
+                          ? const Text(
+                        'Loading users...',
+                        style: TextStyle(fontSize: 16),
+                      )
+                          : _errorMessage != null
+                          ? Text(
+                        'API error:\n$_errorMessage',
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      )
+                          : Text(
+                        'Users in database: $_userCount',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    if (!_loadingUsers)
+                      IconButton(
+                        onPressed: _loadUsers,
+                        icon: const Icon(Icons.refresh),
+                        tooltip: 'Refresh',
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             _menuButton(
               title: 'Doctors',
               icon: Icons.medical_services_outlined,
@@ -78,14 +164,6 @@ class UserScreen extends StatelessWidget {
             style: const TextStyle(fontSize: 17),
           ),
         ),
-      ),
-    );
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('This section will be added next.'),
       ),
     );
   }

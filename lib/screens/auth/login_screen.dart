@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
+import '../home/management_followups_screen.dart';
+import '../home/medical_followups_screen.dart';
+import '../../services/user_api_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController();
 
   bool _obscurePassword = true;
+  bool _isLoggingIn = false;
 
   @override
   void dispose() {
@@ -24,18 +28,122 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
-    // TEMPORARY LOGIN
-    //
-    // Real authentication will be implemented later.
-    // For now, clicking Login simply opens the Home screen.
+  // ============================================================
+  // NORMAL LOGIN
+  // ============================================================
 
+  Future<void> _login() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+
+    if (username.isEmpty) {
+      _showMessage('Please enter Username.');
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showMessage('Please enter Password.');
+      return;
+    }
+
+    setState(() {
+      _isLoggingIn = true;
+    });
+
+    try {
+      final user = await UserApiService.login(
+        logId: username,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      final manageId = user['ManageID'] ?? user['manageID'];
+
+      // ==========================================================
+      // SECRETARY
+      // ManageID = 3
+      // Destination: Management Follow-ups
+      // ==========================================================
+
+      if (manageId == 3) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+            const ManagementFollowupsScreen(),
+          ),
+        );
+
+        return;
+      }
+
+      // ==========================================================
+      // DOCTOR
+      // ManageID = 2
+      // Destination: Medical Follow-ups
+      // ==========================================================
+
+      if (manageId == 2) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+            const MedicalFollowupsScreen(),
+          ),
+        );
+
+        return;
+      }
+
+      // ==========================================================
+      // OTHER USER TYPES
+      // Admin will be handled later.
+      // ==========================================================
+
+      _showMessage(
+        'This user does not have access to this login.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoggingIn = false;
+      });
+    }
+  }
+
+  // ============================================================
+  // DEVELOPMENT BYPASS
+  // ============================================================
+
+  void _bypassLogin() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => const HomeScreen(),
       ),
     );
   }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         controller: _usernameController,
                         textInputAction: TextInputAction.next,
+                        enabled: !_isLoggingIn,
                         decoration: const InputDecoration(
                           labelText: 'Username',
                           prefixIcon: Icon(Icons.person),
@@ -97,12 +206,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
+                        enabled: !_isLoggingIn,
                         onSubmitted: (_) => _login(),
                         decoration: InputDecoration(
                           labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            onPressed: () {
+                            onPressed: _isLoggingIn
+                                ? null
+                                : () {
                               setState(() {
                                 _obscurePassword =
                                 !_obscurePassword;
@@ -119,16 +231,51 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 28),
 
+                      // ==================================================
+                      // LOGIN BUTTON
+                      // ==================================================
+
                       SizedBox(
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: _login,
-                          child: const Text(
+                          onPressed: _isLoggingIn
+                              ? null
+                              : _login,
+                          child: _isLoggingIn
+                              ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child:
+                            CircularProgressIndicator(),
+                          )
+                              : const Text(
                             'Login',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      // ==================================================
+                      // DEVELOPMENT BYPASS BUTTON
+                      // ==================================================
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: OutlinedButton(
+                          onPressed: _isLoggingIn
+                              ? null
+                              : _bypassLogin,
+                          child: const Text(
+                            'Bypass Login (Development)',
+                            style: TextStyle(
+                              fontSize: 15,
                             ),
                           ),
                         ),

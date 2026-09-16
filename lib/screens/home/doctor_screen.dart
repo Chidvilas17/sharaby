@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/user_api_service.dart';
 
 class DoctorScreen extends StatefulWidget {
   const DoctorScreen({super.key});
@@ -17,6 +18,17 @@ class _DoctorScreenState extends State<DoctorScreen>
   TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
+  int? loadedUserId;
+
+  bool loadingUsers = false;
+  List<Map<String, dynamic>> doctorUsers = [];
+
+  // Current database role mapping:
+  // Doctor = user_name "Doctor", ManageID = 2
+  // We will confirm this with the senior developer later.
+  static const String doctorUserName = 'Doctor';
+  static const int doctorManageId = 2;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +37,8 @@ class _DoctorScreenState extends State<DoctorScreen>
       length: 3,
       vsync: this,
     );
+
+    _loadAllDoctors();
   }
 
   @override
@@ -37,6 +51,10 @@ class _DoctorScreenState extends State<DoctorScreen>
 
     super.dispose();
   }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +90,39 @@ class _DoctorScreenState extends State<DoctorScreen>
     );
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
   // ALL TAB
-  // ------------------------------------------------------------
+  // ============================================================
 
   Widget _buildAllTab() {
+    if (loadingUsers) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (doctorUsers.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'No doctor users found.',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadAllDoctors,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -86,7 +132,9 @@ class _DoctorScreenState extends State<DoctorScreen>
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                ),
               ),
               child: const Row(
                 children: [
@@ -110,14 +158,21 @@ class _DoctorScreenState extends State<DoctorScreen>
               ),
             ),
 
-            const Expanded(
-              child: Center(
-                child: Text(
-                  'No user data loaded',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: doctorUsers.length,
+                itemBuilder: (context, index) {
+                  final user = doctorUsers[index];
+
+                  return ListTile(
+                    title: Text(
+                      user['log_id']?.toString() ?? '',
+                    ),
+                    subtitle: const Text(
+                      'Password hidden',
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -126,9 +181,9 @@ class _DoctorScreenState extends State<DoctorScreen>
     );
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
   // ADD TAB
-  // ------------------------------------------------------------
+  // ============================================================
 
   Widget _buildAddTab() {
     return SingleChildScrollView(
@@ -176,9 +231,9 @@ class _DoctorScreenState extends State<DoctorScreen>
     );
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
   // EDIT TAB
-  // ------------------------------------------------------------
+  // ============================================================
 
   Widget _buildEditTab() {
     return SingleChildScrollView(
@@ -216,14 +271,53 @@ class _DoctorScreenState extends State<DoctorScreen>
               ),
             ],
           ),
+
+          const SizedBox(height: 30),
+
+          if (loadedUserId != null) ...[
+            _buildTextField(
+              controller: loginController,
+              label: 'Log In',
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildTextField(
+              controller: passwordController,
+              label: 'Password',
+              obscureText: true,
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildTextField(
+              controller: confirmPasswordController,
+              label: 'Confirm Password',
+              obscureText: true,
+            ),
+
+            const SizedBox(height: 30),
+
+            SizedBox(
+              width: 130,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _updateUser,
+                child: const Text(
+                  'Save',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  // ------------------------------------------------------------
+  // ============================================================
   // TEXT FIELD
-  // ------------------------------------------------------------
+  // ============================================================
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -243,40 +337,211 @@ class _DoctorScreenState extends State<DoctorScreen>
     );
   }
 
-  // ------------------------------------------------------------
-  // SAVE
-  // ------------------------------------------------------------
+  // ============================================================
+  // LOAD ALL DOCTORS
+  // ============================================================
 
-  void _saveUser() {
-    if (loginController.text.trim().isEmpty ||
-        passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
+  Future<void> _loadAllDoctors() async {
+    setState(() {
+      loadingUsers = true;
+    });
+
+    try {
+      final users = await UserApiService.getUsers();
+
+      final doctors = users
+          .where(
+            (user) =>
+        (user['ManageID'] ?? user['manageID']) ==
+            doctorManageId,
+      )
+          .map(
+            (user) => Map<String, dynamic>.from(user),
+      )
+          .toList();
+
+      if (!mounted) return;
+
+      setState(() {
+        doctorUsers = doctors;
+        loadingUsers = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingUsers = false;
+      });
+
+      _showMessage(
+        'Failed to load doctors.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // ADD DOCTOR
+  // ============================================================
+
+  Future<void> _saveUser() async {
+    final login = loginController.text.trim();
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (login.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       _showMessage('Please fill all fields.');
       return;
     }
 
-    if (passwordController.text != confirmPasswordController.text) {
-      _showMessage('Password and Confirm Password do not match.');
+    if (password != confirmPassword) {
+      _showMessage(
+        'Password and Confirm Password do not match.',
+      );
       return;
     }
 
-    // Database saving will be added later.
-    _showMessage('User is ready to be saved.');
+    try {
+      await UserApiService.addUser(
+        userName: doctorUserName,
+        password: password,
+        logId: login,
+        manageId: doctorManageId,
+      );
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Doctor user added successfully.',
+      );
+
+      loginController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+
+      await _loadAllDoctors();
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
   }
 
-  // ------------------------------------------------------------
-  // LOAD
-  // ------------------------------------------------------------
+  // ============================================================
+  // LOAD DOCTOR FOR EDIT
+  // ============================================================
 
-  void _loadUser() {
-    if (searchController.text.trim().isEmpty) {
+  Future<void> _loadUser() async {
+    final login = searchController.text.trim();
+
+    if (login.isEmpty) {
       _showMessage('Please enter a Log in ID.');
       return;
     }
 
-    // Database search will be added later.
-    _showMessage('Search is ready. Database connection will be added later.');
+    try {
+      final user = await UserApiService.searchUser(login);
+
+      final manageId = user['ManageID'] ?? user['manageID'];
+
+      if (manageId != doctorManageId) {
+        _showMessage(
+          'This user is not a Doctor user.',
+        );
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        loadedUserId = user['user_id'];
+
+        loginController.text =
+            user['log_id']?.toString() ?? '';
+
+        passwordController.clear();
+        confirmPasswordController.clear();
+      });
+
+      _showMessage('Doctor user loaded.');
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
   }
+
+  // ============================================================
+  // UPDATE DOCTOR
+  // ============================================================
+
+  Future<void> _updateUser() async {
+    if (loadedUserId == null) {
+      _showMessage('Please load a user first.');
+      return;
+    }
+
+    final login = loginController.text.trim();
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (login.isEmpty) {
+      _showMessage('Log in ID is required.');
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showMessage('Please enter a password.');
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showMessage(
+        'Password and Confirm Password do not match.',
+      );
+      return;
+    }
+
+    try {
+      await UserApiService.updateUser(
+        userId: loadedUserId!,
+        userName: doctorUserName,
+        password: password,
+        logId: login,
+        manageId: doctorManageId,
+      );
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Doctor user updated successfully.',
+      );
+
+      searchController.clear();
+      loginController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+
+      setState(() {
+        loadedUserId = null;
+      });
+
+      await _loadAllDoctors();
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
