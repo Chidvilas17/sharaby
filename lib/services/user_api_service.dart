@@ -126,6 +126,14 @@ class UserApiService {
       );
     }
 
+    if (response.statusCode == 400) {
+      throw Exception(
+        response.body.isNotEmpty
+            ? response.body
+            : 'Please check the entered information.',
+      );
+    }
+
     throw Exception(
       'Failed to add user. Status code: ${response.statusCode}',
     );
@@ -193,6 +201,61 @@ class UserApiService {
 
     throw Exception(
       'Failed to delete user. Status code: ${response.statusCode}',
+    );
+  }
+
+  // ============================================================
+  // UPDATE ADMIN DETAILS
+  //
+  // Admin screen:
+  //
+  // User name  -> log_id
+  // Password   -> user_password
+  // Password 2 -> Password
+  // ============================================================
+
+  static Future<void> updateAdminDetails({
+    required String userName,
+    required String password,
+    required String password2,
+  }) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/Users/admin/password'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'userName': userName,
+        'password': password,
+        'password2': password2,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    }
+
+    if (response.statusCode == 400) {
+      throw Exception(
+        response.body.isNotEmpty
+            ? response.body
+            : 'Please check the entered information.',
+      );
+    }
+
+    if (response.statusCode == 404) {
+      throw Exception('Admin user not found.');
+    }
+
+    if (response.statusCode == 409) {
+      throw Exception(
+        'A different user already uses this Login ID.',
+      );
+    }
+
+    throw Exception(
+      'Failed to update Admin details. '
+          'Status code: ${response.statusCode}',
     );
   }
 }

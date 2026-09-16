@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/user_api_service.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -17,6 +18,8 @@ class _AdminScreenState extends State<AdminScreen> {
   final TextEditingController password2Controller =
   TextEditingController();
 
+  bool _isSaving = false;
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -25,6 +28,95 @@ class _AdminScreenState extends State<AdminScreen> {
 
     super.dispose();
   }
+
+  // ============================================================
+  // SAVE ADMIN DETAILS
+  // ============================================================
+
+  Future<void> _saveAdminDetails() async {
+    final username = usernameController.text.trim();
+    final password = passwordController.text;
+    final password2 = password2Controller.text;
+
+    if (username.isEmpty) {
+      _showMessage('Please enter User name.');
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showMessage('Please enter a password.');
+      return;
+    }
+
+    if (password2.isEmpty) {
+      _showMessage('Please enter Password 2.');
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      await UserApiService.updateAdminDetails(
+        userName: username,
+        password: password,
+        password2: password2,
+      );
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Admin details saved successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        _isSaving = false;
+      });
+    }
+  }
+
+  // ============================================================
+  // USER NAME SAVE
+  //
+  // The original Admin screen has no Save button beside
+  // User name, so we keep the same layout.
+  //
+  // The User name is saved together with the Password
+  // and Password 2 when either Save button is pressed.
+  // ============================================================
+
+  void _savePassword() {
+    _saveAdminDetails();
+  }
+
+  void _savePassword2() {
+    _saveAdminDetails();
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +130,6 @@ class _AdminScreenState extends State<AdminScreen> {
           children: [
             const SizedBox(height: 20),
 
-            // User name
             _buildRow(
               label: 'User name',
               controller: usernameController,
@@ -46,7 +137,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
             const SizedBox(height: 24),
 
-            // Password
             _buildRowWithSave(
               label: 'Password',
               controller: passwordController,
@@ -55,7 +145,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
             const SizedBox(height: 24),
 
-            // Password 2
             _buildRowWithSave(
               label: 'Password 2',
               controller: password2Controller,
@@ -66,6 +155,10 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
+
+  // ============================================================
+  // USER NAME ROW
+  // ============================================================
 
   Widget _buildRow({
     required String label,
@@ -80,12 +173,11 @@ class _AdminScreenState extends State<AdminScreen> {
             style: const TextStyle(fontSize: 16),
           ),
         ),
-
         const SizedBox(width: 10),
-
         Expanded(
           child: TextField(
             controller: controller,
+            enabled: !_isSaving,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
             ),
@@ -94,6 +186,10 @@ class _AdminScreenState extends State<AdminScreen> {
       ],
     );
   }
+
+  // ============================================================
+  // PASSWORD ROW
+  // ============================================================
 
   Widget _buildRowWithSave({
     required String label,
@@ -109,58 +205,35 @@ class _AdminScreenState extends State<AdminScreen> {
             style: const TextStyle(fontSize: 16),
           ),
         ),
-
         const SizedBox(width: 10),
-
         Expanded(
           child: TextField(
             controller: controller,
+            enabled: !_isSaving,
             obscureText: true,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
             ),
           ),
         ),
-
         const SizedBox(width: 44),
-
         SizedBox(
           width: 90,
           height: 45,
           child: ElevatedButton(
-            onPressed: onSave,
-            child: const Text('Save'),
+            onPressed: _isSaving ? null : onSave,
+            child: _isSaving
+                ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            )
+                : const Text('Save'),
           ),
         ),
       ],
-    );
-  }
-
-  void _savePassword() {
-    if (passwordController.text.isEmpty) {
-      _showMessage('Please enter a password.');
-      return;
-    }
-
-    // Database functionality will be added later.
-    _showMessage('Password is ready to be saved.');
-  }
-
-  void _savePassword2() {
-    if (password2Controller.text.isEmpty) {
-      _showMessage('Please enter Password 2.');
-      return;
-    }
-
-    // Database functionality will be added later.
-    _showMessage('Password 2 is ready to be saved.');
-  }
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
     );
   }
 }

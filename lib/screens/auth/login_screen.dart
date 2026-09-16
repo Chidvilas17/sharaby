@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // ============================================================
-  // NORMAL LOGIN
+  // LOGIN
   // ============================================================
 
   Future<void> _login() async {
@@ -60,28 +60,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final manageId = user['ManageID'] ?? user['manageID'];
 
-      // ==========================================================
-      // SECRETARY
-      // ManageID = 3
-      // Destination: Management Follow-ups
-      // ==========================================================
+      // ========================================================
+      // ADMIN
+      // ManageID = 1
+      // ========================================================
 
-      if (manageId == 3) {
+      if (manageId == 1) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>
-            const ManagementFollowupsScreen(),
+            builder: (context) => const HomeScreen(),
           ),
         );
-
         return;
       }
 
-      // ==========================================================
+      // ========================================================
       // DOCTOR
       // ManageID = 2
-      // Destination: Medical Follow-ups
-      // ==========================================================
+      // ========================================================
 
       if (manageId == 2) {
         Navigator.of(context).pushReplacement(
@@ -90,14 +86,23 @@ class _LoginScreenState extends State<LoginScreen> {
             const MedicalFollowupsScreen(),
           ),
         );
-
         return;
       }
 
-      // ==========================================================
-      // OTHER USER TYPES
-      // Admin will be handled later.
-      // ==========================================================
+      // ========================================================
+      // SECRETARY / RECEPTION
+      // ManageID = 3
+      // ========================================================
+
+      if (manageId == 3) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+            const ManagementFollowupsScreen(),
+          ),
+        );
+        return;
+      }
 
       _showMessage(
         'This user does not have access to this login.',
@@ -142,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // ============================================================
-  // BUILD
+  // UI
   // ============================================================
 
   @override
@@ -231,17 +236,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 28),
 
-                      // ==================================================
-                      // LOGIN BUTTON
-                      // ==================================================
-
                       SizedBox(
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: _isLoggingIn
-                              ? null
-                              : _login,
+                          onPressed:
+                          _isLoggingIn ? null : _login,
                           child: _isLoggingIn
                               ? const SizedBox(
                             width: 24,
@@ -261,17 +261,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 14),
 
-                      // ==================================================
-                      // DEVELOPMENT BYPASS BUTTON
-                      // ==================================================
-
                       SizedBox(
                         width: double.infinity,
                         height: 48,
                         child: OutlinedButton(
-                          onPressed: _isLoggingIn
-                              ? null
-                              : _bypassLogin,
+                          onPressed:
+                          _isLoggingIn ? null : _bypassLogin,
                           child: const Text(
                             'Bypass Login (Development)',
                             style: TextStyle(
