@@ -1,23 +1,62 @@
 import 'package:flutter/material.dart';
+import '../../services/doctor_monthly_net_api_service.dart';
 
-class StaffDoctorsMonthlyNetScreen extends StatefulWidget {
-  const StaffDoctorsMonthlyNetScreen({super.key});
+class StaffDoctorsMonthlyNetScreen
+    extends StatefulWidget {
+  const StaffDoctorsMonthlyNetScreen({
+    super.key,
+  });
 
   @override
-  State<StaffDoctorsMonthlyNetScreen> createState() =>
+  State<StaffDoctorsMonthlyNetScreen>
+  createState() =>
       _StaffDoctorsMonthlyNetScreenState();
 }
 
 class _StaffDoctorsMonthlyNetScreenState
     extends State<StaffDoctorsMonthlyNetScreen> {
-  String? selectedDoctor;
+  // ==========================================
+  // DOCTOR
+  // ==========================================
 
-  int selectedMonth = DateTime.now().month;
-  int selectedYear = DateTime.now().year;
+  int? selectedDoctorId;
+  String? selectedDoctorName;
+
+  List<Map<String, dynamic>> doctors = [];
+
+  bool loadingDoctors = false;
+  bool loadingData = false;
+
+  // ==========================================
+  // MONTH
+  // ==========================================
+
+  int selectedMonth =
+      DateTime.now().month;
+
+  int selectedYear =
+      DateTime.now().year;
+
+  // ==========================================
+  // DATA
+  // ==========================================
+
+  List<Map<String, dynamic>>
+  shiftARows = [];
+
+  List<Map<String, dynamic>>
+  shiftBRows = [];
+
+  List<Map<String, dynamic>>
+  shiftCRows = [];
 
   int? selectedShiftARow;
   int? selectedShiftBRow;
   int? selectedShiftCRow;
+
+  // ==========================================
+  // HEADERS
+  // ==========================================
 
   final List<String> headers = [
     'No.',
@@ -26,70 +65,185 @@ class _StaffDoctorsMonthlyNetScreenState
     'Date',
   ];
 
+  // ==========================================
+  // INIT
+  // ==========================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadDoctors();
+  }
+
+  // ==========================================
+  // LOAD DOCTORS
+  // ==========================================
+
+  Future<void> _loadDoctors() async {
+    setState(() {
+      loadingDoctors = true;
+    });
+
+    try {
+      final data =
+      await DoctorMonthlyNetApiService
+          .getDoctors();
+
+      if (!mounted) return;
+
+      setState(() {
+        doctors = data
+            .map(
+              (doctor) =>
+          Map<String, dynamic>.from(
+            doctor,
+          ),
+        )
+            .where(
+              (doctor) =>
+          doctor['id'] != null &&
+              doctor['name'] != null &&
+              doctor['name']
+                  .toString()
+                  .trim()
+                  .isNotEmpty,
+        )
+            .toList();
+
+        loadingDoctors = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingDoctors = false;
+      });
+
+      _showMessage(
+        e.toString().replaceFirst(
+          'Exception: ',
+          '',
+        ),
+      );
+    }
+  }
+
+  // ==========================================
+  // SELECT MONTH
+  // ==========================================
+
   Future<void> _selectMonth() async {
-    final picked = await showDialog<DateTime>(
+    int tempMonth =
+        selectedMonth;
+
+    int tempYear =
+        selectedYear;
+
+    final picked =
+    await showDialog<DateTime>(
       context: context,
       builder: (context) {
-        int tempMonth = selectedMonth;
-        int tempYear = selectedYear;
-
         return StatefulBuilder(
-          builder: (context, setDialogState) {
+          builder:
+              (context, setDialogState) {
             return AlertDialog(
               title: const Text(
                 'Select Month',
-                textAlign: TextAlign.center,
+                textAlign:
+                TextAlign.center,
               ),
               content: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize:
+                MainAxisSize.min,
                 children: [
-                  DropdownButtonFormField<int>(
+                  DropdownButtonFormField<
+                      int>(
                     value: tempMonth,
-                    decoration: const InputDecoration(
-                      labelText: 'Month',
-                      border: OutlineInputBorder(),
+                    decoration:
+                    const InputDecoration(
+                      labelText:
+                      'Month',
+                      border:
+                      OutlineInputBorder(),
                     ),
-                    items: List.generate(12, (index) {
-                      final month = index + 1;
+                    items:
+                    List.generate(
+                      12,
+                          (index) {
+                        final month =
+                            index + 1;
 
-                      return DropdownMenuItem(
-                        value: month,
-                        child: Text(
-                          month.toString().padLeft(2, '0'),
-                        ),
-                      );
-                    }),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() {
-                          tempMonth = value;
-                        });
+                        return DropdownMenuItem<
+                            int>(
+                          value: month,
+                          child: Text(
+                            month
+                                .toString()
+                                .padLeft(
+                              2,
+                              '0',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    onChanged:
+                        (value) {
+                      if (value ==
+                          null) {
+                        return;
                       }
+
+                      setDialogState(() {
+                        tempMonth =
+                            value;
+                      });
                     },
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(
+                    height: 12,
+                  ),
 
-                  DropdownButtonFormField<int>(
+                  DropdownButtonFormField<
+                      int>(
                     value: tempYear,
-                    decoration: const InputDecoration(
-                      labelText: 'Year',
-                      border: OutlineInputBorder(),
+                    decoration:
+                    const InputDecoration(
+                      labelText:
+                      'Year',
+                      border:
+                      OutlineInputBorder(),
                     ),
-                    items: List.generate(101, (index) {
-                      final year = 2000 + index;
+                    items:
+                    List.generate(
+                      101,
+                          (index) {
+                        final year =
+                            2000 +
+                                index;
 
-                      return DropdownMenuItem(
-                        value: year,
-                        child: Text('$year'),
-                      );
-                    }),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() {
-                          tempYear = value;
-                        });
+                        return DropdownMenuItem<
+                            int>(
+                          value: year,
+                          child: Text(
+                            '$year',
+                          ),
+                        );
+                      },
+                    ),
+                    onChanged:
+                        (value) {
+                      if (value ==
+                          null) {
+                        return;
                       }
+
+                      setDialogState(() {
+                        tempYear =
+                            value;
+                      });
                     },
                   ),
                 ],
@@ -97,18 +251,29 @@ class _StaffDoctorsMonthlyNetScreenState
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pop(
+                      context,
+                    );
                   },
-                  child: const Text('Cancel'),
+                  child:
+                  const Text(
+                    'Cancel',
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(
                       context,
-                      DateTime(tempYear, tempMonth),
+                      DateTime(
+                        tempYear,
+                        tempMonth,
+                      ),
                     );
                   },
-                  child: const Text('Select'),
+                  child:
+                  const Text(
+                    'Select',
+                  ),
                 ),
               ],
             );
@@ -117,241 +282,682 @@ class _StaffDoctorsMonthlyNetScreenState
       },
     );
 
-    if (picked == null) return;
+    if (picked == null) {
+      return;
+    }
 
     setState(() {
-      selectedMonth = picked.month;
-      selectedYear = picked.year;
+      selectedMonth =
+          picked.month;
+
+      selectedYear =
+          picked.year;
     });
   }
+
+  // ==========================================
+  // MONTH TEXT
+  // ==========================================
 
   String _monthText() {
     return '${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
   }
 
-  void _show() {
-    if (selectedDoctor == null || selectedDoctor == 'SELECT') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a doctor.'),
-        ),
+  // ==========================================
+  // SHOW
+  // ==========================================
+
+  Future<void> _show() async {
+    if (selectedDoctorId == null) {
+      _showMessage(
+        'Please select a doctor.',
       );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Showing $selectedDoctor for ${_monthText()}. '
-              'Database data will be loaded after API connection.',
+    setState(() {
+      loadingData = true;
+
+      shiftARows = [];
+      shiftBRows = [];
+      shiftCRows = [];
+
+      selectedShiftARow = null;
+      selectedShiftBRow = null;
+      selectedShiftCRow = null;
+    });
+
+    try {
+      final data =
+      await DoctorMonthlyNetApiService
+          .getMonthlyAttendance(
+        doctorId:
+        selectedDoctorId!,
+        month:
+        selectedMonth,
+        year:
+        selectedYear,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        shiftARows =
+            _convertRows(
+              data['shiftA'],
+            );
+
+        shiftBRows =
+            _convertRows(
+              data['shiftB'],
+            );
+
+        shiftCRows =
+            _convertRows(
+              data['shiftC'],
+            );
+
+        loadingData = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingData = false;
+      });
+
+      _showMessage(
+        e.toString().replaceFirst(
+          'Exception: ',
+          '',
         ),
-      ),
-    );
+      );
+    }
   }
 
-  Widget _doctorDropdown() {
-    return DropdownButtonFormField<String>(
-      value: selectedDoctor,
-      isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Select Name',
-        border: OutlineInputBorder(),
+  // ==========================================
+  // CONVERT ROWS
+  // ==========================================
+
+  List<Map<String, dynamic>> _convertRows(
+      dynamic value,
+      ) {
+    if (value is! List) {
+      return [];
+    }
+
+    return value
+        .map(
+          (item) =>
+      Map<String, dynamic>.from(
+        item,
       ),
-      items: const [
-        DropdownMenuItem<String>(
-          value: 'SELECT',
-          child: Text('Select'),
+    )
+        .toList();
+  }
+
+  // ==========================================
+  // DOCTOR DROPDOWN
+  // ==========================================
+
+  Widget _doctorDropdown() {
+    if (loadingDoctors) {
+      return const SizedBox(
+        height: 56,
+        child: Center(
+          child:
+          CircularProgressIndicator(),
         ),
-      ],
+      );
+    }
+
+    if (doctors.isEmpty) {
+      return Container(
+        height: 56,
+        alignment:
+        Alignment.centerLeft,
+        padding:
+        const EdgeInsets.symmetric(
+          horizontal: 12,
+        ),
+        decoration:
+        BoxDecoration(
+          border:
+          Border.all(
+            color: Colors.red,
+          ),
+          borderRadius:
+          BorderRadius.circular(
+            4,
+          ),
+        ),
+        child: const Text(
+          'No doctors found in EmpsData.',
+          style: TextStyle(
+            color: Colors.red,
+          ),
+        ),
+      );
+    }
+
+    return DropdownButtonFormField<int>(
+      value: selectedDoctorId,
+      isExpanded: true,
+      decoration:
+      const InputDecoration(
+        labelText: 'Select Name',
+        border:
+        OutlineInputBorder(),
+      ),
+      items: doctors.map(
+            (doctor) {
+          final id =
+          doctor['id'] as int;
+
+          final name =
+              doctor['name']
+                  ?.toString() ??
+                  '';
+
+          return DropdownMenuItem<int>(
+            value: id,
+            child: Text(
+              name,
+              overflow:
+              TextOverflow.ellipsis,
+            ),
+          );
+        },
+      ).toList(),
       onChanged: (value) {
+        if (value == null) {
+          return;
+        }
+
+        final selected =
+        doctors.firstWhere(
+              (doctor) =>
+          doctor['id'] == value,
+        );
+
         setState(() {
-          selectedDoctor = value;
+          selectedDoctorId =
+              value;
+
+          selectedDoctorName =
+              selected['name']
+                  ?.toString();
         });
       },
     );
   }
 
+  // ==========================================
+  // SHIFT TABLE
+  // ==========================================
+
   Widget _buildShiftTable({
     required String shift,
     required String time,
+    required List<Map<String, dynamic>>
+    rows,
     required int? selectedRow,
-    required ValueChanged<int> onRowSelected,
+    required ValueChanged<int>
+    onRowSelected,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment:
+      CrossAxisAlignment.stretch,
       children: [
         Text(
           shift,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
+          textAlign:
+          TextAlign.center,
+          style:
+          const TextStyle(
             fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+            FontWeight.bold,
+            color: Colors.blue,
           ),
         ),
 
-        const SizedBox(height: 4),
+        const SizedBox(
+          height: 4,
+        ),
 
         Text(
           time,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
+          textAlign:
+          TextAlign.center,
+          style:
+          const TextStyle(
             fontSize: 17,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+            FontWeight.bold,
           ),
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(
+          height: 10,
+        ),
 
         Container(
-          decoration: BoxDecoration(
-            border: Border.all(
+          decoration:
+          BoxDecoration(
+            border:
+            Border.all(
               color: Colors.grey,
             ),
           ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          child:
+          SingleChildScrollView(
+            scrollDirection:
+            Axis.horizontal,
             child: Table(
-              defaultColumnWidth: const FixedColumnWidth(135),
-              border: TableBorder.all(
-                color: Colors.black54,
+              defaultColumnWidth:
+              const FixedColumnWidth(
+                135,
+              ),
+              border:
+              TableBorder.all(
+                color:
+                Colors.black54,
                 width: 0.7,
               ),
               children: [
                 TableRow(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEFEFEF),
+                  decoration:
+                  const BoxDecoration(
+                    color:
+                    Color(0xFFEFEFEF),
                   ),
-                  children: headers.map((header) {
-                    return Container(
-                      height: 48,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(5),
-                      child: Text(
-                        header,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+                  children:
+                  headers.map(
+                        (header) {
+                      return Container(
+                        height: 48,
+                        alignment:
+                        Alignment.center,
+                        padding:
+                        const EdgeInsets.all(
+                          5,
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                ...List.generate(15, (index) {
-                  final isSelected = selectedRow == index;
-
-                  return TableRow(
-                    children: headers.map((header) {
-                      return GestureDetector(
-                        onTap: () {
-                          onRowSelected(index);
-                        },
-                        child: Container(
-                          height: 42,
-                          alignment: Alignment.center,
-                          color: isSelected
-                              ? Colors.blue.withOpacity(0.12)
-                              : Colors.transparent,
-                          child: Text(
-                            header == 'No.'
-                                ? '${index + 1}'
-                                : '',
+                        child:
+                        Text(
+                          header,
+                          textAlign:
+                          TextAlign
+                              .center,
+                          style:
+                          const TextStyle(
+                            fontWeight:
+                            FontWeight
+                                .bold,
                           ),
                         ),
                       );
-                    }).toList(),
-                  );
-                }),
+                    },
+                  ).toList(),
+                ),
+
+                if (loadingData)
+                  TableRow(
+                    children: List
+                        .generate(
+                      headers.length,
+                          (_) =>
+                      const SizedBox(
+                        height: 42,
+                        child:
+                        Center(
+                          child:
+                          SizedBox(
+                            width: 18,
+                            height: 18,
+                            child:
+                            CircularProgressIndicator(
+                              strokeWidth:
+                              2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                else if (rows.isEmpty)
+                  ...List.generate(
+                    8,
+                        (index) {
+                      return TableRow(
+                        children:
+                        headers.map(
+                              (header) {
+                            return Container(
+                              height: 42,
+                              alignment:
+                              Alignment
+                                  .center,
+                              child:
+                              Text(
+                                header ==
+                                    'No.'
+                                    ? '${index + 1}'
+                                    : '',
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      );
+                    },
+                  )
+                else
+                  ...List.generate(
+                    rows.length,
+                        (index) {
+                      final row =
+                      rows[index];
+
+                      final isSelected =
+                          selectedRow ==
+                              index;
+
+                      return TableRow(
+                        children:
+                        headers.map(
+                              (header) {
+                            String text =
+                                '';
+
+                            if (header ==
+                                'No.') {
+                              text =
+                              '${index + 1}';
+                            } else if (header ==
+                                'Notes') {
+                              text =
+                                  row['notes']
+                                      ?.toString() ??
+                                      '';
+                            } else if (header ==
+                                'Accountant') {
+                              text =
+                                  row['accountant']
+                                      ?.toString() ??
+                                      '';
+                            } else if (header ==
+                                'Date') {
+                              text =
+                                  _formatDatabaseDate(
+                                    row['date'],
+                                  );
+                            }
+
+                            return GestureDetector(
+                              onTap: () {
+                                onRowSelected(
+                                  index,
+                                );
+                              },
+                              child:
+                              Container(
+                                height:
+                                42,
+                                alignment:
+                                Alignment.center,
+                                padding:
+                                const EdgeInsets.all(
+                                  5,
+                                ),
+                                color:
+                                isSelected
+                                    ? Colors
+                                    .blue
+                                    .withOpacity(
+                                  0.12,
+                                )
+                                    : Colors
+                                    .transparent,
+                                child:
+                                Text(
+                                  text,
+                                  textAlign:
+                                  TextAlign
+                                      .center,
+                                ),
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      );
+                    },
+                  ),
               ],
             ),
           ),
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(
+          height: 24,
+        ),
       ],
     );
   }
 
+  // ==========================================
+  // DATE FORMAT
+  // ==========================================
+
+  String _formatDatabaseDate(
+      dynamic value,
+      ) {
+    if (value == null) {
+      return '';
+    }
+
+    final parsed =
+    DateTime.tryParse(
+      value.toString(),
+    );
+
+    if (parsed == null) {
+      return value.toString();
+    }
+
+    final day =
+    parsed.day.toString().padLeft(
+      2,
+      '0',
+    );
+
+    final month =
+    parsed.month.toString().padLeft(
+      2,
+      '0',
+    );
+
+    return '$day-$month-${parsed.year}';
+  }
+
+  // ==========================================
+  // MESSAGE
+  // ==========================================
+
+  void _showMessage(
+      String message,
+      ) {
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  // ==========================================
+  // BUILD
+  // ==========================================
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context,
+      ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Doctors Monthly Net'),
+        title: const Text(
+          'Doctors Monthly Net',
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body:
+      SingleChildScrollView(
+        padding:
+        const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment
+              .stretch,
           children: [
-            // Doctor
+            // =========================
+            // DOCTOR
+            // =========================
+
             _doctorDropdown(),
 
-            const SizedBox(height: 12),
+            const SizedBox(
+              height: 12,
+            ),
 
-            // Month
+            // =========================
+            // MONTH
+            // =========================
+
             InkWell(
-              onTap: _selectMonth,
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Month',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_month),
+              onTap:
+              _selectMonth,
+              child:
+              InputDecorator(
+                decoration:
+                const InputDecoration(
+                  labelText:
+                  'Month',
+                  border:
+                  OutlineInputBorder(),
+                  suffixIcon:
+                  Icon(
+                    Icons
+                        .calendar_month,
+                  ),
                 ),
                 child: Text(
                   _monthText(),
-                  textAlign: TextAlign.center,
+                  textAlign:
+                  TextAlign.center,
                 ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(
+              height: 12,
+            ),
 
-            // Show
+            // =========================
+            // SHOW
+            // =========================
+
             ElevatedButton.icon(
-              onPressed: _show,
-              icon: const Icon(Icons.visibility_outlined),
-              label: const Text('Show'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
+              onPressed:
+              loadingData
+                  ? null
+                  : _show,
+              icon:
+              const Icon(
+                Icons
+                    .visibility_outlined,
+              ),
+              label:
+              const Text(
+                'Show',
+              ),
+              style:
+              ElevatedButton
+                  .styleFrom(
+                padding:
+                const EdgeInsets
+                    .symmetric(
                   vertical: 14,
                 ),
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(
+              height: 28,
+            ),
 
-            // Shift A
+            // =========================
+            // SHIFT A
+            // =========================
+
             _buildShiftTable(
-              shift: 'Shift A',
-              time: '9:00 AM to 3:00 PM',
-              selectedRow: selectedShiftARow,
-              onRowSelected: (index) {
+              shift:
+              'Shift A',
+              time:
+              '9:00 AM to 3:00 PM',
+              rows:
+              shiftARows,
+              selectedRow:
+              selectedShiftARow,
+              onRowSelected:
+                  (index) {
                 setState(() {
-                  selectedShiftARow = index;
+                  selectedShiftARow =
+                      index;
                 });
               },
             ),
 
-            // Shift B
+            // =========================
+            // SHIFT B
+            // =========================
+
             _buildShiftTable(
-              shift: 'Shift B',
-              time: '3:00 PM to 9:00 PM',
-              selectedRow: selectedShiftBRow,
-              onRowSelected: (index) {
+              shift:
+              'Shift B',
+              time:
+              '3:00 PM to 9:00 PM',
+              rows:
+              shiftBRows,
+              selectedRow:
+              selectedShiftBRow,
+              onRowSelected:
+                  (index) {
                 setState(() {
-                  selectedShiftBRow = index;
+                  selectedShiftBRow =
+                      index;
                 });
               },
             ),
 
-            // Shift C
+            // =========================
+            // SHIFT C
+            // =========================
+
             _buildShiftTable(
-              shift: 'Shift C',
-              time: '9:00 PM to 9:00 AM',
-              selectedRow: selectedShiftCRow,
-              onRowSelected: (index) {
+              shift:
+              'Shift C',
+              time:
+              '9:00 PM to 9:00 AM',
+              rows:
+              shiftCRows,
+              selectedRow:
+              selectedShiftCRow,
+              onRowSelected:
+                  (index) {
                 setState(() {
-                  selectedShiftCRow = index;
+                  selectedShiftCRow =
+                      index;
                 });
               },
             ),
