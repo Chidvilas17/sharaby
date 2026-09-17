@@ -118,7 +118,9 @@ class DamagesApiService {
     required String damageDetails,
   }) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/Damages/$id/maintain'),
+      Uri.parse(
+        '$baseUrl/Damages/$id/maintain',
+      ),
       headers: {
         'Content-Type': 'application/json',
       },

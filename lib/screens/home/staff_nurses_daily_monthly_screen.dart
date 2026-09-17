@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/nurse_attendance_api_service.dart';
 
 class StaffNursesDailyMonthlyScreen extends StatefulWidget {
   const StaffNursesDailyMonthlyScreen({super.key});
@@ -12,23 +13,44 @@ class _StaffNursesDailyMonthlyScreenState
     extends State<StaffNursesDailyMonthlyScreen> {
   DateTime selectedDate = DateTime.now();
 
+  // Nurses loaded from API
+  List<Map<String, dynamic>> nurses = [];
+  bool loadingNurses = false;
+
+  // Attendance loading
+  bool loadingAttendance = false;
+
+  // Saving states
+  bool savingShiftA = false;
+  bool savingShiftB = false;
+  bool savingShiftC = false;
+
   // Shift A
   String? selectedNurseA;
-  final TextEditingController notesAController = TextEditingController();
+  final TextEditingController notesAController =
+  TextEditingController();
   final List<NurseAttendanceRow> shiftARows = [];
   int? selectedRowA;
 
   // Shift B
   String? selectedNurseB;
-  final TextEditingController notesBController = TextEditingController();
+  final TextEditingController notesBController =
+  TextEditingController();
   final List<NurseAttendanceRow> shiftBRows = [];
   int? selectedRowB;
 
   // Shift C
   String? selectedNurseC;
-  final TextEditingController notesCController = TextEditingController();
+  final TextEditingController notesCController =
+  TextEditingController();
   final List<NurseAttendanceRow> shiftCRows = [];
   int? selectedRowC;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNurses();
+  }
 
   @override
   void dispose() {
@@ -38,6 +60,44 @@ class _StaffNursesDailyMonthlyScreenState
     super.dispose();
   }
 
+  // ============================================================
+  // LOAD NURSES
+  // ============================================================
+  Future<void> _loadNurses() async {
+    setState(() {
+      loadingNurses = true;
+    });
+
+    try {
+      final result =
+      await NurseAttendanceApiService.getNurses();
+
+      if (!mounted) return;
+
+      setState(() {
+        nurses = result;
+        loadingNurses = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingNurses = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to load nurses.\n$e',
+          ),
+        ),
+      );
+    }
+  }
+
+  // ============================================================
+  // FORMAT DATE
+  // ============================================================
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -45,6 +105,9 @@ class _StaffNursesDailyMonthlyScreenState
     return '$day-$month-${date.year}';
   }
 
+  // ============================================================
+  // SELECT DATE
+  // ============================================================
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -60,26 +123,162 @@ class _StaffNursesDailyMonthlyScreenState
     });
   }
 
-  void _showData() {
+  // ============================================================
+  // SHOW DATA
+  // ============================================================
+  Future<void> _showData() async {
     FocusScope.of(context).unfocus();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Showing nurse attendance for ${_formatDate(selectedDate)}. '
-              'Database data will be loaded after API connection.',
+    setState(() {
+      loadingAttendance = true;
+    });
+
+    try {
+      final result =
+      await NurseAttendanceApiService.getAttendance(
+        selectedDate,
+      );
+
+      if (!mounted) return;
+
+      final shiftAData =
+      result['shiftA'] is List
+          ? result['shiftA'] as List
+          : [];
+
+      final shiftBData =
+      result['shiftB'] is List
+          ? result['shiftB'] as List
+          : [];
+
+      final shiftCData =
+      result['shiftC'] is List
+          ? result['shiftC'] as List
+          : [];
+
+      setState(() {
+        shiftARows.clear();
+        shiftBRows.clear();
+        shiftCRows.clear();
+
+        selectedRowA = null;
+        selectedRowB = null;
+        selectedRowC = null;
+
+        for (final item in shiftAData) {
+          final data =
+          Map<String, dynamic>.from(item);
+
+          shiftARows.add(
+            NurseAttendanceRow(
+              id: data['id'],
+              empId: data['emp_Id'],
+              name: data['name']?.toString() ?? '',
+              notes: data['notes']?.toString() ?? '',
+              userId: data['user_id'],
+              done: data['done']?.toString(),
+            ),
+          );
+        }
+
+        for (final item in shiftBData) {
+          final data =
+          Map<String, dynamic>.from(item);
+
+          shiftBRows.add(
+            NurseAttendanceRow(
+              id: data['id'],
+              empId: data['emp_Id'],
+              name: data['name']?.toString() ?? '',
+              notes: data['notes']?.toString() ?? '',
+              userId: data['user_id'],
+              done: data['done']?.toString(),
+            ),
+          );
+        }
+
+        for (final item in shiftCData) {
+          final data =
+          Map<String, dynamic>.from(item);
+
+          shiftCRows.add(
+            NurseAttendanceRow(
+              id: data['id'],
+              empId: data['emp_Id'],
+              name: data['name']?.toString() ?? '',
+              notes: data['notes']?.toString() ?? '',
+              userId: data['user_id'],
+              done: data['done']?.toString(),
+            ),
+          );
+        }
+
+        loadingAttendance = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Attendance loaded for '
+                '${_formatDate(selectedDate)}.',
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingAttendance = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to load attendance.\n$e',
+          ),
+        ),
+      );
+    }
   }
 
-  void _addNurse({
-    required String? nurse,
-    required TextEditingController notesController,
-    required List<NurseAttendanceRow> rows,
-    required String shift,
-  }) {
-    if (nurse == null || nurse == 'SELECT') {
+  // ============================================================
+  // GET NURSE NAME
+  // ============================================================
+  String _getNurseName(String? nurseId) {
+    if (nurseId == null || nurseId == 'SELECT') {
+      return '';
+    }
+
+    Map<String, dynamic>? nurse;
+
+    for (final item in nurses) {
+      if (item['id'].toString() == nurseId) {
+        nurse = item;
+        break;
+      }
+    }
+
+    return nurse?['name']?.toString() ?? '';
+  }
+
+  // ============================================================
+  // GET NURSE ID
+  // ============================================================
+  int? _getNurseId(String? nurseId) {
+    if (nurseId == null || nurseId == 'SELECT') {
+      return null;
+    }
+
+    return int.tryParse(nurseId);
+  }
+
+  // ============================================================
+  // ADD SHIFT A
+  // ============================================================
+  Future<void> _addShiftA() async {
+    final empId = _getNurseId(selectedNurseA);
+
+    if (empId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select a nurse.'),
@@ -89,27 +288,216 @@ class _StaffNursesDailyMonthlyScreenState
     }
 
     setState(() {
-      rows.add(
-        NurseAttendanceRow(
-          name: nurse,
-          notes: notesController.text.trim(),
-        ),
-      );
-
-      notesController.clear();
+      savingShiftA = true;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$nurse added to $shift.'),
-      ),
-    );
+    final notes = notesAController.text.trim();
+
+    try {
+      await NurseAttendanceApiService.addShiftA(
+        empId: empId,
+        date: selectedDate,
+        notes: notes,
+        userId: null,
+      );
+
+      if (!mounted) return;
+
+      final nurseName =
+      _getNurseName(selectedNurseA);
+
+      setState(() {
+        savingShiftA = false;
+        notesAController.clear();
+        selectedNurseA = 'SELECT';
+      });
+
+      await _showData();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '$nurseName added to Shift A.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        savingShiftA = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save Shift A.\n$e',
+          ),
+        ),
+      );
+    }
   }
 
+  // ============================================================
+  // ADD SHIFT B
+  // ============================================================
+  Future<void> _addShiftB() async {
+    final empId = _getNurseId(selectedNurseB);
+
+    if (empId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a nurse.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      savingShiftB = true;
+    });
+
+    final notes = notesBController.text.trim();
+
+    try {
+      await NurseAttendanceApiService.addShiftB(
+        empId: empId,
+        date: selectedDate,
+        notes: notes,
+        userId: null,
+      );
+
+      if (!mounted) return;
+
+      final nurseName =
+      _getNurseName(selectedNurseB);
+
+      setState(() {
+        savingShiftB = false;
+        notesBController.clear();
+        selectedNurseB = 'SELECT';
+      });
+
+      await _showData();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '$nurseName added to Shift B.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        savingShiftB = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save Shift B.\n$e',
+          ),
+        ),
+      );
+    }
+  }
+
+  // ============================================================
+  // ADD SHIFT C
+  // ============================================================
+  Future<void> _addShiftC() async {
+    final empId = _getNurseId(selectedNurseC);
+
+    if (empId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a nurse.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      savingShiftC = true;
+    });
+
+    final notes = notesCController.text.trim();
+
+    try {
+      await NurseAttendanceApiService.addShiftC(
+        empId: empId,
+        date: selectedDate,
+        notes: notes,
+        userId: null,
+      );
+
+      if (!mounted) return;
+
+      final nurseName =
+      _getNurseName(selectedNurseC);
+
+      setState(() {
+        savingShiftC = false;
+        notesCController.clear();
+        selectedNurseC = 'SELECT';
+      });
+
+      await _showData();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '$nurseName added to Shift C.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        savingShiftC = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save Shift C.\n$e',
+          ),
+        ),
+      );
+    }
+  }
+
+  // ============================================================
+  // NURSE DROPDOWN
+  // ============================================================
   Widget _nurseDropdown({
     required String? value,
     required ValueChanged<String?> onChanged,
   }) {
+    if (loadingNurses) {
+      return const InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Nurse',
+          border: OutlineInputBorder(),
+        ),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return DropdownButtonFormField<String>(
       value: value,
       isExpanded: true,
@@ -117,22 +505,38 @@ class _StaffNursesDailyMonthlyScreenState
         labelText: 'Nurse',
         border: OutlineInputBorder(),
       ),
-      items: const [
-        DropdownMenuItem<String>(
+      items: [
+        const DropdownMenuItem<String>(
           value: 'SELECT',
           child: Text('Select'),
+        ),
+        ...nurses.map(
+              (nurse) {
+            final id = nurse['id'];
+            final name =
+                nurse['name']?.toString() ?? '';
+
+            return DropdownMenuItem<String>(
+              value: id.toString(),
+              child: Text(name),
+            );
+          },
         ),
       ],
       onChanged: onChanged,
     );
   }
 
+  // ============================================================
+  // ADD PANEL
+  // ============================================================
   Widget _addPanel({
     required String title,
     required String? nurse,
     required ValueChanged<String?> onNurseChanged,
     required TextEditingController notesController,
     required VoidCallback onAdd,
+    required bool saving,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -144,7 +548,8 @@ class _StaffNursesDailyMonthlyScreenState
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment:
+        CrossAxisAlignment.stretch,
         children: [
           Text(
             title,
@@ -177,15 +582,28 @@ class _StaffNursesDailyMonthlyScreenState
           const SizedBox(height: 10),
 
           ElevatedButton.icon(
-            onPressed: onAdd,
-            icon: const Icon(Icons.add),
-            label: const Text('Add'),
+            onPressed: saving ? null : onAdd,
+            icon: saving
+                ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            )
+                : const Icon(Icons.add),
+            label: Text(
+              saving ? 'Saving...' : 'Add',
+            ),
           ),
         ],
       ),
     );
   }
 
+  // ============================================================
+  // SHIFT TABLE
+  // ============================================================
   Widget _buildShiftTable({
     required String shift,
     required String time,
@@ -201,7 +619,8 @@ class _StaffNursesDailyMonthlyScreenState
     ];
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment:
+      CrossAxisAlignment.stretch,
       children: [
         Text(
           shift,
@@ -233,63 +652,100 @@ class _StaffNursesDailyMonthlyScreenState
             ),
           ),
           child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+            scrollDirection:
+            Axis.horizontal,
             child: Table(
-              defaultColumnWidth: const FixedColumnWidth(135),
+              defaultColumnWidth:
+              const FixedColumnWidth(135),
               border: TableBorder.all(
                 color: Colors.black54,
                 width: 0.7,
               ),
               children: [
                 TableRow(
-                  decoration: const BoxDecoration(
+                  decoration:
+                  const BoxDecoration(
                     color: Color(0xFF4D88B5),
                   ),
-                  children: headers.map((header) {
-                    return Container(
-                      height: 48,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(5),
-                      child: Text(
-                        header,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                  children: headers.map(
+                        (header) {
+                      return Container(
+                        height: 48,
+                        alignment:
+                        Alignment.center,
+                        padding:
+                        const EdgeInsets.all(5),
+                        child: Text(
+                          header,
+                          textAlign:
+                          TextAlign.center,
+                          style:
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight:
+                            FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    },
+                  ).toList(),
                 ),
 
                 ...List.generate(
-                  rows.isEmpty ? 8 : rows.length,
+                  rows.isEmpty
+                      ? 8
+                      : rows.length,
                       (index) {
-                    final hasData = index < rows.length;
-                    final row = hasData ? rows[index] : null;
-                    final isSelected = selectedRow == index;
+                    final hasData =
+                        index < rows.length;
+
+                    final row =
+                    hasData
+                        ? rows[index]
+                        : null;
+
+                    final isSelected =
+                        selectedRow == index;
 
                     return TableRow(
                       children: [
                         _tableCell(
-                          text: '${index + 1}',
-                          selected: isSelected,
-                          onTap: () => onRowSelected(index),
+                          text:
+                          '${index + 1}',
+                          selected:
+                          isSelected,
+                          onTap: () =>
+                              onRowSelected(
+                                  index),
                         ),
+
                         _tableCell(
-                          text: row?.name ?? '',
-                          selected: isSelected,
-                          onTap: () => onRowSelected(index),
+                          text:
+                          row?.name ?? '',
+                          selected:
+                          isSelected,
+                          onTap: () =>
+                              onRowSelected(
+                                  index),
                         ),
+
                         _tableCell(
-                          text: row?.notes ?? '',
-                          selected: isSelected,
-                          onTap: () => onRowSelected(index),
+                          text:
+                          row?.notes ?? '',
+                          selected:
+                          isSelected,
+                          onTap: () =>
+                              onRowSelected(
+                                  index),
                         ),
+
                         _tableCell(
                           text: '',
-                          selected: isSelected,
-                          onTap: () => onRowSelected(index),
+                          selected:
+                          isSelected,
+                          onTap: () =>
+                              onRowSelected(
+                                  index),
                         ),
                       ],
                     );
@@ -305,6 +761,9 @@ class _StaffNursesDailyMonthlyScreenState
     );
   }
 
+  // ============================================================
+  // TABLE CELL
+  // ============================================================
   Widget _tableCell({
     required String text,
     required bool selected,
@@ -327,16 +786,22 @@ class _StaffNursesDailyMonthlyScreenState
     );
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nurses Daily Attendance'),
+        title: const Text(
+          'Nurses Daily Attendance',
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment.stretch,
           children: [
             // DATE + SHOW
             Row(
@@ -345,16 +810,21 @@ class _StaffNursesDailyMonthlyScreenState
                   child: InkWell(
                     onTap: _selectDate,
                     child: InputDecorator(
-                      decoration: const InputDecoration(
+                      decoration:
+                      const InputDecoration(
                         labelText: 'Date',
-                        border: OutlineInputBorder(),
+                        border:
+                        OutlineInputBorder(),
                         suffixIcon: Icon(
                           Icons.calendar_month,
                         ),
                       ),
                       child: Text(
-                        _formatDate(selectedDate),
-                        textAlign: TextAlign.center,
+                        _formatDate(
+                          selectedDate,
+                        ),
+                        textAlign:
+                        TextAlign.center,
                       ),
                     ),
                   ),
@@ -363,8 +833,20 @@ class _StaffNursesDailyMonthlyScreenState
                 const SizedBox(width: 10),
 
                 ElevatedButton(
-                  onPressed: _showData,
-                  child: const Text('Show'),
+                  onPressed:
+                  loadingAttendance
+                      ? null
+                      : _showData,
+                  child: loadingAttendance
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text('Show'),
                 ),
               ],
             ),
@@ -392,15 +874,10 @@ class _StaffNursesDailyMonthlyScreenState
                   selectedNurseA = value;
                 });
               },
-              notesController: notesAController,
-              onAdd: () {
-                _addNurse(
-                  nurse: selectedNurseA,
-                  notesController: notesAController,
-                  rows: shiftARows,
-                  shift: 'Shift A',
-                );
-              },
+              notesController:
+              notesAController,
+              saving: savingShiftA,
+              onAdd: _addShiftA,
             ),
 
             // SHIFT B
@@ -424,15 +901,10 @@ class _StaffNursesDailyMonthlyScreenState
                   selectedNurseB = value;
                 });
               },
-              notesController: notesBController,
-              onAdd: () {
-                _addNurse(
-                  nurse: selectedNurseB,
-                  notesController: notesBController,
-                  rows: shiftBRows,
-                  shift: 'Shift B',
-                );
-              },
+              notesController:
+              notesBController,
+              saving: savingShiftB,
+              onAdd: _addShiftB,
             ),
 
             // SHIFT C
@@ -456,15 +928,10 @@ class _StaffNursesDailyMonthlyScreenState
                   selectedNurseC = value;
                 });
               },
-              notesController: notesCController,
-              onAdd: () {
-                _addNurse(
-                  nurse: selectedNurseC,
-                  notesController: notesCController,
-                  rows: shiftCRows,
-                  shift: 'Shift C',
-                );
-              },
+              notesController:
+              notesCController,
+              saving: savingShiftC,
+              onAdd: _addShiftC,
             ),
           ],
         ),
@@ -473,12 +940,23 @@ class _StaffNursesDailyMonthlyScreenState
   }
 }
 
+// ================================================================
+// NURSE ATTENDANCE ROW
+// ================================================================
 class NurseAttendanceRow {
+  final int? id;
+  final int? empId;
   final String name;
   final String notes;
+  final int? userId;
+  final String? done;
 
   NurseAttendanceRow({
+    this.id,
+    this.empId,
     required this.name,
     required this.notes,
+    this.userId,
+    this.done,
   });
 }
