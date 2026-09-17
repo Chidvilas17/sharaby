@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/household_expenses_api_service.dart';
 
 class HouseholdExpensesScreen extends StatefulWidget {
   const HouseholdExpensesScreen({super.key});
@@ -10,6 +11,10 @@ class HouseholdExpensesScreen extends StatefulWidget {
 
 class _HouseholdExpensesScreenState
     extends State<HouseholdExpensesScreen> {
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
+
   final TextEditingController receiptNumberController =
   TextEditingController();
 
@@ -19,20 +24,57 @@ class _HouseholdExpensesScreenState
   final TextEditingController notesController =
   TextEditingController();
 
+  // ============================================================
+  // DATE
+  // ============================================================
+
   DateTime selectedDate = DateTime.now();
 
+  // ============================================================
+  // DATA
+  // ============================================================
+
+  List<Map<String, dynamic>> expenses = [];
+
+  int? selectedExpenseId;
   int? selectedRow;
 
-  // Empty until the database/API is connected.
-  final List<Map<String, String>> expenses = [];
+  // ============================================================
+  // LOADING STATES
+  // ============================================================
+
+  bool loadingExpenses = false;
+  bool saving = false;
+  bool deleting = false;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Load expenses for today's date when the screen opens.
+    _search();
+  }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
     receiptNumberController.dispose();
     costController.dispose();
     notesController.dispose();
+
     super.dispose();
   }
+
+  // ============================================================
+  // FORMAT DATE
+  // ============================================================
 
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
@@ -41,6 +83,40 @@ class _HouseholdExpensesScreenState
 
     return '$day-$month-$year';
   }
+
+  // ============================================================
+  // FORMAT TIME
+  // ============================================================
+
+  String _formatTime(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+
+    try {
+      final dateTime = DateTime.parse(value.toString());
+
+      final hour = dateTime.hour == 0
+          ? 12
+          : dateTime.hour > 12
+          ? dateTime.hour - 12
+          : dateTime.hour;
+
+      final minute =
+      dateTime.minute.toString().padLeft(2, '0');
+
+      final period =
+      dateTime.hour >= 12 ? 'PM' : 'AM';
+
+      return '$hour:$minute $period';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  // ============================================================
+  // SELECT DATE
+  // ============================================================
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -53,65 +129,272 @@ class _HouseholdExpensesScreenState
     if (picked != null) {
       setState(() {
         selectedDate = picked;
+        selectedRow = null;
+        selectedExpenseId = null;
       });
     }
   }
 
-  void _search() {
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
+  Future<void> _search() async {
+    FocusScope.of(context).unfocus();
+
     setState(() {
+      loadingExpenses = true;
       selectedRow = null;
+      selectedExpenseId = null;
     });
 
-    _showMessage(
-      'Search date: ${_formatDate(selectedDate)}',
-    );
+    try {
+      final result =
+      await HouseholdExpensesApiService.getExpensesByDate(
+        selectedDate,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        expenses = result;
+        loadingExpenses = false;
+      });
+
+      if (expenses.isEmpty) {
+        _showMessage(
+          'No operations this day.',
+        );
+      } else {
+        _showMessage(
+          '${expenses.length} expense(s) found.',
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        expenses = [];
+        loadingExpenses = false;
+      });
+
+      _showMessage(
+        'Failed to load expenses.\n$e',
+      );
+    }
   }
 
-  void _saveExpense() {
+  // ============================================================
+  // SAVE EXPENSE
+  // ============================================================
+
+  Future<void> _saveExpense() async {
     final receiptNumber =
     receiptNumberController.text.trim();
 
-    final cost = costController.text.trim();
+    final costText =
+    costController.text.trim();
+
+    final notes =
+    notesController.text.trim();
+
+    // ------------------------------------------------------------
+    // VALIDATE RECEIPT NUMBER
+    // ------------------------------------------------------------
 
     if (receiptNumber.isEmpty) {
-      _showMessage('Please enter the receipt number.');
+      _showMessage(
+        'Please enter the receipt number.',
+      );
       return;
     }
 
-    if (cost.isEmpty) {
-      _showMessage('Please enter the cost.');
+    final parsedReceiptNumber =
+    int.tryParse(receiptNumber);
+
+    if (parsedReceiptNumber == null) {
+      _showMessage(
+        'Please enter a valid receipt number.',
+      );
       return;
     }
 
-    final parsedCost = double.tryParse(cost);
+    // ------------------------------------------------------------
+    // VALIDATE COST
+    // ------------------------------------------------------------
+
+    if (costText.isEmpty) {
+      _showMessage(
+        'Please enter the cost.',
+      );
+      return;
+    }
+
+    final parsedCost =
+    int.tryParse(costText);
 
     if (parsedCost == null) {
-      _showMessage('Please enter a valid cost.');
+      _showMessage(
+        'Please enter a valid whole number cost.',
+      );
       return;
     }
 
-    // Database insertion will be connected later.
-    _showMessage(
-      'Expense information is valid.',
-    );
+    // ------------------------------------------------------------
+    // SAVE
+    // ------------------------------------------------------------
+
+    setState(() {
+      saving = true;
+    });
+
+    try {
+      await HouseholdExpensesApiService.addExpense(
+        waslNo: parsedReceiptNumber,
+        cost: parsedCost,
+        notes: notes.isEmpty ? null : notes,
+        date: selectedDate,
+        userId: null,
+      );
+
+      if (!mounted) return;
+
+      // Clear input fields.
+      receiptNumberController.clear();
+      costController.clear();
+      notesController.clear();
+
+      setState(() {
+        saving = false;
+        selectedRow = null;
+        selectedExpenseId = null;
+      });
+
+      _showMessage(
+        'Expense saved successfully.',
+      );
+
+      // Reload from SQL Server.
+      await _loadExpensesWithoutMessage();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        saving = false;
+      });
+
+      _showMessage(
+        'Failed to save expense.\n$e',
+      );
+    }
   }
 
-  void _deleteExpense() {
-    if (selectedRow == null) {
+  // ============================================================
+  // LOAD EXPENSES WITHOUT SHOWING MESSAGE
+  // ============================================================
+
+  Future<void> _loadExpensesWithoutMessage() async {
+    try {
+      final result =
+      await HouseholdExpensesApiService.getExpensesByDate(
+        selectedDate,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        expenses = result;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to refresh expenses.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // DELETE EXPENSE
+  // ============================================================
+
+  Future<void> _deleteExpense() async {
+    if (selectedExpenseId == null) {
       _showMessage(
         'Please select an expense first.',
       );
       return;
     }
 
-    // Database deletion will be connected later.
-    _showMessage(
-      'Selected expense is ready for deletion.',
-    );
+    setState(() {
+      deleting = true;
+    });
+
+    try {
+      await HouseholdExpensesApiService.deleteExpense(
+        selectedExpenseId!,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        deleting = false;
+        selectedRow = null;
+        selectedExpenseId = null;
+      });
+
+      _showMessage(
+        'Expense deleted successfully.',
+      );
+
+      // Reload from SQL Server.
+      await _loadExpensesWithoutMessage();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        deleting = false;
+      });
+
+      _showMessage(
+        'Failed to delete expense.\n$e',
+      );
+    }
   }
 
+  // ============================================================
+  // SELECT TABLE ROW
+  // ============================================================
+
+  void _selectExpenseRow(int index) {
+    if (index >= expenses.length) {
+      return;
+    }
+
+    final expense = expenses[index];
+
+    final id = expense['id'];
+
+    if (id == null) {
+      return;
+    }
+
+    setState(() {
+      selectedRow = index;
+      selectedExpenseId =
+          int.tryParse(id.toString());
+    });
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -119,6 +402,10 @@ class _HouseholdExpensesScreenState
       ),
     );
   }
+
+  // ============================================================
+  // SECTION TITLE
+  // ============================================================
 
   Widget _sectionTitle(String title) {
     return Container(
@@ -142,10 +429,15 @@ class _HouseholdExpensesScreenState
     );
   }
 
+  // ============================================================
+  // TEXT FIELD
+  // ============================================================
+
   Widget _textField({
     required TextEditingController controller,
     required String label,
-    TextInputType keyboardType = TextInputType.text,
+    TextInputType keyboardType =
+        TextInputType.text,
   }) {
     return TextField(
       controller: controller,
@@ -156,6 +448,10 @@ class _HouseholdExpensesScreenState
       ),
     );
   }
+
+  // ============================================================
+  // DATE FIELD
+  // ============================================================
 
   Widget _dateField() {
     return InkWell(
@@ -194,6 +490,10 @@ class _HouseholdExpensesScreenState
     );
   }
 
+  // ============================================================
+  // HEADER CELL
+  // ============================================================
+
   Widget _headerCell(
       String text,
       double width,
@@ -214,6 +514,10 @@ class _HouseholdExpensesScreenState
     );
   }
 
+  // ============================================================
+  // DATA CELL
+  // ============================================================
+
   Widget _dataCell(
       int row,
       String text,
@@ -221,9 +525,7 @@ class _HouseholdExpensesScreenState
       ) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedRow = row;
-        });
+        _selectExpenseRow(row);
       },
       child: Container(
         width: width,
@@ -234,6 +536,7 @@ class _HouseholdExpensesScreenState
             .primaryContainer
             : Colors.transparent,
         alignment: Alignment.center,
+        padding: const EdgeInsets.all(4),
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -241,6 +544,10 @@ class _HouseholdExpensesScreenState
       ),
     );
   }
+
+  // ============================================================
+  // EXPENSE TABLE
+  // ============================================================
 
   Widget _buildTable() {
     const int emptyRows = 12;
@@ -252,6 +559,11 @@ class _HouseholdExpensesScreenState
     const double notesWidth = 180;
     const double timeWidth = 120;
     const double accountantWidth = 130;
+
+    final int numberOfRows =
+    expenses.isEmpty
+        ? emptyRows
+        : expenses.length;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -272,21 +584,39 @@ class _HouseholdExpensesScreenState
           6: FixedColumnWidth(accountantWidth),
         },
         children: [
-          // Header row
+          // ------------------------------------------------------
+          // HEADER
+          // ------------------------------------------------------
+
           TableRow(
             decoration: BoxDecoration(
               color: Colors.grey.shade200,
             ),
             children: [
-              _headerCell('No.', noWidth),
-              _headerCell('Type', typeWidth),
+              _headerCell(
+                'No.',
+                noWidth,
+              ),
+              _headerCell(
+                'Type',
+                typeWidth,
+              ),
               _headerCell(
                 'Receipt Number',
                 receiptWidth,
               ),
-              _headerCell('Cost', costWidth),
-              _headerCell('Notes', notesWidth),
-              _headerCell('Time', timeWidth),
+              _headerCell(
+                'Cost',
+                costWidth,
+              ),
+              _headerCell(
+                'Notes',
+                notesWidth,
+              ),
+              _headerCell(
+                'Time',
+                timeWidth,
+              ),
               _headerCell(
                 'Accountant',
                 accountantWidth,
@@ -294,86 +624,142 @@ class _HouseholdExpensesScreenState
             ],
           ),
 
-          // Empty rows.
-          // These will contain database records later.
-          for (int i = 0; i < emptyRows; i++)
-            TableRow(
-              children: [
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? '${i + 1}'
-                      : '',
-                  noWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? expenses[i]['type'] ?? ''
-                      : '',
-                  typeWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? expenses[i]['receiptNumber'] ?? ''
-                      : '',
-                  receiptWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? expenses[i]['cost'] ?? ''
-                      : '',
-                  costWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? expenses[i]['notes'] ?? ''
-                      : '',
-                  notesWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? expenses[i]['time'] ?? ''
-                      : '',
-                  timeWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < expenses.length
-                      ? expenses[i]['accountant'] ?? ''
-                      : '',
-                  accountantWidth,
-                ),
-              ],
-            ),
+          // ------------------------------------------------------
+          // DATA ROWS
+          // ------------------------------------------------------
+
+          ...List.generate(
+            numberOfRows,
+                (index) {
+              final hasData =
+                  index < expenses.length;
+
+              final expense =
+              hasData
+                  ? expenses[index]
+                  : null;
+
+              final type =
+                  expense?['type']
+                      ?.toString() ??
+                      '';
+
+              final receiptNumber =
+                  expense?['wasl_no']
+                      ?.toString() ??
+                      '';
+
+              final cost =
+                  expense?['cost']
+                      ?.toString() ??
+                      '';
+
+              final notes =
+                  expense?['notes']
+                      ?.toString() ??
+                      '';
+
+              final time =
+              _formatTime(
+                expense?['Time'],
+              );
+
+              final accountant =
+                  expense?['log_id']
+                      ?.toString() ??
+                      '';
+
+              return TableRow(
+                children: [
+                  _dataCell(
+                    index,
+                    hasData
+                        ? '${index + 1}'
+                        : '',
+                    noWidth,
+                  ),
+
+                  _dataCell(
+                    index,
+                    type,
+                    typeWidth,
+                  ),
+
+                  _dataCell(
+                    index,
+                    receiptNumber,
+                    receiptWidth,
+                  ),
+
+                  _dataCell(
+                    index,
+                    cost,
+                    costWidth,
+                  ),
+
+                  _dataCell(
+                    index,
+                    notes,
+                    notesWidth,
+                  ),
+
+                  _dataCell(
+                    index,
+                    time,
+                    timeWidth,
+                  ),
+
+                  _dataCell(
+                    index,
+                    accountant,
+                    accountantWidth,
+                  ),
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
+  // ============================================================
+  // TOTAL
+  // ============================================================
+
   double _calculateTotal() {
     double total = 0;
 
     for (final expense in expenses) {
-      total += double.tryParse(
-        expense['cost'] ?? '',
-      ) ??
-          0;
+      final value = expense['cost'];
+
+      if (value == null) {
+        continue;
+      }
+
+      total +=
+          double.tryParse(
+            value.toString(),
+          ) ??
+              0;
     }
 
     return total;
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Household Expenses'),
+        title: const Text(
+          'Household Expenses',
+        ),
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -381,9 +767,9 @@ class _HouseholdExpensesScreenState
             crossAxisAlignment:
             CrossAxisAlignment.stretch,
             children: [
-              // ==========================
+              // ==================================================
               // CURRENT USER
-              // ==========================
+              // ==================================================
 
               Row(
                 children: const [
@@ -399,11 +785,13 @@ class _HouseholdExpensesScreenState
 
               const SizedBox(height: 20),
 
-              // ==========================
+              // ==================================================
               // SEARCH BY DATE
-              // ==========================
+              // ==================================================
 
-              _sectionTitle('Search by Date'),
+              _sectionTitle(
+                'Search by Date',
+              ),
 
               const SizedBox(height: 14),
 
@@ -414,12 +802,25 @@ class _HouseholdExpensesScreenState
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _search,
-                  child: const Text(
+                  onPressed:
+                  loadingExpenses
+                      ? null
+                      : _search,
+                  child: loadingExpenses
+                      ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
                     'Search',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
@@ -427,28 +828,36 @@ class _HouseholdExpensesScreenState
 
               const SizedBox(height: 12),
 
-              const Center(
-                child: Text(
-                  'No operations this day',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+              if (!loadingExpenses &&
+                  expenses.isEmpty)
+                const Center(
+                  child: Text(
+                    'No operations this day',
+                    style: TextStyle(
+                      fontWeight:
+                      FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
 
               const SizedBox(height: 24),
 
-              // ==========================
+              // ==================================================
               // ADD EXPENSE
-              // ==========================
+              // ==================================================
 
-              _sectionTitle('Add Expense'),
+              _sectionTitle(
+                'Add Expense',
+              ),
 
               const SizedBox(height: 16),
 
               _textField(
-                controller: receiptNumberController,
+                controller:
+                receiptNumberController,
                 label: 'Receipt Number',
+                keyboardType:
+                TextInputType.number,
               ),
 
               const SizedBox(height: 14),
@@ -457,8 +866,9 @@ class _HouseholdExpensesScreenState
                 controller: costController,
                 label: 'Cost',
                 keyboardType:
-                const TextInputType.numberWithOptions(
-                  decimal: true,
+                const TextInputType
+                    .numberWithOptions(
+                  decimal: false,
                 ),
               ),
 
@@ -474,12 +884,25 @@ class _HouseholdExpensesScreenState
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _saveExpense,
-                  child: const Text(
+                  onPressed:
+                  saving
+                      ? null
+                      : _saveExpense,
+                  child: saving
+                      ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
                     'Save',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
@@ -487,29 +910,54 @@ class _HouseholdExpensesScreenState
 
               const SizedBox(height: 24),
 
-              // ==========================
-              // EXPENSES TABLE
-              // ==========================
+              // ==================================================
+              // EXPENSE DATA
+              // ==================================================
 
-              _sectionTitle('Expense Data'),
+              _sectionTitle(
+                'Expense Data',
+              ),
 
-              _buildTable(),
+              if (loadingExpenses)
+                const Padding(
+                  padding:
+                  EdgeInsets.all(20),
+                  child: Center(
+                    child:
+                    CircularProgressIndicator(),
+                  ),
+                )
+              else
+                _buildTable(),
 
               const SizedBox(height: 16),
 
-              // ==========================
+              // ==================================================
               // DELETE
-              // ==========================
+              // ==================================================
 
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _deleteExpense,
-                  child: const Text(
+                  onPressed:
+                  deleting
+                      ? null
+                      : _deleteExpense,
+                  child: deleting
+                      ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
                     'Delete',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
@@ -517,9 +965,9 @@ class _HouseholdExpensesScreenState
 
               const SizedBox(height: 16),
 
-              // ==========================
+              // ==================================================
               // TOTAL
-              // ==========================
+              // ==================================================
 
               Row(
                 mainAxisAlignment:
@@ -529,7 +977,8 @@ class _HouseholdExpensesScreenState
                     'Total Expenses: ',
                     style: TextStyle(
                       fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                   Text(
@@ -537,7 +986,8 @@ class _HouseholdExpensesScreenState
                         .toStringAsFixed(0),
                     style: const TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ],
