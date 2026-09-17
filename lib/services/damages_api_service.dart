@@ -6,7 +6,7 @@ class DamagesApiService {
       'http://10.0.2.2:5137/api';
 
   // =========================
-  // GET ALL FAULTS
+  // GET CURRENT FAULTS
   // =========================
 
   static Future<List<dynamic>> getDamages() async {
@@ -20,6 +20,24 @@ class DamagesApiService {
 
     throw Exception(
       'Failed to load faults. Status code: ${response.statusCode}',
+    );
+  }
+
+  // =========================
+  // GET FAULT ARCHIVE
+  // =========================
+
+  static Future<List<dynamic>> getDamagesArchive() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/Damages/archive'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    }
+
+    throw Exception(
+      'Failed to load faults archive. Status code: ${response.statusCode}',
     );
   }
 
