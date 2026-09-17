@@ -1,465 +1,1059 @@
 import 'package:flutter/material.dart';
+import '../../services/other_income_api_service.dart';
 
 class OtherIncomeScreen extends StatefulWidget {
   const OtherIncomeScreen({super.key});
 
   @override
-  State<OtherIncomeScreen> createState() => _OtherIncomeScreenState();
+  State<OtherIncomeScreen> createState() =>
+      _OtherIncomeScreenState();
 }
 
-class _OtherIncomeScreenState extends State<OtherIncomeScreen> {
-  final TextEditingController typeController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-  final TextEditingController notesController = TextEditingController();
+class _OtherIncomeScreenState
+    extends State<OtherIncomeScreen> {
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
+
+  final TextEditingController typeController =
+  TextEditingController();
+
+  final TextEditingController priceController =
+  TextEditingController();
+
+  final TextEditingController notesController =
+  TextEditingController();
+
+  // ============================================================
+  // DATE
+  // ============================================================
 
   DateTime selectedDate = DateTime.now();
 
-  int? selectedRow;
+  // ============================================================
+  // DATABASE DATA
+  // ============================================================
 
-  // Empty for now.
-  // Real records will come from the database through the API later.
-  final List<Map<String, String>> incomeRecords = [];
+  List<Map<String, dynamic>> incomeRecords = [];
+
+  int? selectedRecordId;
+
+  // ============================================================
+  // LOADING STATES
+  // ============================================================
+
+  bool loading = false;
+  bool adding = false;
+  bool deleting = false;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadByDate();
+  }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
     typeController.dispose();
     priceController.dispose();
     notesController.dispose();
+
     super.dispose();
   }
 
-  String _formatDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString();
+  // ============================================================
+  // DATE FORMAT
+  // ============================================================
 
-    return '$day-$month-$year';
+  String _formatDate(DateTime date) {
+    final day =
+    date.day.toString().padLeft(2, '0');
+
+    final month =
+    date.month.toString().padLeft(2, '0');
+
+    return '$day-$month-${date.year}';
   }
 
+  // ============================================================
+  // SELECT DATE
+  // ============================================================
+
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
+    if (picked == null) {
+      return;
     }
+
+    setState(() {
+      selectedDate = picked;
+    });
   }
 
-  void _search() {
+  // ============================================================
+  // LOAD DATA BY DATE
+  // ============================================================
+
+  Future<void> _loadByDate() async {
     setState(() {
-      selectedRow = null;
+      loading = true;
+      selectedRecordId = null;
     });
 
-    _showMessage(
-      'Search date: ${_formatDate(selectedDate)}',
-    );
+    try {
+      final result =
+      await OtherIncomeApiService.getByDate(
+        selectedDate,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        incomeRecords = result;
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        loading = false;
+        incomeRecords = [];
+      });
+
+      _message(
+        'Failed to load data.\n$e',
+      );
+    }
   }
 
-  void _addIncome() {
-    final type = typeController.text.trim();
-    final price = priceController.text.trim();
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
+  Future<void> _search() async {
+    FocusScope.of(context).unfocus();
+
+    await _loadByDate();
+  }
+
+  // ============================================================
+  // ADD INCOME
+  // ============================================================
+
+  Future<void> _addIncome() async {
+    FocusScope.of(context).unfocus();
+
+    final type =
+    typeController.text.trim();
+
+    final priceText =
+    priceController.text.trim();
+
+    final notes =
+    notesController.text.trim();
+
+    // ------------------------------------------------------------
+    // VALIDATE TYPE
+    // ------------------------------------------------------------
 
     if (type.isEmpty) {
-      _showMessage('Please enter the type.');
+      _message(
+        'Please enter the type.',
+      );
       return;
     }
 
-    if (price.isEmpty) {
-      _showMessage('Please enter the price.');
+    // ------------------------------------------------------------
+    // VALIDATE PRICE
+    // ------------------------------------------------------------
+
+    if (priceText.isEmpty) {
+      _message(
+        'Please enter the price.',
+      );
       return;
     }
 
-    final parsedPrice = double.tryParse(price);
+    final price =
+    int.tryParse(priceText);
 
-    if (parsedPrice == null) {
-      _showMessage('Please enter a valid price.');
+    if (price == null) {
+      _message(
+        'Price must be a whole number.',
+      );
       return;
     }
 
-    // Database insertion will be connected later.
-    _showMessage(
-      'Income information is valid.',
-    );
-  }
-
-  void _deleteIncome() {
-    if (selectedRow == null) {
-      _showMessage('Please select an income record first.');
+    if (price < 0) {
+      _message(
+        'Price cannot be negative.',
+      );
       return;
     }
 
-    // Database deletion will be connected later.
-    _showMessage(
-      'Selected income record is ready for deletion.',
+    // ------------------------------------------------------------
+    // START SAVING
+    // ------------------------------------------------------------
+
+    setState(() {
+      adding = true;
+    });
+
+    try {
+      final id =
+      await OtherIncomeApiService.addIncome(
+        type: type,
+        price: price,
+        date: selectedDate,
+        userId: null,
+        notes: notes.isEmpty
+            ? null
+            : notes,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      // ----------------------------------------------------------
+      // CLEAR INPUTS
+      // ----------------------------------------------------------
+
+      typeController.clear();
+      priceController.clear();
+      notesController.clear();
+
+      // ----------------------------------------------------------
+      // RELOAD FROM DATABASE
+      // ----------------------------------------------------------
+
+      await _loadByDate();
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        adding = false;
+      });
+
+      _message(
+        'Income added successfully. ID: $id',
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        adding = false;
+      });
+
+      _message(
+        'Failed to save income.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // DELETE
+  // ============================================================
+
+  Future<void> _deleteIncome() async {
+    if (selectedRecordId == null) {
+      _message(
+        'Please select an income record first.',
+      );
+      return;
+    }
+
+    final confirmed =
+    await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text(
+            'Delete Income',
+          ),
+          content: const Text(
+            'Are you sure you want to delete this income record?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  false,
+                );
+              },
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  true,
+                );
+              },
+              child: const Text(
+                'Delete',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    setState(() {
+      deleting = true;
+    });
+
+    try {
+      await OtherIncomeApiService.deleteIncome(
+        selectedRecordId!,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      await _loadByDate();
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        deleting = false;
+        selectedRecordId = null;
+      });
+
+      _message(
+        'Income deleted successfully.',
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        deleting = false;
+      });
+
+      _message(
+        'Failed to delete income.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // SELECT TABLE ROW
+  // ============================================================
+
+  void _selectRow(int index) {
+    if (index < 0 ||
+        index >= incomeRecords.length) {
+      return;
+    }
+
+    final record =
+    incomeRecords[index];
+
+    final id =
+    record['id'];
+
+    int? parsedId;
+
+    if (id is int) {
+      parsedId = id;
+    } else {
+      parsedId = int.tryParse(
+        id?.toString() ?? '',
+      );
+    }
+
+    setState(() {
+      selectedRecordId = parsedId;
+    });
+  }
+
+  // ============================================================
+  // TOTAL
+  // ============================================================
+
+  int _calculateTotal() {
+    int total = 0;
+
+    for (final record in incomeRecords) {
+      final value =
+      record['price'];
+
+      if (value is num) {
+        total += value.toInt();
+      } else {
+        total +=
+            int.tryParse(
+              value?.toString() ?? '',
+            ) ??
+                0;
+      }
+    }
+
+    return total;
+  }
+
+  // ============================================================
+  // RECORD ID
+  // ============================================================
+
+  int? _recordId(
+      Map<String, dynamic> record,
+      ) {
+    final value =
+    record['id'];
+
+    if (value is int) {
+      return value;
+    }
+
+    return int.tryParse(
+      value?.toString() ?? '',
     );
   }
 
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
-  }
-
-  Widget _sectionTitle(String title) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 10,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.shade400,
-        ),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
+  // ============================================================
+  // TEXT FIELD
+  // ============================================================
 
   Widget _textField({
-    required TextEditingController controller,
     required String label,
-    TextInputType keyboardType = TextInputType.text,
+    required TextEditingController controller,
+    TextInputType keyboardType =
+        TextInputType.text,
+    int maxLines = 1,
   }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
+      maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border:
+        const OutlineInputBorder(),
       ),
     );
   }
 
-  Widget _dateField() {
-    return InkWell(
-      onTap: _selectDate,
+  // ============================================================
+  // EMPTY TABLE CELL
+  // ============================================================
+
+  Widget _emptyCell() {
+    return Container(
+      height: 42,
+      alignment:
+      Alignment.center,
+      child:
+      const Text(''),
+    );
+  }
+
+  // ============================================================
+  // DATA TABLE CELL
+  // ============================================================
+
+  Widget _dataCell({
+    required String text,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.grey.shade400,
-          ),
-          borderRadius: BorderRadius.circular(4),
+        height: 42,
+        alignment:
+        Alignment.center,
+        padding:
+        const EdgeInsets.all(5),
+        color: selected
+            ? Colors.blue
+            .withOpacity(0.15)
+            : Colors.transparent,
+        child: Text(
+          text,
+          textAlign:
+          TextAlign.center,
         ),
-        child: Row(
+      ),
+    );
+  }
+
+  // ============================================================
+  // TABLE
+  // ============================================================
+
+  Widget _buildTable() {
+    if (loading) {
+      return const SizedBox(
+        height: 300,
+        child: Center(
+          child:
+          CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border:
+        Border.all(
+          color: Colors.grey,
+        ),
+      ),
+      child:
+      SingleChildScrollView(
+        scrollDirection:
+        Axis.horizontal,
+        child: Table(
+          defaultColumnWidth:
+          const FixedColumnWidth(
+            145,
+          ),
+          border:
+          TableBorder.all(
+            color: Colors.black54,
+            width: 0.7,
+          ),
           children: [
-            const Icon(Icons.calendar_today_outlined),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                _formatDate(selectedDate),
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
+            // ==================================================
+            // HEADER
+            // ==================================================
+
+            TableRow(
+              decoration:
+              const BoxDecoration(
+                color:
+                Color(0xFF4D88B5),
               ),
+              children: const [
+                _HeaderCell(
+                  'Type',
+                ),
+                _HeaderCell(
+                  'Price',
+                ),
+                _HeaderCell(
+                  'By',
+                ),
+                _HeaderCell(
+                  'Notes',
+                ),
+              ],
             ),
-            const Icon(Icons.arrow_drop_down),
+
+            // ==================================================
+            // EMPTY ROWS
+            // ==================================================
+
+            if (incomeRecords.isEmpty)
+              ...List.generate(
+                10,
+                    (index) {
+                  return TableRow(
+                    children: [
+                      _emptyCell(),
+                      _emptyCell(),
+                      _emptyCell(),
+                      _emptyCell(),
+                    ],
+                  );
+                },
+              )
+
+            // ==================================================
+            // DATABASE ROWS
+            // ==================================================
+
+            else
+              ...incomeRecords
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) {
+                  final index =
+                      entry.key;
+
+                  final record =
+                      entry.value;
+
+                  final isSelected =
+                      selectedRecordId ==
+                          _recordId(
+                            record,
+                          );
+
+                  return TableRow(
+                    children: [
+                      // TYPE
+                      _dataCell(
+                        text:
+                        record['type']
+                            ?.toString() ??
+                            '',
+                        selected:
+                        isSelected,
+                        onTap: () {
+                          _selectRow(
+                            index,
+                          );
+                        },
+                      ),
+
+                      // PRICE
+                      _dataCell(
+                        text:
+                        record['price']
+                            ?.toString() ??
+                            '0',
+                        selected:
+                        isSelected,
+                        onTap: () {
+                          _selectRow(
+                            index,
+                          );
+                        },
+                      ),
+
+                      // BY
+                      _dataCell(
+                        text:
+                        record['by']
+                            ?.toString() ??
+                            '',
+                        selected:
+                        isSelected,
+                        onTap: () {
+                          _selectRow(
+                            index,
+                          );
+                        },
+                      ),
+
+                      // NOTES
+                      _dataCell(
+                        text:
+                        record['notes']
+                            ?.toString() ??
+                            '',
+                        selected:
+                        isSelected,
+                        onTap: () {
+                          _selectRow(
+                            index,
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _headerCell(String text, double width) {
-    return SizedBox(
-      width: width,
-      height: 52,
-      child: Center(
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _message(
+      String message,
+      ) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(
+      SnackBar(
+        content:
+        Text(message),
       ),
     );
   }
 
-  Widget _dataCell(int row, String text, double width) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedRow = row;
-        });
-      },
-      child: Container(
-        width: width,
-        height: 42,
-        color: selectedRow == row
-            ? Theme.of(context).colorScheme.primaryContainer
-            : Colors.transparent,
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTable() {
-    const int emptyRows = 12;
-
-    const double typeWidth = 180;
-    const double priceWidth = 120;
-    const double byWidth = 120;
-    const double notesWidth = 240;
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Table(
-        border: TableBorder.all(
-          color: Colors.grey,
-          width: 1,
-        ),
-        defaultVerticalAlignment:
-        TableCellVerticalAlignment.middle,
-        columnWidths: const {
-          0: FixedColumnWidth(typeWidth),
-          1: FixedColumnWidth(priceWidth),
-          2: FixedColumnWidth(byWidth),
-          3: FixedColumnWidth(notesWidth),
-        },
-        children: [
-          // Header
-          TableRow(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-            ),
-            children: [
-              _headerCell('Type', typeWidth),
-              _headerCell('Price', priceWidth),
-              _headerCell('By', byWidth),
-              _headerCell('Notes', notesWidth),
-            ],
-          ),
-
-          // Empty rows
-          for (int i = 0; i < emptyRows; i++)
-            TableRow(
-              children: [
-                _dataCell(
-                  i,
-                  i < incomeRecords.length
-                      ? incomeRecords[i]['type'] ?? ''
-                      : '',
-                  typeWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < incomeRecords.length
-                      ? incomeRecords[i]['price'] ?? ''
-                      : '',
-                  priceWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < incomeRecords.length
-                      ? incomeRecords[i]['by'] ?? ''
-                      : '',
-                  byWidth,
-                ),
-                _dataCell(
-                  i,
-                  i < incomeRecords.length
-                      ? incomeRecords[i]['notes'] ?? ''
-                      : '',
-                  notesWidth,
-                ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-
-  double _calculateTotal() {
-    double total = 0;
-
-    for (final record in incomeRecords) {
-      total += double.tryParse(
-        record['price'] ?? '',
-      ) ??
-          0;
-    }
-
-    return total;
-  }
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context,
+      ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Other Income'),
+        title:
+        const Text(
+          'Other Income',
+        ),
       ),
+
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+        child:
+        SingleChildScrollView(
+          padding:
+          const EdgeInsets.all(
+            16,
+          ),
+
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+
             children: [
-              // ==========================
-              // ADD NEW INCOME
-              // ==========================
+              // ==================================================
+              // ADD SECTION
+              // ==================================================
 
-              _sectionTitle('Add New Income'),
+              const Text(
+                'Add New Income',
+                textAlign:
+                TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                  FontWeight.bold,
+                ),
+              ),
 
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
 
+              // TYPE
               _textField(
-                controller: typeController,
                 label: 'Type',
+                controller:
+                typeController,
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(
+                height: 14,
+              ),
 
+              // PRICE
               _textField(
-                controller: priceController,
                 label: 'Price',
+                controller:
+                priceController,
                 keyboardType:
-                const TextInputType.numberWithOptions(
-                  decimal: true,
+                const TextInputType
+                    .numberWithOptions(
+                  decimal: false,
                 ),
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(
+                height: 14,
+              ),
 
+              // NOTES
               _textField(
-                controller: notesController,
                 label: 'Notes',
+                controller:
+                notesController,
+                maxLines: 2,
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(
+                height: 14,
+              ),
 
+              // ADD BUTTON
               SizedBox(
                 height: 48,
-                child: ElevatedButton(
-                  onPressed: _addIncome,
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                child:
+                ElevatedButton.icon(
+                  onPressed:
+                  adding
+                      ? null
+                      : _addIncome,
+                  icon: adding
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth:
+                      2,
                     ),
+                  )
+                      : const Icon(
+                    Icons.add,
+                  ),
+                  label: Text(
+                    adding
+                        ? 'Saving...'
+                        : 'Add',
                   ),
                 ),
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(
+                height: 28,
+              ),
 
-              // ==========================
-              // SEARCH BY DATE
-              // ==========================
+              // ==================================================
+              // SEARCH SECTION
+              // ==================================================
 
-              _sectionTitle('Search by Date'),
+              const Text(
+                'Search by Date',
+                textAlign:
+                TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                  FontWeight.bold,
+                ),
+              ),
 
-              const SizedBox(height: 14),
+              const SizedBox(
+                height: 14,
+              ),
 
-              _dateField(),
+              // DATE
+              InkWell(
+                onTap:
+                _selectDate,
+                child:
+                InputDecorator(
+                  decoration:
+                  const InputDecoration(
+                    labelText:
+                    'Date',
+                    border:
+                    OutlineInputBorder(),
+                    suffixIcon:
+                    Icon(
+                      Icons
+                          .calendar_month,
+                    ),
+                  ),
+                  child: Text(
+                    _formatDate(
+                      selectedDate,
+                    ),
+                    textAlign:
+                    TextAlign.center,
+                  ),
+                ),
+              ),
 
-              const SizedBox(height: 12),
+              const SizedBox(
+                height: 12,
+              ),
 
+              // SEARCH BUTTON
               SizedBox(
                 height: 48,
-                child: ElevatedButton(
-                  onPressed: _search,
-                  child: const Text(
+                child:
+                ElevatedButton.icon(
+                  onPressed:
+                  loading
+                      ? null
+                      : _search,
+                  icon:
+                  const Icon(
+                    Icons.search,
+                  ),
+                  label:
+                  const Text(
                     'Search',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(
+                height: 16,
+              ),
 
-              if (incomeRecords.isEmpty)
-                const Center(
+              // ==================================================
+              // NO DATA MESSAGE
+              // ==================================================
+
+              if (!loading &&
+                  incomeRecords.isEmpty)
+                const Padding(
+                  padding:
+                  EdgeInsets.all(
+                    12,
+                  ),
                   child: Text(
                     'No income for this date',
+                    textAlign:
+                    TextAlign.center,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
 
-              const SizedBox(height: 12),
-
-              // ==========================
-              // EXCEL-LIKE TABLE
-              // ==========================
+              // ==================================================
+              // TABLE
+              // ==================================================
 
               _buildTable(),
 
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
 
-              // ==========================
-              // DELETE
-              // ==========================
+              // ==================================================
+              // DELETE BUTTON
+              // ==================================================
 
               SizedBox(
                 height: 48,
-                child: ElevatedButton(
-                  onPressed: _deleteIncome,
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                child:
+                ElevatedButton.icon(
+                  onPressed:
+                  deleting ||
+                      selectedRecordId ==
+                          null
+                      ? null
+                      : _deleteIncome,
+                  icon: deleting
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth:
+                      2,
                     ),
+                  )
+                      : const Icon(
+                    Icons
+                        .delete_outline,
+                  ),
+                  label: Text(
+                    deleting
+                        ? 'Deleting...'
+                        : 'Delete',
                   ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
 
-              // ==========================
+              // ==================================================
               // TOTAL
-              // ==========================
+              // ==================================================
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment
+                    .center,
                 children: [
                   const Text(
-                    'Total: ',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                    'Total:',
+                    style:
+                    TextStyle(
+                      fontSize: 19,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
+
+                  const SizedBox(
+                    width: 15,
+                  ),
+
                   Text(
-                    _calculateTotal().toStringAsFixed(0),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                    _calculateTotal()
+                        .toString(),
+                    style:
+                    const TextStyle(
+                      fontSize: 22,
+                      fontWeight:
+                      FontWeight.bold,
+                      color:
+                      Colors.red,
                     ),
                   ),
                 ],
               ),
+
+              const SizedBox(
+                height: 20,
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ================================================================
+// HEADER CELL
+// ================================================================
+
+class _HeaderCell
+    extends StatelessWidget {
+  final String text;
+
+  const _HeaderCell(
+      this.text,
+      );
+
+  @override
+  Widget build(
+      BuildContext context,
+      ) {
+    return Container(
+      height: 48,
+      alignment:
+      Alignment.center,
+      padding:
+      const EdgeInsets.all(5),
+      child: Text(
+        text,
+        textAlign:
+        TextAlign.center,
+        style:
+        const TextStyle(
+          color: Colors.white,
+          fontWeight:
+          FontWeight.bold,
         ),
       ),
     );
