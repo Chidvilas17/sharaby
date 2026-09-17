@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/staff_salary_api_service.dart';
 
 class StaffAccountantsLaborersScreen extends StatefulWidget {
   const StaffAccountantsLaborersScreen({super.key});
@@ -10,11 +11,126 @@ class StaffAccountantsLaborersScreen extends StatefulWidget {
 
 class _StaffAccountantsLaborersScreenState
     extends State<StaffAccountantsLaborersScreen> {
+  // ============================================================
+  // ACCOUNTANTS
+  // ============================================================
+
+  List<Map<String, dynamic>> accountants = [];
+
+  bool loadingAccountants = false;
+  bool loadingAccountantSalary = false;
+
   String? selectedAccountant;
+
+  int accountantTotalSalary = 0;
+  int accountantDeductions = 0;
+  int accountantAdvances = 0;
+  int accountantBonuses = 0;
+  int accountantNetSalary = 0;
+
+  // ============================================================
+  // LABORERS
+  // ============================================================
+
+  List<Map<String, dynamic>> laborers = [];
+
+  bool loadingLaborers = false;
+  bool loadingLaborerSalary = false;
+
   String? selectedLaborer;
+
+  int laborerTotalSalary = 0;
+  int laborerDeductions = 0;
+  int laborerAdvances = 0;
+  int laborerBonuses = 0;
+  int laborerNetSalary = 0;
+
+  // ============================================================
+  // MONTH
+  // ============================================================
 
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadAccountants();
+    _loadLaborers();
+  }
+
+  // ============================================================
+  // LOAD ACCOUNTANTS
+  // ============================================================
+
+  Future<void> _loadAccountants() async {
+    setState(() {
+      loadingAccountants = true;
+    });
+
+    try {
+      final result =
+      await StaffSalaryApiService.getAccountants();
+
+      if (!mounted) return;
+
+      setState(() {
+        accountants = result;
+        loadingAccountants = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingAccountants = false;
+      });
+
+      _message(
+        'Failed to load accountants.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // LOAD LABORERS
+  // ============================================================
+
+  Future<void> _loadLaborers() async {
+    setState(() {
+      loadingLaborers = true;
+    });
+
+    try {
+      final result =
+      await StaffSalaryApiService.getLaborers();
+
+      if (!mounted) return;
+
+      setState(() {
+        laborers = result;
+        loadingLaborers = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingLaborers = false;
+      });
+
+      _message(
+        'Failed to load laborers.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // SELECT MONTH
+  // ============================================================
 
   Future<void> _selectMonth() async {
     int tempMonth = selectedMonth;
@@ -33,6 +149,7 @@ class _StaffAccountantsLaborersScreenState
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // MONTH
                   DropdownButtonFormField<int>(
                     initialValue: tempMonth,
                     isExpanded: true,
@@ -48,7 +165,9 @@ class _StaffAccountantsLaborersScreenState
                         return DropdownMenuItem<int>(
                           value: month,
                           child: Text(
-                            month.toString().padLeft(2, '0'),
+                            month
+                                .toString()
+                                .padLeft(2, '0'),
                           ),
                         );
                       },
@@ -64,6 +183,7 @@ class _StaffAccountantsLaborersScreenState
 
                   const SizedBox(height: 15),
 
+                  // YEAR
                   DropdownButtonFormField<int>(
                     initialValue: tempYear,
                     isExpanded: true,
@@ -99,11 +219,15 @@ class _StaffAccountantsLaborersScreenState
                   },
                   child: const Text('Cancel'),
                 ),
+
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(
                       dialogContext,
-                      DateTime(tempYear, tempMonth),
+                      DateTime(
+                        tempYear,
+                        tempMonth,
+                      ),
                     );
                   },
                   child: const Text('Select'),
@@ -123,31 +247,201 @@ class _StaffAccountantsLaborersScreenState
     });
   }
 
+  // ============================================================
+  // MONTH TEXT
+  // ============================================================
+
   String _monthText() {
     return '${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
   }
 
-  void _showAccountant() {
-    if (selectedAccountant == null) {
-      _message('Please select an accountant.');
+  // ============================================================
+  // SHOW ACCOUNTANT
+  // ============================================================
+
+  Future<void> _showAccountant() async {
+    if (selectedAccountant == null ||
+        selectedAccountant == 'SELECT') {
+      _message(
+        'Please select an accountant.',
+      );
       return;
     }
 
-    _message(
-      'Showing $selectedAccountant for ${_monthText()}.',
-    );
-  }
+    final empId =
+    int.tryParse(selectedAccountant!);
 
-  void _showLaborer() {
-    if (selectedLaborer == null) {
-      _message('Please select a laborer.');
+    if (empId == null) {
+      _message(
+        'Invalid accountant.',
+      );
       return;
     }
 
-    _message(
-      'Showing $selectedLaborer for ${_monthText()}.',
-    );
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      loadingAccountantSalary = true;
+    });
+
+    try {
+      final result =
+      await StaffSalaryApiService.getAccountantSalary(
+        empId: empId,
+        month: selectedMonth,
+        year: selectedYear,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        accountantTotalSalary =
+            _toInt(result['totalSalary']);
+
+        accountantDeductions =
+            _toInt(result['deductions']);
+
+        accountantAdvances =
+            _toInt(result['advances']);
+
+        accountantBonuses =
+            _toInt(result['bonuses']);
+
+        accountantNetSalary =
+            _toInt(result['netSalary']);
+
+        loadingAccountantSalary = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingAccountantSalary = false;
+      });
+
+      _message(
+        'Failed to load accountant salary.\n$e',
+      );
+    }
   }
+
+  // ============================================================
+  // SHOW LABORER
+  // ============================================================
+
+  Future<void> _showLaborer() async {
+    if (selectedLaborer == null ||
+        selectedLaborer == 'SELECT') {
+      _message(
+        'Please select a laborer.',
+      );
+      return;
+    }
+
+    final empId =
+    int.tryParse(selectedLaborer!);
+
+    if (empId == null) {
+      _message(
+        'Invalid laborer.',
+      );
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      loadingLaborerSalary = true;
+    });
+
+    try {
+      final result =
+      await StaffSalaryApiService.getLaborerSalary(
+        empId: empId,
+        month: selectedMonth,
+        year: selectedYear,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        laborerTotalSalary =
+            _toInt(result['totalSalary']);
+
+        laborerDeductions =
+            _toInt(result['deductions']);
+
+        laborerAdvances =
+            _toInt(result['advances']);
+
+        laborerBonuses =
+            _toInt(result['bonuses']);
+
+        laborerNetSalary =
+            _toInt(result['netSalary']);
+
+        loadingLaborerSalary = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingLaborerSalary = false;
+      });
+
+      _message(
+        'Failed to load laborer salary.\n$e',
+      );
+    }
+  }
+
+  // ============================================================
+  // INTEGER CONVERSION
+  // ============================================================
+
+  int _toInt(dynamic value) {
+    if (value == null) {
+      return 0;
+    }
+
+    if (value is int) {
+      return value;
+    }
+
+    if (value is double) {
+      return value.toInt();
+    }
+
+    return int.tryParse(
+      value.toString(),
+    ) ??
+        0;
+  }
+
+  // ============================================================
+  // GET PERSON NAME
+  // ============================================================
+
+  String _getName(
+      List<Map<String, dynamic>> people,
+      String? id,
+      ) {
+    if (id == null || id == 'SELECT') {
+      return '';
+    }
+
+    for (final person in people) {
+      if (person['id'].toString() == id) {
+        return person['name']?.toString() ?? '';
+      }
+    }
+
+    return '';
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
 
   void _message(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -157,11 +451,34 @@ class _StaffAccountantsLaborersScreenState
     );
   }
 
+  // ============================================================
+  // PERSON DROPDOWN
+  // ============================================================
+
   Widget _personDropdown({
     required String label,
     required String? value,
+    required List<Map<String, dynamic>> people,
+    required bool loading,
     required ValueChanged<String?> onChanged,
   }) {
+    if (loading) {
+      return InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        child: const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 8,
+            ),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return DropdownButtonFormField<String>(
       initialValue: value,
       isExpanded: true,
@@ -169,19 +486,29 @@ class _StaffAccountantsLaborersScreenState
         labelText: label,
         border: const OutlineInputBorder(),
       ),
-      items: const [
-        DropdownMenuItem<String>(
+      items: [
+        const DropdownMenuItem<String>(
           value: 'SELECT',
           child: Text('Select'),
         ),
-        DropdownMenuItem<String>(
-          value: 'DATABASE',
-          child: Text('Load from database'),
+        ...people.map(
+              (person) {
+            return DropdownMenuItem<String>(
+              value: person['id'].toString(),
+              child: Text(
+                person['name']?.toString() ?? '',
+              ),
+            );
+          },
         ),
       ],
       onChanged: onChanged,
     );
   }
+
+  // ============================================================
+  // SUMMARY ROW
+  // ============================================================
 
   Widget _summaryRow({
     required String label,
@@ -189,7 +516,9 @@ class _StaffAccountantsLaborersScreenState
     required Color valueColor,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -202,6 +531,7 @@ class _StaffAccountantsLaborersScreenState
               ),
             ),
           ),
+
           SizedBox(
             width: 70,
             child: Text(
@@ -219,11 +549,23 @@ class _StaffAccountantsLaborersScreenState
     );
   }
 
+  // ============================================================
+  // EMPLOYEE SECTION
+  // ============================================================
+
   Widget _employeeSection({
     required String title,
     required String? selectedPerson,
+    required List<Map<String, dynamic>> people,
+    required bool loadingPeople,
+    required bool loadingSalary,
     required ValueChanged<String?> onChanged,
     required VoidCallback onShow,
+    required int totalSalary,
+    required int deductions,
+    required int advances,
+    required int bonuses,
+    required int netSalary,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -234,8 +576,10 @@ class _StaffAccountantsLaborersScreenState
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment:
+        CrossAxisAlignment.stretch,
         children: [
+          // TITLE
           Text(
             title,
             textAlign: TextAlign.center,
@@ -247,58 +591,94 @@ class _StaffAccountantsLaborersScreenState
 
           const SizedBox(height: 15),
 
+          // DROPDOWN
           _personDropdown(
             label: 'Select Name',
             value: selectedPerson,
+            people: people,
+            loading: loadingPeople,
             onChanged: onChanged,
           ),
 
           const SizedBox(height: 12),
 
+          // SHOW
           ElevatedButton(
-            onPressed: onShow,
-            child: const Text('Show'),
+            onPressed:
+            loadingSalary ? null : onShow,
+            child: loadingSalary
+                ? const SizedBox(
+              height: 20,
+              width: 20,
+              child:
+              CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            )
+                : const Text('Show'),
           ),
 
           const SizedBox(height: 12),
 
-          const Text(
-            '--',
+          // SELECTED PERSON
+          Text(
+            selectedPerson == null ||
+                selectedPerson == 'SELECT'
+                ? '--'
+                : _getName(
+              people,
+              selectedPerson,
+            ),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
             ),
           ),
 
           const SizedBox(height: 12),
 
+          // TOTAL SALARY
           _summaryRow(
             label: 'Total Salary',
-            value: '0',
+            value: loadingSalary
+                ? '...'
+                : totalSalary.toString(),
             valueColor: Colors.black,
           ),
 
+          // DEDUCTIONS
           _summaryRow(
             label: 'Deductions',
-            value: '0',
+            value: loadingSalary
+                ? '...'
+                : deductions.toString(),
             valueColor: Colors.red,
           ),
 
+          // ADVANCES
           _summaryRow(
             label: 'Advances',
-            value: '0',
+            value: loadingSalary
+                ? '...'
+                : advances.toString(),
             valueColor: Colors.red,
           ),
 
+          // BONUSES
           _summaryRow(
             label: 'Bonuses',
-            value: '0',
+            value: loadingSalary
+                ? '...'
+                : bonuses.toString(),
             valueColor: Colors.green,
           ),
 
+          // NET SALARY
           _summaryRow(
             label: 'Net Salary',
-            value: '0',
+            value: loadingSalary
+                ? '...'
+                : netSalary.toString(),
             valueColor: Colors.blue,
           ),
         ],
@@ -306,62 +686,156 @@ class _StaffAccountantsLaborersScreenState
     );
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Accountants and Laborers'),
+        title: const Text(
+          'Accountants and Laborers',
+        ),
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
+
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment.stretch,
+
           children: [
+            // ====================================================
             // MONTH
+            // ====================================================
+
             InkWell(
               onTap: _selectMonth,
+
               child: InputDecorator(
-                decoration: const InputDecoration(
+                decoration:
+                const InputDecoration(
                   labelText: 'Month',
-                  border: OutlineInputBorder(),
+                  border:
+                  OutlineInputBorder(),
                   suffixIcon: Icon(
                     Icons.calendar_month,
                   ),
                 ),
+
                 child: Text(
                   _monthText(),
-                  textAlign: TextAlign.center,
+                  textAlign:
+                  TextAlign.center,
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
 
+            // ====================================================
             // ACCOUNTANTS
+            // ====================================================
+
             _employeeSection(
               title: 'Accountants',
-              selectedPerson: selectedAccountant,
+
+              selectedPerson:
+              selectedAccountant,
+
+              people: accountants,
+
+              loadingPeople:
+              loadingAccountants,
+
+              loadingSalary:
+              loadingAccountantSalary,
+
               onChanged: (value) {
                 setState(() {
                   selectedAccountant = value;
+
+                  // Reset displayed salary
+                  accountantTotalSalary = 0;
+                  accountantDeductions = 0;
+                  accountantAdvances = 0;
+                  accountantBonuses = 0;
+                  accountantNetSalary = 0;
                 });
               },
+
               onShow: _showAccountant,
+
+              totalSalary:
+              accountantTotalSalary,
+
+              deductions:
+              accountantDeductions,
+
+              advances:
+              accountantAdvances,
+
+              bonuses:
+              accountantBonuses,
+
+              netSalary:
+              accountantNetSalary,
             ),
 
             const SizedBox(height: 20),
 
+            // ====================================================
             // LABORERS
+            // ====================================================
+
             _employeeSection(
               title: 'Laborers',
-              selectedPerson: selectedLaborer,
+
+              selectedPerson:
+              selectedLaborer,
+
+              people: laborers,
+
+              loadingPeople:
+              loadingLaborers,
+
+              loadingSalary:
+              loadingLaborerSalary,
+
               onChanged: (value) {
                 setState(() {
                   selectedLaborer = value;
+
+                  // Reset displayed salary
+                  laborerTotalSalary = 0;
+                  laborerDeductions = 0;
+                  laborerAdvances = 0;
+                  laborerBonuses = 0;
+                  laborerNetSalary = 0;
                 });
               },
+
               onShow: _showLaborer,
+
+              totalSalary:
+              laborerTotalSalary,
+
+              deductions:
+              laborerDeductions,
+
+              advances:
+              laborerAdvances,
+
+              bonuses:
+              laborerBonuses,
+
+              netSalary:
+              laborerNetSalary,
             ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
