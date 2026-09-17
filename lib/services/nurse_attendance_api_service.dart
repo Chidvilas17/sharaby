@@ -90,7 +90,7 @@ class NurseAttendanceApiService {
   }
 
   // ============================================================
-  // COMMON SAVE METHOD
+  // COMMON SAVE
   // ============================================================
   static Future<int> _addShift({
     required String endpoint,
@@ -134,7 +134,7 @@ class NurseAttendanceApiService {
   }
 
   // ============================================================
-  // GET ATTENDANCE FOR DATE
+  // GET DAILY ATTENDANCE
   // ============================================================
   static Future<Map<String, dynamic>> getAttendance(
       DateTime date,
@@ -146,7 +146,8 @@ class NurseAttendanceApiService {
 
     final response = await http.get(
       Uri.parse(
-        '$baseUrl/NurseAttendance/attendance?date=$dateString',
+        '$baseUrl/NurseAttendance/attendance'
+            '?date=$dateString',
       ),
     );
 
@@ -163,6 +164,42 @@ class NurseAttendanceApiService {
     if (decoded is! Map<String, dynamic>) {
       throw Exception(
         'Invalid attendance response from API.',
+      );
+    }
+
+    return decoded;
+  }
+
+  // ============================================================
+  // GET NET ATTENDANCE
+  // ============================================================
+  static Future<Map<String, dynamic>> getNetAttendance({
+    required int empId,
+    required int month,
+    required int year,
+  }) async {
+    final response = await http.get(
+      Uri.parse(
+        '$baseUrl/NurseAttendance/net-attendance'
+            '?empId=$empId'
+            '&month=$month'
+            '&year=$year',
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to load net attendance. '
+            'Status code: ${response.statusCode}\n'
+            '${response.body}',
+      );
+    }
+
+    final decoded = jsonDecode(response.body);
+
+    if (decoded is! Map<String, dynamic>) {
+      throw Exception(
+        'Invalid net attendance response.',
       );
     }
 
