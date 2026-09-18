@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/incubator_current_patients_api_service.dart';
 
 class IncubatorViewCurrentScreen extends StatefulWidget {
   const IncubatorViewCurrentScreen({super.key});
@@ -10,27 +11,79 @@ class IncubatorViewCurrentScreen extends StatefulWidget {
 
 class _IncubatorViewCurrentScreenState
     extends State<IncubatorViewCurrentScreen> {
-  // This will be filled from the API later.
-  // Keep empty for now.
-  final List<Map<String, String>> patients = [];
+  // ============================================================
+  // DATA
+  // ============================================================
+
+  List<Map<String, dynamic>> patients = [];
 
   int? selectedIndex;
+
+  bool isLoading = true;
+  String? errorMessage;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPatients();
+  }
+
+  // ============================================================
+  // LOAD CURRENT PATIENTS
+  // ============================================================
+
+  Future<void> _loadPatients() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final data =
+      await IncubatorCurrentPatientsApiService
+          .getCurrentPatients();
+
+      if (!mounted) return;
+
+      setState(() {
+        patients = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('In Patient Check'),
+        title: const Text('Current Patients'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
             children: [
-              // ==========================================
-              // CURRENT PATIENTS SECTION
-              // ==========================================
+              // ==================================================
+              // CURRENT PATIENTS GROUP
+              // ==================================================
+
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(
@@ -43,11 +96,17 @@ class _IncubatorViewCurrentScreenState
                   border: Border.all(
                     color: Colors.grey.shade500,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius:
+                  BorderRadius.circular(4),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
+                    // ==================================================
+                    // TITLE
+                    // ==================================================
+
                     const Text(
                       'Current Patients',
                       style: TextStyle(
@@ -58,31 +117,40 @@ class _IncubatorViewCurrentScreenState
 
                     const SizedBox(height: 16),
 
-                    // ==========================================
-                    // PATIENT TABLE
-                    // ==========================================
+                    // ==================================================
+                    // TABLE
+                    // ==================================================
+
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Colors.grey.shade500,
+                          color:
+                          Colors.grey.shade500,
                         ),
                       ),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+                      child:
+                      SingleChildScrollView(
+                        scrollDirection:
+                        Axis.horizontal,
                         child: SizedBox(
-                          width: 700,
+                          width: 650,
                           child: Column(
                             children: [
-                              // ==================================
+                              // ==================================================
                               // TABLE HEADER
-                              // ==================================
+                              // ==================================================
+
                               Container(
                                 height: 52,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
+                                decoration:
+                                BoxDecoration(
+                                  color: Colors
+                                      .grey.shade100,
                                   border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade400,
+                                    bottom:
+                                    BorderSide(
+                                      color: Colors
+                                          .grey.shade400,
                                     ),
                                   ),
                                 ),
@@ -93,15 +161,18 @@ class _IncubatorViewCurrentScreenState
                                       flex: 3,
                                     ),
                                     _HeaderCell(
-                                      title: 'Date of Birth',
+                                      title:
+                                      'Birth Date',
                                       flex: 2,
                                     ),
                                     _HeaderCell(
-                                      title: 'Time of Birth',
+                                      title:
+                                      'Birth Time',
                                       flex: 2,
                                     ),
                                     _HeaderCell(
-                                      title: 'Admission Date',
+                                      title:
+                                      'Admission Date',
                                       flex: 2,
                                     ),
                                     _HeaderCell(
@@ -112,23 +183,122 @@ class _IncubatorViewCurrentScreenState
                                 ),
                               ),
 
-                              // ==================================
-                              // DATABASE DATA
-                              // ==================================
-                              if (patients.isEmpty)
-                                _buildEmptyRows()
-                              else
-                                ...patients.asMap().entries.map(
-                                      (entry) {
-                                    final index = entry.key;
-                                    final patient = entry.value;
+                              // ==================================================
+                              // LOADING
+                              // ==================================================
 
-                                    return _buildPatientRow(
-                                      index,
-                                      patient,
-                                    );
-                                  },
-                                ),
+                              if (isLoading)
+                                const SizedBox(
+                                  height: 480,
+                                  child: Center(
+                                    child:
+                                    CircularProgressIndicator(),
+                                  ),
+                                )
+
+                              // ==================================================
+                              // ERROR
+                              // ==================================================
+
+                              else if (
+                              errorMessage != null)
+                                SizedBox(
+                                  height: 480,
+                                  child: Center(
+                                    child: Padding(
+                                      padding:
+                                      const EdgeInsets
+                                          .all(20),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                        children: [
+                                          const Text(
+                                            'Failed to load current patients.',
+                                            textAlign:
+                                            TextAlign
+                                                .center,
+                                            style:
+                                            TextStyle(
+                                              fontSize:
+                                              16,
+                                              fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                            ),
+                                          ),
+
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+
+                                          Text(
+                                            errorMessage!,
+                                            textAlign:
+                                            TextAlign
+                                                .center,
+                                          ),
+
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+
+                                          ElevatedButton(
+                                            onPressed:
+                                            _loadPatients,
+                                            child:
+                                            const Text(
+                                              'Retry',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+
+                              // ==================================================
+                              // NO DATA
+                              // ==================================================
+
+                              else if (
+                                patients.isEmpty)
+                                  const SizedBox(
+                                    height: 480,
+                                    child: Center(
+                                      child: Text(
+                                        'No current patients found.',
+                                        style: TextStyle(
+                                          color:
+                                          Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+
+                                // ==================================================
+                                // PATIENT DATA
+                                // ==================================================
+
+                                else
+                                  ...patients
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                        (entry) {
+                                      final index =
+                                          entry.key;
+
+                                      final patient =
+                                          entry.value;
+
+                                      return _buildPatientRow(
+                                        index,
+                                        patient,
+                                      );
+                                    },
+                                  ),
                             ],
                           ),
                         ),
@@ -144,48 +314,16 @@ class _IncubatorViewCurrentScreenState
     );
   }
 
-  // ==========================================
-  // EMPTY TABLE
-  // ==========================================
-
-  Widget _buildEmptyRows() {
-    return Column(
-      children: List.generate(
-        15,
-            (index) {
-          return Container(
-            height: 32,
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey.shade200,
-                ),
-              ),
-            ),
-            child: const Row(
-              children: [
-                _EmptyCell(flex: 3),
-                _EmptyCell(flex: 2),
-                _EmptyCell(flex: 2),
-                _EmptyCell(flex: 2),
-                _EmptyCell(flex: 2),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // ==========================================
+  // ============================================================
   // PATIENT ROW
-  // ==========================================
+  // ============================================================
 
   Widget _buildPatientRow(
       int index,
-      Map<String, String> patient,
+      Map<String, dynamic> patient,
       ) {
-    final isSelected = selectedIndex == index;
+    final isSelected =
+        selectedIndex == index;
 
     return InkWell(
       onTap: () {
@@ -196,28 +334,48 @@ class _IncubatorViewCurrentScreenState
       child: Container(
         height: 44,
         color: isSelected
-            ? Colors.blue.withValues(alpha: 0.12)
+            ? Colors.blue.withValues(
+          alpha: 0.12,
+        )
             : Colors.transparent,
         child: Row(
           children: [
             _DataCell(
-              text: patient['name'] ?? '',
+              text:
+              patient['name']?.toString() ??
+                  '',
               flex: 3,
             ),
+
             _DataCell(
-              text: patient['dateOfBirth'] ?? '',
+              text:
+              patient['birthDate']
+                  ?.toString() ??
+                  '',
               flex: 2,
             ),
+
             _DataCell(
-              text: patient['timeOfBirth'] ?? '',
+              text:
+              patient['birthTime']
+                  ?.toString() ??
+                  '',
               flex: 2,
             ),
+
             _DataCell(
-              text: patient['admissionDate'] ?? '',
+              text:
+              patient['admissionDate']
+                  ?.toString() ??
+                  '',
               flex: 2,
             ),
+
             _DataCell(
-              text: patient['status'] ?? '',
+              text:
+              patient['status']
+                  ?.toString() ??
+                  '',
               flex: 2,
             ),
           ],
@@ -227,9 +385,9 @@ class _IncubatorViewCurrentScreenState
   }
 }
 
-// ==========================================
-// TABLE HEADER CELL
-// ==========================================
+// ================================================================
+// HEADER CELL
+// ================================================================
 
 class _HeaderCell extends StatelessWidget {
   final String title;
@@ -246,13 +404,15 @@ class _HeaderCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade300,
+              color:
+              Colors.grey.shade300,
             ),
           ),
         ),
@@ -261,7 +421,8 @@ class _HeaderCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+            FontWeight.bold,
           ),
         ),
       ),
@@ -269,37 +430,9 @@ class _HeaderCell extends StatelessWidget {
   }
 }
 
-// ==========================================
-// EMPTY CELL
-// ==========================================
-
-class _EmptyCell extends StatelessWidget {
-  final int flex;
-
-  const _EmptyCell({
-    required this.flex,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            right: BorderSide(
-              color: Colors.grey.shade200,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ==========================================
+// ================================================================
 // DATA CELL
-// ==========================================
+// ================================================================
 
 class _DataCell extends StatelessWidget {
   final String text;
@@ -316,16 +449,19 @@ class _DataCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
             bottom: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),

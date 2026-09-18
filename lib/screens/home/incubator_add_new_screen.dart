@@ -1,18 +1,58 @@
 import 'package:flutter/material.dart';
+import '../../services/incubator_add_new_api_service.dart';
 
 class IncubatorAddNewScreen extends StatefulWidget {
   const IncubatorAddNewScreen({super.key});
 
   @override
-  State<IncubatorAddNewScreen> createState() => _IncubatorAddNewScreenState();
+  State<IncubatorAddNewScreen> createState() =>
+      _IncubatorAddNewScreenState();
 }
 
-class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
-  // Will be loaded from the API later.
-  // Keep empty for now.
-  final List<Map<String, String>> patients = [];
+class _IncubatorAddNewScreenState
+    extends State<IncubatorAddNewScreen> {
+  List<Map<String, dynamic>> patients = [];
 
   int? selectedIndex;
+
+  bool isLoading = true;
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPatients();
+  }
+
+  // ============================================================
+  // LOAD PATIENTS
+  // ============================================================
+
+  Future<void> _loadPatients() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final data =
+      await IncubatorAddNewApiService.getPatients();
+
+      if (!mounted) return;
+
+      setState(() {
+        patients = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +66,10 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // =========================
+              // ==================================================
               // NEW PATIENT SECTION
-              // =========================
+              // ==================================================
+
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(
@@ -44,9 +85,13 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
-                    // Section heading
+                    // ==================================================
+                    // SECTION HEADING
+                    // ==================================================
+
                     const Text(
                       'New Patient',
                       style: TextStyle(
@@ -57,9 +102,10 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
 
                     const SizedBox(height: 16),
 
-                    // =========================
+                    // ==================================================
                     // TABLE
-                    // =========================
+                    // ==================================================
+
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(
@@ -72,16 +118,18 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
                           width: 650,
                           child: Column(
                             children: [
-                              // =========================
-                              // TABLE COLUMN NAMES
-                              // =========================
+                              // ==================================================
+                              // HEADER
+                              // ==================================================
+
                               Container(
                                 height: 52,
                                 decoration: BoxDecoration(
                                   color: Colors.grey.shade100,
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: Colors.grey.shade400,
+                                      color:
+                                      Colors.grey.shade400,
                                     ),
                                   ),
                                 ),
@@ -107,23 +155,108 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
                                 ),
                               ),
 
-                              // =========================
-                              // DATABASE DATA
-                              // =========================
-                              if (patients.isEmpty)
-                                _buildEmptyRows()
-                              else
-                                ...patients.asMap().entries.map(
-                                      (entry) {
-                                    final index = entry.key;
-                                    final patient = entry.value;
+                              // ==================================================
+                              // LOADING
+                              // ==================================================
 
-                                    return _buildPatientRow(
-                                      index,
-                                      patient,
-                                    );
-                                  },
-                                ),
+                              if (isLoading)
+                                const SizedBox(
+                                  height: 480,
+                                  child: Center(
+                                    child:
+                                    CircularProgressIndicator(),
+                                  ),
+                                )
+
+                              // ==================================================
+                              // ERROR
+                              // ==================================================
+
+                              else if (errorMessage != null)
+                                SizedBox(
+                                  height: 480,
+                                  child: Center(
+                                    child: Padding(
+                                      padding:
+                                      const EdgeInsets.all(
+                                        20,
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                        children: [
+                                          const Text(
+                                            'Failed to load patients.',
+                                            textAlign:
+                                            TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight:
+                                              FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            errorMessage!,
+                                            textAlign:
+                                            TextAlign.center,
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          ElevatedButton(
+                                            onPressed:
+                                            _loadPatients,
+                                            child:
+                                            const Text(
+                                              'Retry',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+
+                              // ==================================================
+                              // NO DATA
+                              // ==================================================
+
+                              else if (patients.isEmpty)
+                                  const SizedBox(
+                                    height: 480,
+                                    child: Center(
+                                      child: Text(
+                                        'No patients found.',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+
+                                // ==================================================
+                                // PATIENT DATA
+                                // ==================================================
+
+                                else
+                                  ...patients.asMap().entries.map(
+                                        (entry) {
+                                      final index =
+                                          entry.key;
+
+                                      final patient =
+                                          entry.value;
+
+                                      return _buildPatientRow(
+                                        index,
+                                        patient,
+                                      );
+                                    },
+                                  ),
                             ],
                           ),
                         ),
@@ -139,41 +272,16 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
     );
   }
 
-  // Empty table area.
-  // Actual patients will come from the API later.
-  Widget _buildEmptyRows() {
-    return Column(
-      children: List.generate(
-        15,
-            (index) {
-          return Container(
-            height: 32,
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey.shade200,
-                ),
-              ),
-            ),
-            child: const Row(
-              children: [
-                _EmptyCell(flex: 3),
-                _EmptyCell(flex: 2),
-                _EmptyCell(flex: 2),
-                _EmptyCell(flex: 2),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+  // ============================================================
+  // PATIENT ROW
+  // ============================================================
 
   Widget _buildPatientRow(
       int index,
-      Map<String, String> patient,
+      Map<String, dynamic> patient,
       ) {
-    final isSelected = selectedIndex == index;
+    final isSelected =
+        selectedIndex == index;
 
     return InkWell(
       onTap: () {
@@ -189,19 +297,23 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
         child: Row(
           children: [
             _DataCell(
-              text: patient['name'] ?? '',
+              text: patient['name']?.toString() ?? '',
               flex: 3,
             ),
             _DataCell(
-              text: patient['birthDate'] ?? '',
+              text:
+              patient['birthDate']?.toString() ?? '',
               flex: 2,
             ),
             _DataCell(
-              text: patient['birthTime'] ?? '',
+              text:
+              patient['birthTime']?.toString() ?? '',
               flex: 2,
             ),
             _DataCell(
-              text: patient['admissionDate'] ?? '',
+              text:
+              patient['admissionDate']?.toString() ??
+                  '',
               flex: 2,
             ),
           ],
@@ -211,9 +323,9 @@ class _IncubatorAddNewScreenState extends State<IncubatorAddNewScreen> {
   }
 }
 
-// ======================================================
+// ================================================================
 // TABLE HEADER CELL
-// ======================================================
+// ================================================================
 
 class _HeaderCell extends StatelessWidget {
   final String title;
@@ -230,7 +342,9 @@ class _HeaderCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+        ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
@@ -251,37 +365,9 @@ class _HeaderCell extends StatelessWidget {
   }
 }
 
-// ======================================================
-// EMPTY CELL
-// ======================================================
-
-class _EmptyCell extends StatelessWidget {
-  final int flex;
-
-  const _EmptyCell({
-    required this.flex,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            right: BorderSide(
-              color: Colors.grey.shade200,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ======================================================
+// ================================================================
 // DATA CELL
-// ======================================================
+// ================================================================
 
 class _DataCell extends StatelessWidget {
   final String text;
@@ -298,7 +384,9 @@ class _DataCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+        ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
