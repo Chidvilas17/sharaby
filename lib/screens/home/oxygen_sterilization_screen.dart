@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/oxygen_sterilization_api_service.dart';
 
 class OxygenSterilizationScreen extends StatefulWidget {
   const OxygenSterilizationScreen({super.key});
@@ -19,61 +20,379 @@ class _OxygenSterilizationScreenState
   final TextEditingController unitPriceController =
   TextEditingController();
 
+  List<Map<String, dynamic>> materials = [];
+
+  bool loading = true;
+
+  bool savingOxygenPrice = false;
+
+  bool savingMaterial = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadData();
+  }
+
   @override
   void dispose() {
     oxygenPriceController.dispose();
     materialTypeController.dispose();
     unitPriceController.dispose();
+
     super.dispose();
   }
 
+  // ============================================================
+  // LOAD DATA
+  // ============================================================
+
+  Future<void> _loadData() async {
+    try {
+      final oxygenPrice =
+      await OxygenSterilizationApiService
+          .getOxygenPrice();
+
+      final materialData =
+      await OxygenSterilizationApiService
+          .getMaterials();
+
+      if (!mounted) return;
+
+      final price =
+      oxygenPrice['price'];
+
+      setState(() {
+        if (price != null) {
+          oxygenPriceController.text =
+              price.toString();
+        }
+
+        materials = materialData;
+
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+
+      _showMessage(
+        'Failed to load data: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // SAVE OXYGEN PRICE
+  // ============================================================
+
+  Future<void> _saveOxygenPrice() async {
+    final text =
+    oxygenPriceController.text.trim();
+
+    if (text.isEmpty) {
+      _showMessage(
+        'Please enter the oxygen cylinder price.',
+      );
+      return;
+    }
+
+    final price =
+    int.tryParse(text);
+
+    if (price == null || price < 0) {
+      _showMessage(
+        'Please enter a valid oxygen cylinder price.',
+      );
+      return;
+    }
+
+    if (savingOxygenPrice) {
+      return;
+    }
+
+    setState(() {
+      savingOxygenPrice = true;
+    });
+
+    try {
+      await OxygenSterilizationApiService
+          .saveOxygenPrice(price);
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Oxygen cylinder price saved successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to save oxygen price: $e',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          savingOxygenPrice = false;
+        });
+      }
+    }
+  }
+
+  // ============================================================
+  // ADD MATERIAL
+  // ============================================================
+
+  Future<void> _saveMaterial() async {
+    final type =
+    materialTypeController.text.trim();
+
+    final priceText =
+    unitPriceController.text.trim();
+
+    if (type.isEmpty) {
+      _showMessage(
+        'Please enter the material type.',
+      );
+      return;
+    }
+
+    if (priceText.isEmpty) {
+      _showMessage(
+        'Please enter the unit price.',
+      );
+      return;
+    }
+
+    final price =
+    int.tryParse(priceText);
+
+    if (price == null || price < 0) {
+      _showMessage(
+        'Please enter a valid unit price.',
+      );
+      return;
+    }
+
+    if (savingMaterial) {
+      return;
+    }
+
+    setState(() {
+      savingMaterial = true;
+    });
+
+    try {
+      await OxygenSterilizationApiService
+          .addMaterial(
+        type: type,
+        price: price,
+      );
+
+      if (!mounted) return;
+
+      materialTypeController.clear();
+
+      unitPriceController.clear();
+
+      await _loadMaterials();
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Sterilization material added successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to add sterilization material: $e',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          savingMaterial = false;
+        });
+      }
+    }
+  }
+
+  // ============================================================
+  // LOAD MATERIALS
+  // ============================================================
+
+  Future<void> _loadMaterials() async {
+    final result =
+    await OxygenSterilizationApiService
+        .getMaterials();
+
+    if (!mounted) return;
+
+    setState(() {
+      materials = result;
+    });
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  // ============================================================
+  // SECTION
+  // ============================================================
+
+  Widget _buildSection({
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      padding:
+      const EdgeInsets.all(16),
+      decoration:
+      BoxDecoration(
+        border: Border.all(
+          color: Colors.grey.shade300,
+        ),
+        borderRadius:
+        BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style:
+            const TextStyle(
+              fontSize: 18,
+              fontWeight:
+              FontWeight.w500,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context,
+      ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Oxygen & Sterilization Data'),
+        title: const Text(
+          'Oxygen & Sterilization Data',
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+
+      body: loading
+          ? const Center(
+        child:
+        CircularProgressIndicator(),
+      )
+          : SingleChildScrollView(
+        padding:
+        const EdgeInsets.all(16),
+
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment
+              .stretch,
+
           children: [
-            // =====================================
+
+            // ==========================================
             // OXYGEN CYLINDER PRICE
-            // =====================================
+            // ==========================================
 
             _buildSection(
-              title: 'Oxygen Cylinder Price',
+              title:
+              'Oxygen Cylinder Price',
+
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment:
+                CrossAxisAlignment
+                    .stretch,
+
                 children: [
+
                   const Text(
                     'Price',
-                    style: TextStyle(
+                    style:
+                    TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
                   TextField(
-                    controller: oxygenPriceController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter oxygen cylinder price',
+                    controller:
+                    oxygenPriceController,
+
+                    keyboardType:
+                    TextInputType
+                        .number,
+
+                    decoration:
+                    const InputDecoration(
+                      border:
+                      OutlineInputBorder(),
+
+                      hintText:
+                      'Enter oxygen cylinder price',
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
                   Center(
-                    child: SizedBox(
+                    child:
+                    SizedBox(
                       width: 120,
                       height: 45,
-                      child: ElevatedButton(
-                        onPressed: null,
-                        child: const Text('Save'),
+
+                      child:
+                      ElevatedButton(
+                        onPressed:
+                        savingOxygenPrice
+                            ? null
+                            : _saveOxygenPrice,
+
+                        child:
+                        Text(
+                          savingOxygenPrice
+                              ? 'Saving...'
+                              : 'Save',
+                        ),
                       ),
                     ),
                   ),
@@ -81,63 +400,108 @@ class _OxygenSterilizationScreenState
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(
+              height: 24,
+            ),
 
-            // =====================================
+            // ==========================================
             // ADD STERILIZATION MATERIAL
-            // =====================================
+            // ==========================================
 
             _buildSection(
-              title: 'Add Sterilization Material',
+              title:
+              'Add Sterilization Material',
+
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment:
+                CrossAxisAlignment
+                    .stretch,
+
                 children: [
+
                   const Text(
                     'Type',
-                    style: TextStyle(
+                    style:
+                    TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
                   TextField(
-                    controller: materialTypeController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter material type',
+                    controller:
+                    materialTypeController,
+
+                    decoration:
+                    const InputDecoration(
+                      border:
+                      OutlineInputBorder(),
+
+                      hintText:
+                      'Enter material type',
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
                   const Text(
                     'Unit Price',
-                    style: TextStyle(
+                    style:
+                    TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
                   TextField(
-                    controller: unitPriceController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter unit price',
+                    controller:
+                    unitPriceController,
+
+                    keyboardType:
+                    TextInputType
+                        .number,
+
+                    decoration:
+                    const InputDecoration(
+                      border:
+                      OutlineInputBorder(),
+
+                      hintText:
+                      'Enter unit price',
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
                   Center(
-                    child: SizedBox(
+                    child:
+                    SizedBox(
                       width: 120,
                       height: 45,
-                      child: ElevatedButton(
-                        onPressed: null,
-                        child: const Text('Save'),
+
+                      child:
+                      ElevatedButton(
+                        onPressed:
+                        savingMaterial
+                            ? null
+                            : _saveMaterial,
+
+                        child:
+                        Text(
+                          savingMaterial
+                              ? 'Saving...'
+                              : 'Save',
+                        ),
                       ),
                     ),
                   ),
@@ -145,62 +509,108 @@ class _OxygenSterilizationScreenState
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(
+              height: 24,
+            ),
 
-            // =====================================
+            // ==========================================
             // CURRENT STERILIZATION MATERIALS
-            // =====================================
+            // ==========================================
 
             const Text(
               'Current Sterilization Materials',
-              style: TextStyle(
+
+              style:
+              TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontWeight:
+                FontWeight.w600,
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(
+              height: 8,
+            ),
 
             SizedBox(
               height: 400,
+
               child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey,
+                decoration:
+                BoxDecoration(
+                  border:
+                  Border.all(
+                    color:
+                    Colors.grey,
                   ),
-                  borderRadius: BorderRadius.circular(8),
+
+                  borderRadius:
+                  BorderRadius
+                      .circular(
+                    8,
+                  ),
                 ),
+
                 child: Column(
                   children: [
-                    // Table header
+
+                    // HEADER
+
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 12,
+                      padding:
+                      const EdgeInsets
+                          .symmetric(
+                        vertical:
+                        12,
+                        horizontal:
+                        12,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey.shade400,
+
+                      decoration:
+                      BoxDecoration(
+                        color: Colors
+                            .grey
+                            .shade100,
+
+                        border:
+                        Border(
+                          bottom:
+                          BorderSide(
+                            color: Colors
+                                .grey
+                                .shade400,
                           ),
                         ),
                       ),
-                      child: const Row(
+
+                      child:
+                      const Row(
                         children: [
+
                           Expanded(
-                            child: Text(
+                            child:
+                            Text(
                               'Type',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+
+                              style:
+                              TextStyle(
+                                fontWeight:
+                                FontWeight
+                                    .bold,
                               ),
                             ),
                           ),
+
                           Expanded(
-                            child: Text(
+                            child:
+                            Text(
                               'Unit Price',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+
+                              style:
+                              TextStyle(
+                                fontWeight:
+                                FontWeight
+                                    .bold,
                               ),
                             ),
                           ),
@@ -208,16 +618,82 @@ class _OxygenSterilizationScreenState
                       ),
                     ),
 
-                    // Empty for now.
-                    // Data will come from the database later.
-                    const Expanded(
-                      child: Center(
-                        child: Text(
+                    // DATA
+
+                    Expanded(
+                      child:
+                      materials.isEmpty
+                          ? const Center(
+                        child:
+                        Text(
                           'No data',
-                          style: TextStyle(
-                            color: Colors.grey,
+                          style:
+                          TextStyle(
+                            color:
+                            Colors.grey,
                           ),
                         ),
+                      )
+                          : ListView
+                          .builder(
+                        itemCount:
+                        materials.length,
+
+                        itemBuilder:
+                            (
+                            context,
+                            index,
+                            ) {
+                          final item =
+                          materials[index];
+
+                          return Container(
+                            padding:
+                            const EdgeInsets
+                                .symmetric(
+                              vertical:
+                              10,
+                              horizontal:
+                              12,
+                            ),
+
+                            decoration:
+                            BoxDecoration(
+                              border:
+                              Border(
+                                bottom:
+                                BorderSide(
+                                  color:
+                                  Colors.grey.shade300,
+                                ),
+                              ),
+                            ),
+
+                            child:
+                            Row(
+                              children: [
+
+                                Expanded(
+                                  child:
+                                  Text(
+                                    item['type']
+                                        ?.toString() ??
+                                        '',
+                                  ),
+                                ),
+
+                                Expanded(
+                                  child:
+                                  Text(
+                                    item['price']
+                                        ?.toString() ??
+                                        '',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -226,37 +702,6 @@ class _OxygenSterilizationScreenState
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required Widget child,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.shade300,
-        ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          child,
-        ],
       ),
     );
   }
