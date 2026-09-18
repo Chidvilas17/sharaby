@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/oxygen_intake_api_service.dart';
 
 class OxygenIntakeScreen extends StatefulWidget {
   const OxygenIntakeScreen({super.key});
@@ -27,8 +28,20 @@ class _OxygenIntakeScreenState
 
   int? selectedRow;
 
-  // Empty until the database/API is connected.
-  final List<Map<String, String>> purchases = [];
+  List<Map<String, dynamic>> purchases = [];
+
+  List<int> purchaseIds = [];
+
+  bool loadingPurchases = true;
+  bool savingPurchase = false;
+  bool deletingPurchase = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadPurchases();
+  }
 
   @override
   void dispose() {
@@ -40,66 +53,252 @@ class _OxygenIntakeScreenState
     super.dispose();
   }
 
-  void _addPurchase() {
-    final quantity = quantityController.text.trim();
-    final unitPrice = unitPriceController.text.trim();
+  // ============================================================
+  // LOAD PURCHASES
+  // ============================================================
+
+  Future<void> _loadPurchases() async {
+    try {
+      final result =
+      await OxygenIntakeApiService.getAll();
+
+      if (!mounted) return;
+
+      final List<int> ids = [];
+
+      for (final item in result) {
+        final id = int.tryParse(
+          item['id']?.toString() ?? '',
+        );
+
+        if (id != null) {
+          ids.add(id);
+        }
+      }
+
+      setState(() {
+        purchases = result;
+        purchaseIds = ids;
+        loadingPurchases = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingPurchases = false;
+      });
+
+      _showMessage(
+        'Failed to load oxygen operations: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // ADD PURCHASE
+  // ============================================================
+
+  Future<void> _addPurchase() async {
+    final quantity =
+    quantityController.text.trim();
+
+    final unitPrice =
+    unitPriceController.text.trim();
+
     final receiptNumber =
     receiptNumberController.text.trim();
-    final discount = discountController.text.trim();
+
+    final discount =
+    discountController.text.trim();
+
+    final discountDetails =
+    discountDetailsController.text.trim();
 
     if (quantity.isEmpty) {
-      _showMessage('Please enter the quantity.');
+      _showMessage(
+        'Please enter the quantity.',
+      );
       return;
     }
 
-    if (double.tryParse(quantity) == null) {
-      _showMessage('Please enter a valid quantity.');
+    final parsedQuantity =
+    int.tryParse(quantity);
+
+    if (parsedQuantity == null ||
+        parsedQuantity <= 0) {
+      _showMessage(
+        'Please enter a valid quantity.',
+      );
       return;
     }
 
     if (unitPrice.isEmpty) {
-      _showMessage('Please enter the unit price.');
+      _showMessage(
+        'Please enter the unit price.',
+      );
       return;
     }
 
-    if (double.tryParse(unitPrice) == null) {
-      _showMessage('Please enter a valid unit price.');
+    final parsedUnitPrice =
+    int.tryParse(unitPrice);
+
+    if (parsedUnitPrice == null ||
+        parsedUnitPrice < 0) {
+      _showMessage(
+        'Please enter a valid unit price.',
+      );
       return;
     }
 
     if (receiptNumber.isEmpty) {
-      _showMessage('Please enter the receipt number.');
+      _showMessage(
+        'Please enter the receipt number.',
+      );
       return;
     }
 
     if (discount.isEmpty) {
-      _showMessage('Please enter the discount.');
+      _showMessage(
+        'Please enter the discount.',
+      );
       return;
     }
 
-    if (double.tryParse(discount) == null) {
-      _showMessage('Please enter a valid discount.');
+    final parsedDiscount =
+    int.tryParse(discount);
+
+    if (parsedDiscount == null ||
+        parsedDiscount < 0) {
+      _showMessage(
+        'Please enter a valid discount.',
+      );
       return;
     }
 
-    // Database insertion will be connected later.
-    _showMessage('Purchase information is valid.');
+    if (savingPurchase) {
+      return;
+    }
+
+    setState(() {
+      savingPurchase = true;
+    });
+
+    try {
+      await OxygenIntakeApiService.add(
+        count: parsedQuantity,
+        unitPrice: parsedUnitPrice,
+        receiptNumber: receiptNumber,
+        discount: parsedDiscount,
+        discountDetails:
+        discountDetails.isEmpty
+            ? null
+            : discountDetails,
+        userId: null,
+      );
+
+      if (!mounted) return;
+
+      await _loadPurchases();
+
+      if (!mounted) return;
+
+      setState(() {
+        quantityController.text = '0';
+        unitPriceController.text = '0';
+        receiptNumberController.text = '0';
+        discountController.text = '0';
+        discountDetailsController.clear();
+        selectedRow = null;
+      });
+
+      _showMessage(
+        'Oxygen operation added successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to save oxygen operation: $e',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          savingPurchase = false;
+        });
+      }
+    }
   }
 
-  void _deletePurchase() {
+  // ============================================================
+  // DELETE PURCHASE
+  // ============================================================
+
+  Future<void> _deletePurchase() async {
     if (selectedRow == null) {
-      _showMessage('Please select a purchase first.');
+      _showMessage(
+        'Please select a purchase first.',
+      );
       return;
     }
 
-    // Database deletion will be connected later.
-    _showMessage(
-      'Selected purchase is ready for deletion.',
-    );
+    final row = selectedRow!;
+
+    if (row < 0 ||
+        row >= purchaseIds.length) {
+      _showMessage(
+        'Invalid selected purchase.',
+      );
+      return;
+    }
+
+    if (deletingPurchase) {
+      return;
+    }
+
+    final id = purchaseIds[row];
+
+    setState(() {
+      deletingPurchase = true;
+    });
+
+    try {
+      await OxygenIntakeApiService.delete(id);
+
+      if (!mounted) return;
+
+      setState(() {
+        selectedRow = null;
+      });
+
+      await _loadPurchases();
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Oxygen operation deleted successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to delete oxygen operation: $e',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          deletingPurchase = false;
+        });
+      }
+    }
   }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -107,6 +306,10 @@ class _OxygenIntakeScreenState
       ),
     );
   }
+
+  // ============================================================
+  // SECTION TITLE
+  // ============================================================
 
   Widget _sectionTitle(String title) {
     return Container(
@@ -130,10 +333,15 @@ class _OxygenIntakeScreenState
     );
   }
 
+  // ============================================================
+  // TEXT FIELD
+  // ============================================================
+
   Widget _textField({
     required TextEditingController controller,
     required String label,
-    TextInputType keyboardType = TextInputType.text,
+    TextInputType keyboardType =
+        TextInputType.text,
   }) {
     return TextField(
       controller: controller,
@@ -144,6 +352,10 @@ class _OxygenIntakeScreenState
       ),
     );
   }
+
+  // ============================================================
+  // HEADER CELL
+  // ============================================================
 
   Widget _headerCell(
       String text,
@@ -165,6 +377,10 @@ class _OxygenIntakeScreenState
     );
   }
 
+  // ============================================================
+  // DATA CELL
+  // ============================================================
+
   Widget _dataCell(
       int row,
       String text,
@@ -172,6 +388,10 @@ class _OxygenIntakeScreenState
       ) {
     return GestureDetector(
       onTap: () {
+        if (row >= purchases.length) {
+          return;
+        }
+
         setState(() {
           selectedRow = row;
         });
@@ -192,6 +412,10 @@ class _OxygenIntakeScreenState
       ),
     );
   }
+
+  // ============================================================
+  // TABLE
+  // ============================================================
 
   Widget _buildTable() {
     const int emptyRows = 10;
@@ -215,17 +439,32 @@ class _OxygenIntakeScreenState
         defaultVerticalAlignment:
         TableCellVerticalAlignment.middle,
         columnWidths: const {
-          0: FixedColumnWidth(quantityWidth),
-          1: FixedColumnWidth(unitPriceWidth),
-          2: FixedColumnWidth(discountWidth),
-          3: FixedColumnWidth(totalWidth),
-          4: FixedColumnWidth(discountDetailsWidth),
-          5: FixedColumnWidth(byWidth),
-          6: FixedColumnWidth(receiptWidth),
-          7: FixedColumnWidth(dateWidth),
+          0: FixedColumnWidth(
+            quantityWidth,
+          ),
+          1: FixedColumnWidth(
+            unitPriceWidth,
+          ),
+          2: FixedColumnWidth(
+            discountWidth,
+          ),
+          3: FixedColumnWidth(
+            totalWidth,
+          ),
+          4: FixedColumnWidth(
+            discountDetailsWidth,
+          ),
+          5: FixedColumnWidth(
+            byWidth,
+          ),
+          6: FixedColumnWidth(
+            receiptWidth,
+          ),
+          7: FixedColumnWidth(
+            dateWidth,
+          ),
         },
         children: [
-          // Header
           TableRow(
             decoration: BoxDecoration(
               color: Colors.grey.shade200,
@@ -266,63 +505,87 @@ class _OxygenIntakeScreenState
             ],
           ),
 
-          // Empty Excel-style rows.
-          for (int i = 0; i < emptyRows; i++)
+          for (int i = 0;
+          i < emptyRows;
+          i++)
             TableRow(
               children: [
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['quantity'] ?? ''
+                      ? purchases[i]
+                  ['quantity']
+                      ?.toString() ??
+                      ''
                       : '',
                   quantityWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['unitPrice'] ?? ''
+                      ? purchases[i]
+                  ['unitPrice']
+                      ?.toString() ??
+                      ''
                       : '',
                   unitPriceWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['discount'] ?? ''
+                      ? purchases[i]
+                  ['discount']
+                      ?.toString() ??
+                      ''
                       : '',
                   discountWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['total'] ?? ''
+                      ? purchases[i]
+                  ['total']
+                      ?.toString() ??
+                      ''
                       : '',
                   totalWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['discountDetails'] ?? ''
+                      ? purchases[i]
+                  ['discountDetails']
+                      ?.toString() ??
+                      ''
                       : '',
                   discountDetailsWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['by'] ?? ''
+                      ? purchases[i]
+                  ['by']
+                      ?.toString() ??
+                      ''
                       : '',
                   byWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['receiptNumber'] ?? ''
+                      ? purchases[i]
+                  ['receiptNumber']
+                      ?.toString() ??
+                      ''
                       : '',
                   receiptWidth,
                 ),
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['date'] ?? ''
+                      ? _formatDate(
+                    purchases[i]['date'],
+                  )
                       : '',
                   dateWidth,
                 ),
@@ -333,22 +596,67 @@ class _OxygenIntakeScreenState
     );
   }
 
+  // ============================================================
+  // DATE FORMAT
+  // ============================================================
+
+  String _formatDate(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+
+    final date =
+    DateTime.tryParse(
+      value.toString(),
+    );
+
+    if (date == null) {
+      return value.toString();
+    }
+
+    final day =
+    date.day.toString().padLeft(2, '0');
+
+    final month =
+    date.month.toString().padLeft(2, '0');
+
+    final year =
+    date.year.toString();
+
+    return '$day/$month/$year';
+  }
+
+  // ============================================================
+  // TOTAL
+  // ============================================================
+
   double _calculateTotal() {
     double total = 0;
 
     for (final purchase in purchases) {
       total +=
-          double.tryParse(purchase['total'] ?? '') ?? 0;
+          double.tryParse(
+            purchase['total']
+                ?.toString() ??
+                '',
+          ) ??
+              0;
     }
 
     return total;
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Oxygen Intake'),
+        title: const Text(
+          'Oxygen Intake',
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -369,16 +677,25 @@ class _OxygenIntakeScreenState
 
               const SizedBox(height: 16),
 
+              // =================================
               // DELETE
+              // =================================
+
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _deletePurchase,
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(
+                  onPressed:
+                  deletingPurchase
+                      ? null
+                      : _deletePurchase,
+                  child: Text(
+                    deletingPurchase
+                        ? 'Deleting...'
+                        : 'Delete',
+                    style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
@@ -386,7 +703,10 @@ class _OxygenIntakeScreenState
 
               const SizedBox(height: 16),
 
+              // =================================
               // TOTAL COST
+              // =================================
+
               Row(
                 mainAxisAlignment:
                 MainAxisAlignment.center,
@@ -396,7 +716,8 @@ class _OxygenIntakeScreenState
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                   Text(
@@ -405,7 +726,8 @@ class _OxygenIntakeScreenState
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ],
@@ -417,15 +739,19 @@ class _OxygenIntakeScreenState
               // NEW PURCHASE
               // =================================
 
-              _sectionTitle('New Purchase'),
+              _sectionTitle(
+                'New Purchase',
+              ),
 
               const SizedBox(height: 16),
 
               _textField(
-                controller: quantityController,
+                controller:
+                quantityController,
                 label: 'Quantity',
                 keyboardType:
-                const TextInputType.numberWithOptions(
+                const TextInputType
+                    .numberWithOptions(
                   decimal: true,
                 ),
               ),
@@ -433,10 +759,12 @@ class _OxygenIntakeScreenState
               const SizedBox(height: 14),
 
               _textField(
-                controller: unitPriceController,
+                controller:
+                unitPriceController,
                 label: 'Unit Price',
                 keyboardType:
-                const TextInputType.numberWithOptions(
+                const TextInputType
+                    .numberWithOptions(
                   decimal: true,
                 ),
               ),
@@ -444,17 +772,20 @@ class _OxygenIntakeScreenState
               const SizedBox(height: 14),
 
               _textField(
-                controller: receiptNumberController,
+                controller:
+                receiptNumberController,
                 label: 'Receipt Number',
               ),
 
               const SizedBox(height: 14),
 
               _textField(
-                controller: discountController,
+                controller:
+                discountController,
                 label: 'Discount',
                 keyboardType:
-                const TextInputType.numberWithOptions(
+                const TextInputType
+                    .numberWithOptions(
                   decimal: true,
                 ),
               ),
@@ -472,12 +803,18 @@ class _OxygenIntakeScreenState
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _addPurchase,
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(
+                  onPressed:
+                  savingPurchase
+                      ? null
+                      : _addPurchase,
+                  child: Text(
+                    savingPurchase
+                        ? 'Saving...'
+                        : 'Add',
+                    style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
