@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/co_api_service.dart';
+
 class CoScreen extends StatefulWidget {
   const CoScreen({super.key});
 
@@ -8,13 +10,167 @@ class CoScreen extends StatefulWidget {
 }
 
 class _CoScreenState extends State<CoScreen> {
-  final TextEditingController coController = TextEditingController();
+  final TextEditingController coController =
+  TextEditingController();
+
+  List<Map<String, dynamic>> coList = [];
+
+  bool loading = true;
+  bool adding = false;
+
+  String? coError;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCo();
+  }
 
   @override
   void dispose() {
     coController.dispose();
     super.dispose();
   }
+
+  // ============================================================
+  // LOAD C/O
+  // ============================================================
+
+  Future<void> _loadCo() async {
+    if (!mounted) return;
+
+    setState(() {
+      loading = true;
+    });
+
+    try {
+      final data = await CoApiService.getAll();
+
+      if (!mounted) return;
+
+      setState(() {
+        coList = data;
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+
+      _showMessage(
+        'Failed to load C/O: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // ADD C/O
+  // ============================================================
+
+  Future<void> _addCo() async {
+    final name = coController.text.trim();
+
+    if (name.isEmpty) {
+      setState(() {
+        coError = 'Invalid C/O Name';
+      });
+      return;
+    }
+
+    setState(() {
+      coError = null;
+      adding = true;
+    });
+
+    try {
+      await CoApiService.addCo(
+        coName: name,
+      );
+
+      // Reload from SQL Server so the list
+      // reflects the actual database.
+      await _loadCo();
+
+      if (!mounted) return;
+
+      coController.clear();
+
+      _showMessage(
+        'C/O added successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to add C/O: $e',
+      );
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        adding = false;
+      });
+    }
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
+  }
+
+  // ============================================================
+  // TABLE ROW
+  // ============================================================
+
+  Widget _buildCoRow(
+      Map<String, dynamic> record,
+      ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 12,
+      ),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.shade300,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 60,
+            child: Text(
+              record['id']?.toString() ?? '',
+            ),
+          ),
+          Expanded(
+            child: Text(
+              record['co_name']?.toString() ?? '',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -25,31 +181,39 @@ class _CoScreenState extends State<CoScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment.stretch,
           children: [
-            // =========================
+            // =====================================================
             // ADD SECTION
-            // =========================
+            // =====================================================
+
             Container(
-              padding: const EdgeInsets.all(16),
+              padding:
+              const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Colors.grey.shade300,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius:
+                BorderRadius.circular(8),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Add',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      fontWeight:
+                      FontWeight.w500,
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
                   const Text(
                     'C/O Name',
@@ -58,25 +222,55 @@ class _CoScreenState extends State<CoScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
                   TextField(
-                    controller: coController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter C/O name',
+                    controller:
+                    coController,
+                    onChanged: (_) {
+                      if (coError != null) {
+                        setState(() {
+                          coError = null;
+                        });
+                      }
+                    },
+                    decoration:
+                    InputDecoration(
+                      border:
+                      const OutlineInputBorder(),
+                      hintText:
+                      'Enter C/O name',
+                      errorText: coError,
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
 
                   Center(
                     child: SizedBox(
                       width: 120,
                       height: 45,
                       child: ElevatedButton(
-                        onPressed: null,
-                        child: const Text('Add'),
+                        onPressed:
+                        adding
+                            ? null
+                            : _addCo,
+                        child: adding
+                            ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child:
+                          CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Text(
+                          'Add',
+                        ),
                       ),
                     ),
                   ),
@@ -84,42 +278,62 @@ class _CoScreenState extends State<CoScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
 
-            // =========================
-            // DATABASE LIST
-            // =========================
+            // =====================================================
+            // C/O LIST
+            // =====================================================
+
             const Text(
               'C/O List',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w500,
+                fontWeight:
+                FontWeight.w500,
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(
+              height: 8,
+            ),
 
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration:
+                BoxDecoration(
                   border: Border.all(
                     color: Colors.grey,
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius:
+                  BorderRadius.circular(8),
                 ),
                 child: Column(
                   children: [
-                    // Table header
+                    // =================================================
+                    // TABLE HEADER
+                    // =================================================
+
                     Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding:
+                      const EdgeInsets
+                          .symmetric(
                         vertical: 12,
                         horizontal: 12,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey.shade400,
+                      decoration:
+                      BoxDecoration(
+                        color: Colors
+                            .grey
+                            .shade100,
+                        border:
+                        Border(
+                          bottom:
+                          BorderSide(
+                            color: Colors
+                                .grey
+                                .shade400,
                           ),
                         ),
                       ),
@@ -129,16 +343,22 @@ class _CoScreenState extends State<CoScreen> {
                             width: 60,
                             child: Text(
                               'No.',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                              style:
+                              TextStyle(
+                                fontWeight:
+                                FontWeight
+                                    .bold,
                               ),
                             ),
                           ),
                           Expanded(
                             child: Text(
                               'Name',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                              style:
+                              TextStyle(
+                                fontWeight:
+                                FontWeight
+                                    .bold,
                               ),
                             ),
                           ),
@@ -146,15 +366,44 @@ class _CoScreenState extends State<CoScreen> {
                       ),
                     ),
 
-                    // Empty for now.
-                    // Data will come directly from the database later.
-                    const Expanded(
-                      child: Center(
+                    // =================================================
+                    // DATA
+                    // =================================================
+
+                    Expanded(
+                      child: loading
+                          ? const Center(
+                        child:
+                        CircularProgressIndicator(),
+                      )
+                          : coList.isEmpty
+                          ? const Center(
                         child: Text(
                           'No data',
-                          style: TextStyle(
-                            color: Colors.grey,
+                          style:
+                          TextStyle(
+                            color:
+                            Colors.grey,
                           ),
+                        ),
+                      )
+                          : RefreshIndicator(
+                        onRefresh:
+                        _loadCo,
+                        child:
+                        ListView.builder(
+                          itemCount:
+                          coList.length,
+                          itemBuilder:
+                              (
+                              context,
+                              index,
+                              ) {
+                            return _buildCoRow(
+                              coList[
+                              index],
+                            );
+                          },
                         ),
                       ),
                     ),
