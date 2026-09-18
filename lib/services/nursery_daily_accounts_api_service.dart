@@ -18,11 +18,12 @@ class NurseryDailyAccountsApiService {
         '${date.month.toString().padLeft(2, '0')}-'
         '${date.day.toString().padLeft(2, '0')}';
 
-    final response = await http.get(
-      Uri.parse(
-        '$baseUrl/NurseryDailyAccounts?date=$dateText',
-      ),
+    final uri = Uri.parse(
+      '$baseUrl/NurseryDailyAccounts'
+          '?date=$dateText',
     );
+
+    final response = await http.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -46,7 +47,9 @@ class NurseryDailyAccountsApiService {
   // DELETE INCOME
   // ============================================================
 
-  static Future<void> deleteIncome(int id) async {
+  static Future<void> deleteIncome(
+      int id,
+      ) async {
     final response = await http.delete(
       Uri.parse(
         '$baseUrl/NurseryDailyAccounts/income/$id',
@@ -54,10 +57,19 @@ class NurseryDailyAccountsApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(
-        'Failed to delete income. '
-            'Status code: ${response.statusCode}',
-      );
+      String message =
+          'Failed to delete income. '
+          'Status code: ${response.statusCode}';
+
+      try {
+        final body = jsonDecode(response.body);
+
+        if (body is Map && body['message'] != null) {
+          message = body['message'].toString();
+        }
+      } catch (_) {}
+
+      throw Exception(message);
     }
   }
 
@@ -65,7 +77,9 @@ class NurseryDailyAccountsApiService {
   // DELETE EXPENSE
   // ============================================================
 
-  static Future<void> deleteExpense(int id) async {
+  static Future<void> deleteExpense(
+      int id,
+      ) async {
     final response = await http.delete(
       Uri.parse(
         '$baseUrl/NurseryDailyAccounts/expense/$id',
@@ -73,10 +87,19 @@ class NurseryDailyAccountsApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(
-        'Failed to delete expense. '
-            'Status code: ${response.statusCode}',
-      );
+      String message =
+          'Failed to delete expense. '
+          'Status code: ${response.statusCode}';
+
+      try {
+        final body = jsonDecode(response.body);
+
+        if (body is Map && body['message'] != null) {
+          message = body['message'].toString();
+        }
+      } catch (_) {}
+
+      throw Exception(message);
     }
   }
 }
