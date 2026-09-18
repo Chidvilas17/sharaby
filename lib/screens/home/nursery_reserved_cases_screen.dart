@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/nursery_reserved_api_service.dart';
+
 class NurseryReservedCasesScreen extends StatefulWidget {
   const NurseryReservedCasesScreen({super.key});
 
@@ -12,17 +14,107 @@ class _NurseryReservedCasesScreenState
     extends State<NurseryReservedCasesScreen> {
   int? selectedRow;
 
+  bool loading = false;
+
+  List<Map<String, dynamic>> reservedCases = [];
+
   final List<String> headers = [
     'No.',
     'Name',
     'Total Account',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+
+    _loadReservedCases();
+  }
+
+  // ============================================================
+  // LOAD RESERVED CASES
+  // ============================================================
+
+  Future<void> _loadReservedCases() async {
+    if (loading) return;
+
+    setState(() {
+      loading = true;
+    });
+
+    try {
+      final result =
+      await NurseryReservedApiService.getReservedCases();
+
+      if (!mounted) return;
+
+      setState(() {
+        reservedCases = result;
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+
+      _showMessage(
+        'Failed to load reserved cases: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  // ============================================================
+  // GET VALUE
+  // ============================================================
+
+  String _getValue(
+      Map<String, dynamic> row,
+      String key,
+      ) {
+    final value = row[key];
+
+    if (value == null) {
+      return '';
+    }
+
+    return value.toString();
+  }
+
+  // ============================================================
+  // TABLE
+  // ============================================================
+
   Widget _buildTable() {
+    if (loading) {
+      return const SizedBox(
+        height: 250,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Table(
-        defaultColumnWidth: const FixedColumnWidth(150),
+        defaultColumnWidth:
+        const FixedColumnWidth(150),
         border: TableBorder.all(
           color: Colors.grey,
           width: 0.7,
@@ -48,12 +140,54 @@ class _NurseryReservedCasesScreenState
             }).toList(),
           ),
 
-          // Empty rows — real data will come from the API later.
+          // ======================================================
+          // DATABASE ROWS
+          // ======================================================
+
           ...List.generate(20, (index) {
+            final hasData =
+                index < reservedCases.length;
+
+            final row =
+            hasData
+                ? reservedCases[index]
+                : null;
+
+            final isSelected =
+                selectedRow == index;
+
+            String cellValue(
+                String header,
+                ) {
+              if (!hasData || row == null) {
+                return '';
+              }
+
+              if (header == 'Name') {
+                return _getValue(
+                  row,
+                  'name',
+                );
+              }
+
+              if (header == 'Total Account') {
+                return _getValue(
+                  row,
+                  'totalAccount',
+                );
+              }
+
+              return '';
+            }
+
             return TableRow(
               children: headers.map((header) {
                 return GestureDetector(
                   onTap: () {
+                    if (!hasData) {
+                      return;
+                    }
+
                     setState(() {
                       selectedRow = index;
                     });
@@ -61,11 +195,16 @@ class _NurseryReservedCasesScreenState
                   child: Container(
                     height: 42,
                     alignment: Alignment.center,
-                    color: selectedRow == index
+                    color: isSelected
                         ? Colors.blue.withOpacity(0.12)
                         : Colors.transparent,
                     child: Text(
-                      header == 'No.' ? '${index + 1}' : '',
+                      header == 'No.'
+                          ? hasData
+                          ? '${index + 1}'
+                          : ''
+                          : cellValue(header),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 );
@@ -77,6 +216,10 @@ class _NurseryReservedCasesScreenState
     );
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +229,8 @@ class _NurseryReservedCasesScreenState
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment.stretch,
           children: [
             const Text(
               'Reserved Cases',
