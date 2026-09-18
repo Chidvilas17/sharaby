@@ -1,13 +1,14 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class DoctorMonthlyNetApiService {
   static const String baseUrl =
       'http://10.0.2.2:5137/api';
 
-  // ==========================================
+  // ============================================================
   // GET DOCTORS
-  // ==========================================
+  // ============================================================
 
   static Future<List<dynamic>> getDoctors() async {
     final response = await http.get(
@@ -17,18 +18,20 @@ class DoctorMonthlyNetApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body)
-      as List<dynamic>;
+      final decoded = jsonDecode(response.body);
+
+      return decoded as List<dynamic>;
     }
 
     throw Exception(
-      'Failed to load doctors. Status code: ${response.statusCode}',
+      'Failed to load doctors. '
+          'Status code: ${response.statusCode}',
     );
   }
 
-  // ==========================================
-  // GET MONTHLY NET
-  // ==========================================
+  // ============================================================
+  // GET MONTHLY ATTENDANCE
+  // ============================================================
 
   static Future<Map<String, dynamic>>
   getMonthlyAttendance({
@@ -43,12 +46,12 @@ class DoctorMonthlyNetApiService {
           '&year=$year',
     );
 
-    final response =
-    await http.get(uri);
+    final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body)
-      as Map<String, dynamic>;
+      final decoded = jsonDecode(response.body);
+
+      return decoded as Map<String, dynamic>;
     }
 
     if (response.statusCode == 400) {
@@ -66,7 +69,8 @@ class DoctorMonthlyNetApiService {
     }
 
     throw Exception(
-      'Failed to load monthly data. Status code: ${response.statusCode}',
+      'Failed to load monthly data. '
+          'Status code: ${response.statusCode}',
     );
   }
 }
