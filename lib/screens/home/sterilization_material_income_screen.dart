@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/sterilization_material_api_service.dart';
 
 class SterilizationMaterialIncomeScreen extends StatefulWidget {
   const SterilizationMaterialIncomeScreen({super.key});
@@ -26,73 +27,340 @@ class _SterilizationMaterialIncomeScreenState
 
   int? selectedRow;
 
-  // Empty until database/API connection.
-  final List<Map<String, String>> purchases = [];
+  List<Map<String, dynamic>> materialTypes = [];
+
+  List<Map<String, String>> purchases = [];
+
+  // Keep the real database IDs separately.
+  List<int> purchaseIds = [];
+
+  bool loadingTypes = true;
+  bool loadingPurchases = true;
+  bool savingPurchase = false;
+  bool deletingPurchase = false;
 
   @override
-  void dispose() {
-    quantityController.dispose();
-    receiptNumberController.dispose();
-    discountController.dispose();
-    discountDetailsController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+
+    _loadMaterialTypes();
+    _loadPurchases();
   }
 
-  void _addPurchase() {
-    final quantity = quantityController.text.trim();
-    final receiptNumber = receiptNumberController.text.trim();
-    final discount = discountController.text.trim();
+  // ============================================================
+  // LOAD MATERIAL TYPES
+  // ============================================================
 
-    if (quantity.isEmpty) {
+  Future<void> _loadMaterialTypes() async {
+    try {
+      final result =
+      await SterilizationMaterialApiService.getTypes();
+
+      if (!mounted) return;
+
+      setState(() {
+        materialTypes = result;
+        loadingTypes = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingTypes = false;
+      });
+
+      _showMessage(
+        'Failed to load material types.',
+      );
+    }
+  }
+
+  // ============================================================
+  // LOAD PURCHASES FROM DATABASE
+  // ============================================================
+
+  Future<void> _loadPurchases() async {
+    try {
+      final result =
+      await SterilizationMaterialApiService.getAll();
+
+      if (!mounted) return;
+
+      final List<Map<String, String>> loadedPurchases = [];
+      final List<int> loadedIds = [];
+
+      for (final item in result) {
+        final id = int.tryParse(
+          item['id']?.toString() ?? '',
+        );
+
+        if (id == null) {
+          continue;
+        }
+
+        loadedIds.add(id);
+
+        loadedPurchases.add({
+          'quantity':
+          item['count']?.toString() ?? '',
+          'type':
+          item['type']?.toString() ?? '',
+          'unitPrice':
+          item['unitPrice']?.toString() ?? '',
+          'discount':
+          item['discount']?.toString() ?? '',
+          'total':
+          item['total']?.toString() ?? '',
+          'discountDetails':
+          item['discountDetails']?.toString() ?? '',
+          'by':
+          item['logId']?.toString() ?? '',
+          'receiptNumber':
+          item['waslNo']?.toString() ?? '',
+          'date':
+          _formatDate(item['date']),
+        });
+      }
+
+      setState(() {
+        purchases = loadedPurchases;
+        purchaseIds = loadedIds;
+        loadingPurchases = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingPurchases = false;
+      });
+
+      _showMessage(
+        'Failed to load purchases.',
+      );
+    }
+  }
+
+  // ============================================================
+  // DATE FORMAT
+  // ============================================================
+
+  String _formatDate(dynamic value) {
+    if (value == null) {
+      return '';
+    }
+
+    final date = DateTime.tryParse(
+      value.toString(),
+    );
+
+    if (date == null) {
+      return value.toString();
+    }
+
+    final day =
+    date.day.toString().padLeft(2, '0');
+
+    final month =
+    date.month.toString().padLeft(2, '0');
+
+    final year =
+    date.year.toString();
+
+    return '$day/$month/$year';
+  }
+
+  // ============================================================
+  // ADD PURCHASE
+  // ============================================================
+
+  Future<void> _addPurchase() async {
+    final quantityText =
+    quantityController.text.trim();
+
+    final receiptNumber =
+    receiptNumberController.text.trim();
+
+    final discountText =
+    discountController.text.trim();
+
+    final discountDetails =
+    discountDetailsController.text.trim();
+
+    if (quantityText.isEmpty) {
       _showMessage('Please enter the quantity.');
       return;
     }
 
-    final parsedQuantity = double.tryParse(quantity);
+    final parsedQuantity =
+    int.tryParse(quantityText);
 
-    if (parsedQuantity == null) {
-      _showMessage('Please enter a valid quantity.');
+    if (parsedQuantity == null ||
+        parsedQuantity <= 0) {
+      _showMessage(
+        'Please enter a valid quantity.',
+      );
       return;
     }
 
-    if (selectedType == null || selectedType!.isEmpty) {
+    if (selectedType == null ||
+        selectedType!.isEmpty) {
       _showMessage('Please select the type.');
       return;
     }
 
     if (receiptNumber.isEmpty) {
-      _showMessage('Please enter the receipt number.');
+      _showMessage(
+        'Please enter the receipt number.',
+      );
       return;
     }
 
-    if (discount.isEmpty) {
-      _showMessage('Please enter the discount.');
+    if (discountText.isEmpty) {
+      _showMessage(
+        'Please enter the discount.',
+      );
       return;
     }
 
-    final parsedDiscount = double.tryParse(discount);
+    final parsedDiscount =
+    int.tryParse(discountText);
 
-    if (parsedDiscount == null) {
-      _showMessage('Please enter a valid discount.');
+    if (parsedDiscount == null ||
+        parsedDiscount < 0) {
+      _showMessage(
+        'Please enter a valid discount.',
+      );
       return;
     }
 
-    // Database insertion will be connected later.
-    _showMessage('Purchase information is valid.');
+    if (savingPurchase) {
+      return;
+    }
+
+    setState(() {
+      savingPurchase = true;
+    });
+
+    try {
+      await SterilizationMaterialApiService.add(
+        count: parsedQuantity,
+        type: selectedType!,
+        waslNo: receiptNumber,
+        discount: parsedDiscount,
+        discountDetails:
+        discountDetails.isEmpty
+            ? null
+            : discountDetails,
+        userId: null,
+        status: 'Test',
+        date: DateTime.now(),
+      );
+
+      if (!mounted) return;
+
+      // Read again from SQL Server.
+      await _loadPurchases();
+
+      if (!mounted) return;
+
+      setState(() {
+        quantityController.text = '0';
+        receiptNumberController.clear();
+        discountController.text = '0';
+        discountDetailsController.clear();
+        selectedType = null;
+        selectedRow = null;
+      });
+
+      _showMessage(
+        'Purchase added successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to save purchase: $e',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          savingPurchase = false;
+        });
+      }
+    }
   }
 
-  void _deletePurchase() {
+  // ============================================================
+  // DELETE PURCHASE
+  // ============================================================
+
+  Future<void> _deletePurchase() async {
     if (selectedRow == null) {
-      _showMessage('Please select a purchase first.');
+      _showMessage(
+        'Please select a purchase first.',
+      );
       return;
     }
 
-    // Database deletion will be connected later.
-    _showMessage('Selected purchase is ready for deletion.');
+    final row = selectedRow!;
+
+    if (row >= purchaseIds.length) {
+      _showMessage(
+        'Please select an existing purchase.',
+      );
+      return;
+    }
+
+    final id = purchaseIds[row];
+
+    if (deletingPurchase) {
+      return;
+    }
+
+    setState(() {
+      deletingPurchase = true;
+    });
+
+    try {
+      await SterilizationMaterialApiService.delete(
+        id,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        selectedRow = null;
+      });
+
+      await _loadPurchases();
+
+      if (!mounted) return;
+
+      _showMessage(
+        'Purchase deleted successfully.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showMessage(
+        'Failed to delete purchase: $e',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          deletingPurchase = false;
+        });
+      }
+    }
   }
+
+  // ============================================================
+  // MESSAGE
+  // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -100,6 +368,10 @@ class _SterilizationMaterialIncomeScreenState
       ),
     );
   }
+
+  // ============================================================
+  // SECTION TITLE
+  // ============================================================
 
   Widget _sectionTitle(String title) {
     return Container(
@@ -123,10 +395,15 @@ class _SterilizationMaterialIncomeScreenState
     );
   }
 
+  // ============================================================
+  // TEXT FIELD
+  // ============================================================
+
   Widget _textField({
     required TextEditingController controller,
     required String label,
-    TextInputType keyboardType = TextInputType.text,
+    TextInputType keyboardType =
+        TextInputType.text,
   }) {
     return TextField(
       controller: controller,
@@ -138,6 +415,10 @@ class _SterilizationMaterialIncomeScreenState
     );
   }
 
+  // ============================================================
+  // TYPE DROPDOWN
+  // ============================================================
+
   Widget _typeDropdown() {
     return DropdownButtonFormField<String>(
       value: selectedType,
@@ -145,16 +426,29 @@ class _SterilizationMaterialIncomeScreenState
         labelText: 'Type',
         border: OutlineInputBorder(),
       ),
-      items: const [
-        // Real types will come from the database later.
-      ],
-      onChanged: (value) {
+      items: materialTypes.map((item) {
+        final type =
+            item['type']?.toString() ?? '';
+
+        return DropdownMenuItem<String>(
+          value: type,
+          child: Text(type),
+        );
+      }).toList(),
+      onChanged:
+      loadingTypes || materialTypes.isEmpty
+          ? null
+          : (value) {
         setState(() {
           selectedType = value;
         });
       },
     );
   }
+
+  // ============================================================
+  // HEADER CELL
+  // ============================================================
 
   Widget _headerCell(
       String text,
@@ -176,6 +470,10 @@ class _SterilizationMaterialIncomeScreenState
     );
   }
 
+  // ============================================================
+  // DATA CELL
+  // ============================================================
+
   Widget _dataCell(
       int row,
       String text,
@@ -183,6 +481,10 @@ class _SterilizationMaterialIncomeScreenState
       ) {
     return GestureDetector(
       onTap: () {
+        if (row >= purchases.length) {
+          return;
+        }
+
         setState(() {
           selectedRow = row;
         });
@@ -191,7 +493,9 @@ class _SterilizationMaterialIncomeScreenState
         width: width,
         height: 42,
         color: selectedRow == row
-            ? Theme.of(context).colorScheme.primaryContainer
+            ? Theme.of(context)
+            .colorScheme
+            .primaryContainer
             : Colors.transparent,
         alignment: Alignment.center,
         child: Text(
@@ -201,6 +505,10 @@ class _SterilizationMaterialIncomeScreenState
       ),
     );
   }
+
+  // ============================================================
+  // TABLE
+  // ============================================================
 
   Widget _buildTable() {
     const int emptyRows = 12;
@@ -230,7 +538,8 @@ class _SterilizationMaterialIncomeScreenState
           2: FixedColumnWidth(unitPriceWidth),
           3: FixedColumnWidth(discountWidth),
           4: FixedColumnWidth(totalWidth),
-          5: FixedColumnWidth(discountDetailsWidth),
+          5: FixedColumnWidth(
+              discountDetailsWidth),
           6: FixedColumnWidth(byWidth),
           7: FixedColumnWidth(receiptWidth),
           8: FixedColumnWidth(dateWidth),
@@ -241,25 +550,45 @@ class _SterilizationMaterialIncomeScreenState
               color: Colors.grey.shade200,
             ),
             children: [
-              _headerCell('Quantity', quantityWidth),
-              _headerCell('Type', typeWidth),
-              _headerCell('Unit Price', unitPriceWidth),
-              _headerCell('Discount', discountWidth),
-              _headerCell('Total', totalWidth),
+              _headerCell(
+                'Quantity',
+                quantityWidth,
+              ),
+              _headerCell(
+                'Type',
+                typeWidth,
+              ),
+              _headerCell(
+                'Unit Price',
+                unitPriceWidth,
+              ),
+              _headerCell(
+                'Discount',
+                discountWidth,
+              ),
+              _headerCell(
+                'Total',
+                totalWidth,
+              ),
               _headerCell(
                 'Discount Details',
                 discountDetailsWidth,
               ),
-              _headerCell('By', byWidth),
+              _headerCell(
+                'By',
+                byWidth,
+              ),
               _headerCell(
                 'Receipt Number',
                 receiptWidth,
               ),
-              _headerCell('Date', dateWidth),
+              _headerCell(
+                'Date',
+                dateWidth,
+              ),
             ],
           ),
 
-          // Empty rows.
           for (int i = 0; i < emptyRows; i++)
             TableRow(
               children: [
@@ -301,7 +630,9 @@ class _SterilizationMaterialIncomeScreenState
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['discountDetails'] ?? ''
+                      ? purchases[i]
+                  ['discountDetails'] ??
+                      ''
                       : '',
                   discountDetailsWidth,
                 ),
@@ -315,7 +646,9 @@ class _SterilizationMaterialIncomeScreenState
                 _dataCell(
                   i,
                   i < purchases.length
-                      ? purchases[i]['receiptNumber'] ?? ''
+                      ? purchases[i]
+                  ['receiptNumber'] ??
+                      ''
                       : '',
                   receiptWidth,
                 ),
@@ -333,24 +666,35 @@ class _SterilizationMaterialIncomeScreenState
     );
   }
 
+  // ============================================================
+  // TOTAL
+  // ============================================================
+
   double _calculateTotal() {
     double total = 0;
 
     for (final purchase in purchases) {
-      total += double.tryParse(
-        purchase['total'] ?? '',
-      ) ??
-          0;
+      total +=
+          double.tryParse(
+            purchase['total'] ?? '',
+          ) ??
+              0;
     }
 
     return total;
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sterilization Material'),
+        title: const Text(
+          'Sterilization Material',
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -375,12 +719,18 @@ class _SterilizationMaterialIncomeScreenState
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _deletePurchase,
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(
+                  onPressed:
+                  deletingPurchase
+                      ? null
+                      : _deletePurchase,
+                  child: Text(
+                    deletingPurchase
+                        ? 'Deleting...'
+                        : 'Delete',
+                    style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
@@ -397,7 +747,8 @@ class _SterilizationMaterialIncomeScreenState
                     'Total Cost: ',
                     style: TextStyle(
                       fontSize: 17,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                   Text(
@@ -405,7 +756,8 @@ class _SterilizationMaterialIncomeScreenState
                         .toStringAsFixed(0),
                     style: const TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ],
@@ -417,15 +769,19 @@ class _SterilizationMaterialIncomeScreenState
               // NEW PURCHASE
               // ==========================
 
-              _sectionTitle('New Purchase'),
+              _sectionTitle(
+                'New Purchase',
+              ),
 
               const SizedBox(height: 16),
 
               _textField(
-                controller: quantityController,
+                controller:
+                quantityController,
                 label: 'Quantity',
                 keyboardType:
-                const TextInputType.numberWithOptions(
+                const TextInputType
+                    .numberWithOptions(
                   decimal: true,
                 ),
               ),
@@ -437,17 +793,20 @@ class _SterilizationMaterialIncomeScreenState
               const SizedBox(height: 14),
 
               _textField(
-                controller: receiptNumberController,
+                controller:
+                receiptNumberController,
                 label: 'Receipt Number',
               ),
 
               const SizedBox(height: 14),
 
               _textField(
-                controller: discountController,
+                controller:
+                discountController,
                 label: 'Discount',
                 keyboardType:
-                const TextInputType.numberWithOptions(
+                const TextInputType
+                    .numberWithOptions(
                   decimal: true,
                 ),
               ),
@@ -455,7 +814,8 @@ class _SterilizationMaterialIncomeScreenState
               const SizedBox(height: 14),
 
               _textField(
-                controller: discountDetailsController,
+                controller:
+                discountDetailsController,
                 label: 'Discount Details',
               ),
 
@@ -464,12 +824,18 @@ class _SterilizationMaterialIncomeScreenState
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _addPurchase,
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(
+                  onPressed:
+                  savingPurchase
+                      ? null
+                      : _addPurchase,
+                  child: Text(
+                    savingPurchase
+                        ? 'Saving...'
+                        : 'Add',
+                    style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ),
