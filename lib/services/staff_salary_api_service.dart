@@ -8,6 +8,7 @@ class StaffSalaryApiService {
   // ============================================================
   // GET ACCOUNTANTS
   // ============================================================
+
   static Future<List<Map<String, dynamic>>> getAccountants() async {
     final response = await http.get(
       Uri.parse(
@@ -40,6 +41,7 @@ class StaffSalaryApiService {
   // ============================================================
   // GET LABORERS
   // ============================================================
+
   static Future<List<Map<String, dynamic>>> getLaborers() async {
     final response = await http.get(
       Uri.parse(
@@ -72,6 +74,7 @@ class StaffSalaryApiService {
   // ============================================================
   // GET ACCOUNTANT SALARY
   // ============================================================
+
   static Future<Map<String, dynamic>> getAccountantSalary({
     required int empId,
     required int month,
@@ -100,6 +103,7 @@ class StaffSalaryApiService {
   // ============================================================
   // GET LABORER SALARY
   // ============================================================
+
   static Future<Map<String, dynamic>> getLaborerSalary({
     required int empId,
     required int month,
@@ -123,5 +127,55 @@ class StaffSalaryApiService {
     final decoded = jsonDecode(response.body);
 
     return Map<String, dynamic>.from(decoded);
+  }
+
+  // ============================================================
+  // GET TOTAL SALARIES SCREEN
+  // ============================================================
+
+  static Future<Map<String, dynamic>> getMonthlySalaries({
+    required int month,
+    required int year,
+    String? untilDate,
+  }) async {
+    String url =
+        '$baseUrl/StaffSalary/monthly'
+        '?month=$month'
+        '&year=$year';
+
+    if (untilDate != null &&
+        untilDate.trim().isNotEmpty) {
+      url += '&untilDate=$untilDate';
+    }
+
+    final response = await http.get(
+      Uri.parse(url),
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+
+      if (decoded is! Map) {
+        throw Exception(
+          'Invalid salary data returned from API.',
+        );
+      }
+
+      return Map<String, dynamic>.from(decoded);
+    }
+
+    if (response.statusCode == 400) {
+      throw Exception(
+        response.body.isNotEmpty
+            ? response.body
+            : 'Invalid month, year, or date.',
+      );
+    }
+
+    throw Exception(
+      'Failed to load total salaries. '
+          'Status code: ${response.statusCode}\n'
+          '${response.body}',
+    );
   }
 }
