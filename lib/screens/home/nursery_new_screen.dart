@@ -72,7 +72,12 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
 
   List<Map<String, dynamic>> patients = [];
 
+  List<Map<String, dynamic>> doctors = [];
+  List<Map<String, dynamic>> treatmentTypes = [];
+
   bool loadingPatients = false;
+  bool loadingDoctors = false;
+  bool loadingTreatmentTypes = false;
   bool saving = false;
 
   int? selectedRow;
@@ -105,6 +110,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
     super.initState();
 
     _loadPatients();
+    _loadDropdownData();
   }
 
   // ============================================================
@@ -153,6 +159,44 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
 
       _showMessage(
         'Failed to load nursery patients: $e',
+      );
+    }
+  }
+
+  // ============================================================
+  // LOAD DOCTORS AND TREATMENT TYPES
+  // ============================================================
+
+  Future<void> _loadDropdownData() async {
+    setState(() {
+      loadingDoctors = true;
+      loadingTreatmentTypes = true;
+    });
+
+    try {
+      final results = await Future.wait([
+        HdanPatientsApiService.getDoctors(),
+        HdanPatientsApiService.getTreatmentTypes(),
+      ]);
+
+      if (!mounted) return;
+
+      setState(() {
+        doctors = results[0];
+        treatmentTypes = results[1];
+        loadingDoctors = false;
+        loadingTreatmentTypes = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loadingDoctors = false;
+        loadingTreatmentTypes = false;
+      });
+
+      _showMessage(
+        'Failed to load doctors/treatment types: $e',
       );
     }
   }
@@ -536,6 +580,60 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
           ),
         ],
         onChanged: onChanged,
+      ),
+    );
+  }
+
+  // ============================================================
+  // DATABASE DROPDOWN
+  // ============================================================
+
+  Widget _databaseDropdown({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required bool loading,
+    required ValueChanged<String?> onChanged,
+  }) {
+    final dropdownItems = <String>['SELECT', ...items];
+
+    final validValue =
+    value != null && dropdownItems.contains(value)
+        ? value
+        : null;
+
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: 12,
+      ),
+      child: DropdownButtonFormField<String>(
+        value: validValue,
+        isExpanded: true,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          suffixIcon: loading
+              ? const Padding(
+            padding: EdgeInsets.all(12),
+            child: SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          )
+              : null,
+        ),
+        items: dropdownItems.map((item) {
+          return DropdownMenuItem<String>(
+            value: item,
+            child: Text(
+              item == 'SELECT' ? 'Select' : item,
+            ),
+          );
+        }).toList(),
+        onChanged: loading ? null : onChanged,
       ),
     );
   }
@@ -1090,11 +1188,16 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
 
             const SizedBox(height: 12),
 
-            _dropdown(
+            _databaseDropdown(
               label:
               'Transferred From Doctor',
               value:
               transferredFromDoctor,
+              items: doctors
+                  .map((doctor) => doctor['name']?.toString() ?? '')
+                  .where((name) => name.isNotEmpty)
+                  .toList(),
+              loading: loadingDoctors,
               onChanged: (value) {
                 setState(() {
                   transferredFromDoctor =
@@ -1103,11 +1206,16 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               },
             ),
 
-            _dropdown(
+            _databaseDropdown(
               label:
               'Neonatology Doctor',
               value:
               neonatologyDoctor,
+              items: doctors
+                  .map((doctor) => doctor['name']?.toString() ?? '')
+                  .where((name) => name.isNotEmpty)
+                  .toList(),
+              loading: loadingDoctors,
               onChanged: (value) {
                 setState(() {
                   neonatologyDoctor =
@@ -1116,11 +1224,16 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               },
             ),
 
-            _dropdown(
+            _databaseDropdown(
               label:
               'Consulting Doctor',
               value:
               consultingDoctor,
+              items: doctors
+                  .map((doctor) => doctor['name']?.toString() ?? '')
+                  .where((name) => name.isNotEmpty)
+                  .toList(),
+              loading: loadingDoctors,
               onChanged: (value) {
                 setState(() {
                   consultingDoctor =
@@ -1129,9 +1242,14 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               },
             ),
 
-            _dropdown(
+            _databaseDropdown(
               label: 'Birth Doctor',
               value: birthDoctor,
+              items: doctors
+                  .map((doctor) => doctor['name']?.toString() ?? '')
+                  .where((name) => name.isNotEmpty)
+                  .toList(),
+              loading: loadingDoctors,
               onChanged: (value) {
                 setState(() {
                   birthDoctor =
@@ -1256,11 +1374,16 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               },
             ),
 
-            _dropdown(
+            _databaseDropdown(
               label:
               'Treatment Type',
               value:
               treatmentType,
+              items: treatmentTypes
+                  .map((item) => item['type']?.toString() ?? '')
+                  .where((type) => type.isNotEmpty)
+                  .toList(),
+              loading: loadingTreatmentTypes,
               onChanged: (value) {
                 setState(() {
                   treatmentType =

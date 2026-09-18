@@ -6,7 +6,7 @@ class HdanPatientsApiService {
       'http://10.0.2.2:5137/api';
 
   // ============================================================
-  // GET ALL NURSERY PATIENTS
+  // GET ALL PATIENTS
   // ============================================================
 
   static Future<List<Map<String, dynamic>>> getPatients() async {
@@ -40,7 +40,9 @@ class HdanPatientsApiService {
   // GET ONE PATIENT
   // ============================================================
 
-  static Future<Map<String, dynamic>> getPatient(int id) async {
+  static Future<Map<String, dynamic>> getPatient(
+      int id,
+      ) async {
     final response = await http.get(
       Uri.parse('$baseUrl/HdanPatients/$id'),
     );
@@ -59,7 +61,70 @@ class HdanPatientsApiService {
   }
 
   // ============================================================
-  // ADD NEW PATIENT
+  // GET DOCTORS
+  // ============================================================
+
+  static Future<List<Map<String, dynamic>>> getDoctors() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/HdanPatients/doctors'),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to load doctors. '
+            'Status code: ${response.statusCode}',
+      );
+    }
+
+    final decoded = jsonDecode(response.body);
+
+    if (decoded is! List) {
+      throw Exception(
+        'Invalid doctor data returned from API.',
+      );
+    }
+
+    return decoded
+        .map<Map<String, dynamic>>(
+          (item) => Map<String, dynamic>.from(item),
+    )
+        .toList();
+  }
+
+  // ============================================================
+  // GET TREATMENT TYPES
+  // ============================================================
+
+  static Future<List<Map<String, dynamic>>>
+  getTreatmentTypes() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/HdanPatients/treatment-types'),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to load treatment types. '
+            'Status code: ${response.statusCode}',
+      );
+    }
+
+    final decoded = jsonDecode(response.body);
+
+    if (decoded is! List) {
+      throw Exception(
+        'Invalid treatment type data returned from API.',
+      );
+    }
+
+    return decoded
+        .map<Map<String, dynamic>>(
+          (item) => Map<String, dynamic>.from(item),
+    )
+        .toList();
+  }
+
+  // ============================================================
+  // ADD PATIENT
   // ============================================================
 
   static Future<Map<String, dynamic>> addPatient({
