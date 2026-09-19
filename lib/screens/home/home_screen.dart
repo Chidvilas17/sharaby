@@ -25,6 +25,139 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+      // ============================================================
+      // NEW: HAMBURGER SIDE MENU
+      // ============================================================
+
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+
+              // ----------------------------------------------------
+              // Drawer Header
+              // ----------------------------------------------------
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 30,
+                  horizontal: 20,
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Icon(
+                      Icons.local_hospital_outlined,
+                      size: 48,
+                    ),
+
+                    SizedBox(height: 12),
+
+                    Text(
+                      'Sharaby Center',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    SizedBox(height: 5),
+
+                    Text(
+                      'Patient Management System',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Divider(),
+
+              // ----------------------------------------------------
+              // Doctor Screen
+              // ----------------------------------------------------
+
+              ListTile(
+                leading: const Icon(
+                  Icons.medical_services_outlined,
+                ),
+                title: const Text(
+                  'Doctor Screen',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: null,
+              ),
+
+              // ----------------------------------------------------
+              // Reception Screen
+              // ----------------------------------------------------
+
+              ListTile(
+                leading: const Icon(
+                  Icons.person_outline,
+                ),
+                title: const Text(
+                  'Reception Screen',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: null,
+              ),
+
+              // ----------------------------------------------------
+              // Settings
+              // ----------------------------------------------------
+
+              ListTile(
+                leading: const Icon(
+                  Icons.settings_outlined,
+                ),
+                title: const Text(
+                  'Settings',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: null,
+              ),
+
+              // ----------------------------------------------------
+              // About
+              // ----------------------------------------------------
+
+              ListTile(
+                leading: const Icon(
+                  Icons.info_outline,
+                ),
+                title: const Text(
+                  'About',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: null,
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      // ============================================================
+      // EXISTING APP BAR - UNCHANGED
+      // ============================================================
+
       appBar: AppBar(
         title: const Text(
           'Sharaby Center',
@@ -34,6 +167,10 @@ class HomeScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+
+      // ============================================================
+      // EXISTING BODY - UNCHANGED
+      // ============================================================
 
       body: SafeArea(
         child: SingleChildScrollView(
