@@ -1,0 +1,54 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+class IndoorViewHistoryApiService {
+  static const String baseUrl =
+      'http://10.0.2.2:5137/api';
+
+  // ============================================================
+  // GET HISTORY
+  //
+  // Empty name = all history.
+  // Name supplied = search by name.
+  // ============================================================
+
+  static Future<List<Map<String, dynamic>>>
+  getHistory({
+    String name = '',
+  }) async {
+    final trimmedName = name.trim();
+
+    final uri = trimmedName.isEmpty
+        ? Uri.parse(
+      '$baseUrl/IndoorViewHistory',
+    )
+        : Uri.parse(
+      '$baseUrl/IndoorViewHistory'
+          '?name=${Uri.encodeQueryComponent(trimmedName)}',
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to load Indoor history.\n'
+            '${response.body}',
+      );
+    }
+
+    final decoded = jsonDecode(response.body);
+
+    if (decoded is! List) {
+      throw Exception(
+        'Invalid Indoor history data returned from API.',
+      );
+    }
+
+    return decoded
+        .map<Map<String, dynamic>>(
+          (item) => Map<String, dynamic>.from(item),
+    )
+        .toList();
+  }
+}

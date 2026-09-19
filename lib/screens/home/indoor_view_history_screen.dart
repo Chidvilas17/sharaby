@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/indoor_view_history_api_service.dart';
+
 class IndoorViewHistoryScreen extends StatefulWidget {
   const IndoorViewHistoryScreen({super.key});
 
@@ -10,85 +12,140 @@ class IndoorViewHistoryScreen extends StatefulWidget {
 
 class _IndoorViewHistoryScreenState
     extends State<IndoorViewHistoryScreen> {
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
   final TextEditingController _searchController =
   TextEditingController();
 
-  // Will come from the API later.
-  // Keep empty for now.
-  final List<Map<String, String>> patients = [];
+  // ============================================================
+  // DATABASE DATA
+  // ============================================================
 
-  List<Map<String, String>> searchResults = [];
+  List<Map<String, dynamic>> patients = [];
+
+  bool isLoading = true;
+
+  String? errorMessage;
 
   String? message;
+
+  // ============================================================
+  // INIT
+  // ============================================================
 
   @override
   void initState() {
     super.initState();
-    searchResults = List.from(patients);
+
+    _loadHistory();
   }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
     _searchController.dispose();
+
     super.dispose();
+  }
+
+  // ============================================================
+  // LOAD HISTORY
+  //
+  // No search text = load all history.
+  // ============================================================
+
+  Future<void> _loadHistory({
+    String name = '',
+  }) async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+      message = null;
+    });
+
+    try {
+      final data =
+      await IndoorViewHistoryApiService.getHistory(
+        name: name,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        patients = data;
+        isLoading = false;
+
+        if (name.trim().isNotEmpty &&
+            data.isEmpty) {
+          message = 'Not found';
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
   }
 
   // ============================================================
   // SEARCH
   // ============================================================
 
-  void _search() {
+  Future<void> _search() async {
     final name = _searchController.text.trim();
 
-    setState(() {
-      if (name.isEmpty) {
+    if (name.isEmpty) {
+      setState(() {
         message = 'Enter Name to search';
-        searchResults = [];
-        return;
-      }
+      });
 
-      final results = patients.where((patient) {
-        final patientName =
-        (patient['name'] ?? '').toLowerCase();
+      return;
+    }
 
-        return patientName.contains(name.toLowerCase());
-      }).toList();
-
-      searchResults = results;
-
-      if (results.isEmpty) {
-        message = 'Not found';
-      } else {
-        message = null;
-      }
-    });
+    await _loadHistory(
+      name: name,
+    );
   }
 
   // ============================================================
   // CLEAR
+  //
+  // Clears the search box and returns all history.
   // ============================================================
 
-  void _clear() {
-    setState(() {
-      _searchController.clear();
-      searchResults = List.from(patients);
-      message = null;
-    });
+  Future<void> _clear() async {
+    _searchController.clear();
+
+    await _loadHistory();
   }
+
+  // ============================================================
+  // MAIN BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Internal History'),
+        title: const Text(
+          'Internal History',
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
             children: [
-
               // ==================================================
               // SEARCH SECTION
               // ==================================================
@@ -99,12 +156,13 @@ class _IndoorViewHistoryScreenState
                   border: Border.all(
                     color: Colors.grey.shade500,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius:
+                  BorderRadius.circular(4),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
-
                     const Text(
                       'Search By Name',
                       textAlign: TextAlign.right,
@@ -116,29 +174,41 @@ class _IndoorViewHistoryScreenState
 
                     const SizedBox(height: 14),
 
-                    // Name input
+                    // ==========================================
+                    // NAME INPUT
+                    // ==========================================
+
                     TextField(
-                      controller: _searchController,
-                      textInputAction: TextInputAction.search,
+                      controller:
+                      _searchController,
+                      textInputAction:
+                      TextInputAction.search,
                       onSubmitted: (_) {
                         _search();
                       },
-                      decoration: const InputDecoration(
+                      decoration:
+                      const InputDecoration(
                         labelText: 'Name',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(
-                          Icons.search,
-                        ),
+                        border:
+                        OutlineInputBorder(),
+                        prefixIcon:
+                        Icon(Icons.search),
                       ),
                     ),
 
                     const SizedBox(height: 12),
 
-                    // Search button
+                    // ==========================================
+                    // SEARCH BUTTON
+                    // ==========================================
+
                     SizedBox(
                       height: 48,
                       child: ElevatedButton.icon(
-                        onPressed: _search,
+                        onPressed:
+                        isLoading
+                            ? null
+                            : _search,
                         icon: const Icon(
                           Icons.search,
                         ),
@@ -153,11 +223,17 @@ class _IndoorViewHistoryScreenState
 
                     const SizedBox(height: 10),
 
-                    // Clear button
+                    // ==========================================
+                    // CLEAR BUTTON
+                    // ==========================================
+
                     SizedBox(
                       height: 48,
                       child: OutlinedButton.icon(
-                        onPressed: _clear,
+                        onPressed:
+                        isLoading
+                            ? null
+                            : _clear,
                         icon: const Icon(
                           Icons.clear,
                         ),
@@ -181,15 +257,18 @@ class _IndoorViewHistoryScreenState
 
               if (message != null)
                 Padding(
-                  padding: const EdgeInsets.only(
+                  padding:
+                  const EdgeInsets.only(
                     bottom: 16,
                   ),
                   child: Text(
                     message!,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontWeight:
+                      FontWeight.w500,
                     ),
                   ),
                 ),
@@ -199,7 +278,8 @@ class _IndoorViewHistoryScreenState
               // ==================================================
 
               Container(
-                padding: const EdgeInsets.fromLTRB(
+                padding:
+                const EdgeInsets.fromLTRB(
                   12,
                   18,
                   12,
@@ -209,47 +289,59 @@ class _IndoorViewHistoryScreenState
                   border: Border.all(
                     color: Colors.grey.shade500,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius:
+                  BorderRadius.circular(4),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
-
                     const Text(
                       'History',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight:
+                        FontWeight.bold,
                       ),
                     ),
 
                     const SizedBox(height: 12),
 
-                    // Table
+                    // ==========================================
+                    // TABLE
+                    // ==========================================
+
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Colors.grey.shade500,
+                          color:
+                          Colors.grey.shade500,
                         ),
                       ),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+                      child:
+                      SingleChildScrollView(
+                        scrollDirection:
+                        Axis.horizontal,
                         child: SizedBox(
                           width: 520,
                           child: Column(
                             children: [
-
-                              // ==============================
+                              // ==================================
                               // TABLE HEADER
-                              // ==============================
+                              // ==================================
 
                               Container(
                                 height: 52,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
+                                decoration:
+                                BoxDecoration(
+                                  color:
+                                  Colors.grey.shade100,
                                   border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade400,
+                                    bottom:
+                                    BorderSide(
+                                      color: Colors
+                                          .grey
+                                          .shade400,
                                     ),
                                   ),
                                 ),
@@ -267,20 +359,108 @@ class _IndoorViewHistoryScreenState
                                 ),
                               ),
 
-                              // ==============================
-                              // DATA
-                              // ==============================
+                              // ==================================
+                              // LOADING
+                              // ==================================
 
-                              if (searchResults.isEmpty)
-                                _buildEmptyRows()
-                              else
-                                ...searchResults.asMap().entries.map(
-                                      (entry) {
-                                    return _buildPatientRow(
-                                      entry.value,
-                                    );
-                                  },
-                                ),
+                              if (isLoading)
+                                const SizedBox(
+                                  height: 576,
+                                  child: Center(
+                                    child:
+                                    CircularProgressIndicator(),
+                                  ),
+                                )
+
+                              // ==================================
+                              // ERROR
+                              // ==================================
+
+                              else if (
+                              errorMessage !=
+                                  null)
+                                SizedBox(
+                                  height: 576,
+                                  child: Padding(
+                                    padding:
+                                    const EdgeInsets
+                                        .all(
+                                      20,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                      children: [
+                                        const Text(
+                                          'Failed to load history.',
+                                          textAlign:
+                                          TextAlign
+                                              .center,
+                                          style:
+                                          TextStyle(
+                                            fontSize:
+                                            16,
+                                            fontWeight:
+                                            FontWeight
+                                                .bold,
+                                          ),
+                                        ),
+
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+
+                                        Text(
+                                          errorMessage!,
+                                          textAlign:
+                                          TextAlign
+                                              .center,
+                                        ),
+
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+
+                                        ElevatedButton(
+                                          onPressed:
+                                              () {
+                                            _loadHistory();
+                                          },
+                                          child:
+                                          const Text(
+                                            'Retry',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+
+                              // ==================================
+                              // NO DATA
+                              // ==================================
+
+                              else if (patients
+                                    .isEmpty)
+                                  _buildEmptyRows()
+
+                                // ==================================
+                                // DATA
+                                // ==================================
+
+                                else
+                                  ...patients
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                        (entry) {
+                                      return _buildPatientRow(
+                                        entry.key,
+                                        entry.value,
+                                      );
+                                    },
+                                  ),
                             ],
                           ),
                         ),
@@ -297,7 +477,7 @@ class _IndoorViewHistoryScreenState
   }
 
   // ============================================================
-  // EMPTY ROWS
+  // EMPTY TABLE
   // ============================================================
 
   Widget _buildEmptyRows() {
@@ -310,7 +490,8 @@ class _IndoorViewHistoryScreenState
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.grey.shade200,
+                  color:
+                  Colors.grey.shade200,
                 ),
               ),
             ),
@@ -331,7 +512,8 @@ class _IndoorViewHistoryScreenState
   // ============================================================
 
   Widget _buildPatientRow(
-      Map<String, String> patient,
+      int index,
+      Map<String, dynamic> patient,
       ) {
     return Container(
       height: 44,
@@ -345,11 +527,18 @@ class _IndoorViewHistoryScreenState
       child: Row(
         children: [
           _DataCell(
-            text: patient['name'] ?? '',
+            text:
+            patient['patientName']
+                ?.toString() ??
+                '',
             flex: 3,
           ),
+
           _DataCell(
-            text: patient['phone'] ?? '',
+            text:
+            patient['phone']
+                ?.toString() ??
+                '',
             flex: 2,
           ),
         ],
@@ -364,6 +553,7 @@ class _IndoorViewHistoryScreenState
 
 class _HeaderCell extends StatelessWidget {
   final String title;
+
   final int flex;
 
   const _HeaderCell({
@@ -377,13 +567,15 @@ class _HeaderCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade300,
+              color:
+              Colors.grey.shade300,
             ),
           ),
         ),
@@ -392,7 +584,8 @@ class _HeaderCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+            FontWeight.bold,
           ),
         ),
       ),
@@ -419,7 +612,8 @@ class _EmptyCell extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),
@@ -434,6 +628,7 @@ class _EmptyCell extends StatelessWidget {
 
 class _DataCell extends StatelessWidget {
   final String text;
+
   final int flex;
 
   const _DataCell({
@@ -447,13 +642,15 @@ class _DataCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),
