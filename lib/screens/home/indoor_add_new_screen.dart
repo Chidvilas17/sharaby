@@ -1,56 +1,147 @@
 import 'package:flutter/material.dart';
 
+import '../../services/indoor_add_new_api_service.dart';
+
 class IndoorAddNewScreen extends StatefulWidget {
-  const IndoorAddNewScreen({super.key});
+  const IndoorAddNewScreen({
+    super.key,
+  });
 
   @override
-  State<IndoorAddNewScreen> createState() => _IndoorAddNewScreenState();
+  State<IndoorAddNewScreen> createState() =>
+      _IndoorAddNewScreenState();
 }
 
-class _IndoorAddNewScreenState extends State<IndoorAddNewScreen> {
+class _IndoorAddNewScreenState
+    extends State<IndoorAddNewScreen> {
+
   // ============================================================
   // PATIENT DATA
-  // This will be loaded from the API later.
-  // Keep empty for now.
   // ============================================================
 
-  final List<Map<String, String>> patients = [];
+  List<Map<String, dynamic>> patients = [];
 
   int? selectedIndex;
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+
+  bool isLoading = true;
+
+  String? errorMessage;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadPatients();
+  }
+
+  // ============================================================
+  // LOAD PATIENTS
+  // ============================================================
+
+  Future<void> _loadPatients() async {
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+        errorMessage = null;
+      });
+    }
+
+    try {
+      final result =
+      await IndoorAddNewApiService.getPatients();
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        patients = result;
+        selectedIndex = null;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        patients = [];
+        selectedIndex = null;
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
+  }
 
   // ============================================================
   // SELECT PATIENT
   // ============================================================
 
   void _selectPatient(int index) {
+    if (index < 0 ||
+        index >= patients.length) {
+      return;
+    }
+
     setState(() {
       selectedIndex = index;
     });
   }
 
   // ============================================================
-  // SCREEN
+  // GET VALUE
+  // ============================================================
+
+  String _getValue(
+      Map<String, dynamic> patient,
+      String key,
+      ) {
+    final value = patient[key];
+
+    if (value == null) {
+      return '';
+    }
+
+    return value.toString();
+  }
+
+  // ============================================================
+  // BUILD
   // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MedicalInternal'),
+        title: const Text(
+          'MedicalInternal',
+        ),
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
             children: [
+
               // ==================================================
               // NEW PATIENT SECTION
               // ==================================================
 
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(
+                padding:
+                const EdgeInsets.fromLTRB(
                   12,
                   18,
                   12,
@@ -60,58 +151,87 @@ class _IndoorAddNewScreenState extends State<IndoorAddNewScreen> {
                   border: Border.all(
                     color: Colors.grey.shade500,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius:
+                  BorderRadius.circular(4),
                 ),
+
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
-                    // Section title
+
+                    // ==========================================
+                    // SECTION TITLE
+                    // ==========================================
+
                     const Text(
                       'New Patient',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        fontWeight:
+                        FontWeight.w500,
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(
+                      height: 16,
+                    ),
 
-                    // ==================================================
+                    // ==========================================
                     // TABLE
-                    // ==================================================
+                    // ==========================================
 
                     Container(
-                      decoration: BoxDecoration(
+                      decoration:
+                      BoxDecoration(
                         border: Border.all(
-                          color: Colors.grey.shade500,
+                          color:
+                          Colors.grey.shade500,
                         ),
                       ),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+
+                      child:
+                      SingleChildScrollView(
+                        scrollDirection:
+                        Axis.horizontal,
+
                         child: SizedBox(
                           width: 500,
+
                           child: Column(
                             children: [
-                              // ========================================
-                              // TABLE HEADER
-                              // ========================================
+
+                              // =================================
+                              // HEADER
+                              // =================================
 
                               Container(
                                 height: 52,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade400,
+
+                                decoration:
+                                BoxDecoration(
+                                  color: Colors
+                                      .grey.shade100,
+
+                                  border:
+                                  Border(
+                                    bottom:
+                                    BorderSide(
+                                      color: Colors
+                                          .grey.shade400,
                                     ),
                                   ),
                                 ),
-                                child: const Row(
+
+                                child:
+                                const Row(
                                   children: [
+
                                     _HeaderCell(
                                       title: 'Name',
                                       flex: 3,
                                     ),
+
                                     _HeaderCell(
                                       title: 'Age',
                                       flex: 2,
@@ -120,27 +240,119 @@ class _IndoorAddNewScreenState extends State<IndoorAddNewScreen> {
                                 ),
                               ),
 
-                              // ========================================
-                              // DATABASE DATA
-                              // ========================================
+                              // =================================
+                              // LOADING
+                              // =================================
 
-                              if (patients.isEmpty)
-                                _buildEmptyRows()
-                              else
-                                ...patients.asMap().entries.map(
-                                      (entry) {
-                                    return _buildPatientRow(
-                                      entry.key,
-                                      entry.value,
-                                    );
-                                  },
-                                ),
+                              if (isLoading)
+                                const SizedBox(
+                                  height: 480,
+
+                                  child: Center(
+                                    child:
+                                    CircularProgressIndicator(),
+                                  ),
+                                )
+
+                              // =================================
+                              // ERROR
+                              // =================================
+
+                              else if (
+                              errorMessage !=
+                                  null)
+                                _buildError()
+
+                              // =================================
+                              // EMPTY
+                              // =================================
+
+                              else if (
+                                patients.isEmpty)
+                                  _buildEmptyRows()
+
+                                // =================================
+                                // DATA
+                                // =================================
+
+                                else
+                                  ...patients
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                        (
+                                        entry,
+                                        ) {
+                                      return _buildPatientRow(
+                                        entry.key,
+                                        entry.value,
+                                      );
+                                    },
+                                  ),
                             ],
                           ),
                         ),
                       ),
                     ),
                   ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // ERROR
+  // ============================================================
+
+  Widget _buildError() {
+    return SizedBox(
+      height: 480,
+
+      child: Center(
+        child: Padding(
+          padding:
+          const EdgeInsets.all(20),
+
+          child: Column(
+            mainAxisAlignment:
+            MainAxisAlignment.center,
+
+            children: [
+
+              const Icon(
+                Icons.error_outline,
+                size: 45,
+                color: Colors.red,
+              ),
+
+              const SizedBox(
+                height: 12,
+              ),
+
+              Text(
+                errorMessage ??
+                    'Failed to load patients.',
+                textAlign:
+                TextAlign.center,
+              ),
+
+              const SizedBox(
+                height: 16,
+              ),
+
+              ElevatedButton.icon(
+                onPressed: _loadPatients,
+
+                icon: const Icon(
+                  Icons.refresh,
+                ),
+
+                label: const Text(
+                  'Retry',
                 ),
               ),
             ],
@@ -161,17 +373,27 @@ class _IndoorAddNewScreenState extends State<IndoorAddNewScreen> {
             (index) {
           return Container(
             height: 32,
-            decoration: BoxDecoration(
+
+            decoration:
+            BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.grey.shade200,
+                  color:
+                  Colors.grey.shade200,
                 ),
               ),
             ),
+
             child: const Row(
               children: [
-                _EmptyCell(flex: 3),
-                _EmptyCell(flex: 2),
+
+                _EmptyCell(
+                  flex: 3,
+                ),
+
+                _EmptyCell(
+                  flex: 2,
+                ),
               ],
             ),
           );
@@ -186,27 +408,47 @@ class _IndoorAddNewScreenState extends State<IndoorAddNewScreen> {
 
   Widget _buildPatientRow(
       int index,
-      Map<String, String> patient,
+      Map<String, dynamic> patient,
       ) {
-    final bool isSelected = selectedIndex == index;
+    final bool isSelected =
+        selectedIndex == index;
+
+    final name =
+    _getValue(
+      patient,
+      'patientName',
+    );
+
+    final age =
+    _getValue(
+      patient,
+      'age',
+    );
 
     return InkWell(
       onTap: () {
         _selectPatient(index);
       },
+
       child: Container(
         height: 44,
+
         color: isSelected
-            ? Colors.blue.withValues(alpha: 0.12)
+            ? Colors.blue.withValues(
+          alpha: 0.12,
+        )
             : Colors.transparent,
+
         child: Row(
           children: [
+
             _DataCell(
-              text: patient['name'] ?? '',
+              text: name,
               flex: 3,
             ),
+
             _DataCell(
-              text: patient['age'] ?? '',
+              text: age,
               flex: 2,
             ),
           ],
@@ -220,8 +462,11 @@ class _IndoorAddNewScreenState extends State<IndoorAddNewScreen> {
 // TABLE HEADER CELL
 // ================================================================
 
-class _HeaderCell extends StatelessWidget {
+class _HeaderCell
+    extends StatelessWidget {
+
   final String title;
+
   final int flex;
 
   const _HeaderCell({
@@ -230,27 +475,42 @@ class _HeaderCell extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context,
+      ) {
     return Expanded(
       flex: flex,
+
       child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        alignment:
+        Alignment.center,
+
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
-        decoration: BoxDecoration(
+
+        decoration:
+        BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade300,
+              color:
+              Colors.grey.shade300,
             ),
           ),
         ),
+
         child: Text(
           title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
+
+          textAlign:
+          TextAlign.center,
+
+          style:
+          const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+            FontWeight.bold,
           ),
         ),
       ),
@@ -262,7 +522,9 @@ class _HeaderCell extends StatelessWidget {
 // EMPTY CELL
 // ================================================================
 
-class _EmptyCell extends StatelessWidget {
+class _EmptyCell
+    extends StatelessWidget {
+
   final int flex;
 
   const _EmptyCell({
@@ -270,14 +532,19 @@ class _EmptyCell extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context,
+      ) {
     return Expanded(
       flex: flex,
+
       child: Container(
-        decoration: BoxDecoration(
+        decoration:
+        BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),
@@ -290,8 +557,11 @@ class _EmptyCell extends StatelessWidget {
 // DATA CELL
 // ================================================================
 
-class _DataCell extends StatelessWidget {
+class _DataCell
+    extends StatelessWidget {
+
   final String text;
+
   final int flex;
 
   const _DataCell({
@@ -300,27 +570,44 @@ class _DataCell extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context,
+      ) {
     return Expanded(
       flex: flex,
+
       child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        alignment:
+        Alignment.center,
+
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
-        decoration: BoxDecoration(
+
+        decoration:
+        BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
+
             bottom: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),
+
         child: Text(
           text,
-          textAlign: TextAlign.center,
+
+          textAlign:
+          TextAlign.center,
+
+          overflow:
+          TextOverflow.ellipsis,
         ),
       ),
     );
