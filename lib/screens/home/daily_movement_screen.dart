@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../services/daily_movement_api_service.dart';
+import 'faults_screen.dart';
+import 'internal_daily_accounts_screen.dart';
+import 'nursery_daily_accounts_screen.dart';
+import 'other_expenses_screen.dart';
+import 'other_income_screen.dart';
+import 'oxygen_calculation_screen.dart';
+import 'statements_today_account_screen.dart';
+import 'sterilization_material_accounts_screen.dart';
+
 class DailyMovementScreen extends StatefulWidget {
   const DailyMovementScreen({super.key});
 
@@ -14,57 +24,79 @@ class _DailyMovementScreenState
   // DATE
   // ============================================================
 
-  DateTime selectedDate = DateTime(2026, 9, 19);
+  DateTime selectedDate = DateTime.now();
 
   // ============================================================
-  // DISPLAY VALUES
-  //
-  // Database/business calculations will be connected later.
-  // For now they intentionally remain zero, matching the
-  // Windows screen shown.
+  // DATA
   // ============================================================
 
-  final String totalTodayReceipts = '0';
-  final String totalNurseryIncome = '0';
-  final String totalIndoorIncome = '0';
-  final String totalOtherIncome = '0';
+  Map<String, dynamic> data = {};
 
-  final String totalNurseryExpenses = '0';
-  final String totalIndoorExpenses = '0';
-  final String totalOtherExpenses = '0';
-  final String oxygenPayments = '0';
-  final String sterilizationPayments = '0';
-  final String maintenancePayments = '0';
-  final String nurseryDiscounts = '0';
-  final String indoorDiscounts = '0';
-  final String advances = '0';
+  bool isLoading = true;
 
-  final String incomeTotal = '0';
-  final String expenseTotal = '0';
-  final String dailyNet = '0';
+  String? errorMessage;
 
   // ============================================================
-  // DATE FORMAT
+  // INIT
   // ============================================================
 
-  String _formatDate(DateTime date) {
-    final day =
-    date.day.toString().padLeft(2, '0');
+  @override
+  void initState() {
+    super.initState();
 
-    final month =
-    date.month.toString().padLeft(2, '0');
+    _loadDailyMovement();
+  }
 
-    final year =
-    date.year.toString();
+  // ============================================================
+  // LOAD DATA
+  // ============================================================
 
-    return '$day-$month-$year';
+  Future<void> _loadDailyMovement() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final result =
+      await DailyMovementApiService
+          .getDailyMovement(
+        date: selectedDate,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        data = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  // ============================================================
+  // TODAY
+  // ============================================================
+
+  Future<void> _today() async {
+    setState(() {
+      selectedDate = DateTime.now();
+    });
+
+    await _loadDailyMovement();
   }
 
   // ============================================================
   // PREVIOUS DAY
   // ============================================================
 
-  void _previousDay() {
+  Future<void> _previousDay() async {
     setState(() {
       selectedDate = DateTime(
         selectedDate.year,
@@ -72,16 +104,8 @@ class _DailyMovementScreenState
         selectedDate.day - 1,
       );
     });
-  }
 
-  // ============================================================
-  // TODAY
-  // ============================================================
-
-  void _today() {
-    setState(() {
-      selectedDate = DateTime.now();
-    });
+    await _loadDailyMovement();
   }
 
   // ============================================================
@@ -106,33 +130,63 @@ class _DailyMovementScreenState
   }
 
   // ============================================================
-  // SEARCH BY DATE
-  //
-  // At this stage it only selects the date.
-  // Database loading will be connected later.
+  // SEARCH
   // ============================================================
 
-  void _searchByDate() {
-    setState(() {});
+  Future<void> _searchByDate() async {
+    await _loadDailyMovement();
   }
 
   // ============================================================
-  // DETAILS BUTTON
-  //
-  // Placeholder only for now.
-  // We will connect each detail operation after the screen
-  // structure has been confirmed.
+  // DATE FORMAT
   // ============================================================
 
-  void _showDetails(String title) {
+  String _formatDate(DateTime date) {
+    final day =
+    date.day.toString().padLeft(2, '0');
+
+    final month =
+    date.month.toString().padLeft(2, '0');
+
+    return '$day-$month-${date.year}';
+  }
+
+  // ============================================================
+  // NUMBER
+  // ============================================================
+
+  String _value(String key) {
+    final value = data[key];
+
+    if (value == null) {
+      return '0';
+    }
+
+    if (value is num) {
+      if (value % 1 == 0) {
+        return value.toInt().toString();
+      }
+
+      return value.toString();
+    }
+
+    return value.toString();
+  }
+
+  // ============================================================
+  // PLACEHOLDER DETAILS (SCREENS 1 & 2)
+  // ============================================================
+
+  void _showPlaceholderDetails(String title) {
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Details'),
+          title: Text(title),
           content: Text(
-            'Details for:\n$title\n\n'
-                'Database details will be connected later.',
+            '$title\n\n'
+            'Reserved navigation slot.\n'
+            'Awaiting exact Windows application screenshot before implementing.',
             textAlign: TextAlign.center,
           ),
           actions: [
@@ -149,7 +203,7 @@ class _DailyMovementScreenState
   }
 
   // ============================================================
-  // MAIN SCREEN
+  // BUILD
   // ============================================================
 
   @override
@@ -158,69 +212,133 @@ class _DailyMovementScreenState
       appBar: AppBar(
         title: const Text(
           'Daily Movement',
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.stretch,
-            children: [
-              // ==================================================
-              // DATE CONTROLS
-              // ==================================================
-
-              _buildDateSection(),
-
-              const SizedBox(height: 14),
-
-              // ==================================================
-              // CASH INCOME
-              // ==================================================
-
-              _buildIncomeSection(),
-
-              const SizedBox(height: 14),
-
-              // ==================================================
-              // CASH EXPENSES
-              // ==================================================
-
-              _buildExpenseSection(),
-
-              const SizedBox(height: 14),
-
-              // ==================================================
-              // OXYGEN PIPE INCOME
-              // ==================================================
-
-              _buildEmptySection(
-                title: 'Oxygen Pipe Income',
-              ),
-
-              const SizedBox(height: 14),
-
-              // ==================================================
-              // STERILIZATION INCOME
-              // ==================================================
-
-              _buildEmptySection(
-                title: 'Sterilization Income',
-              ),
-
-              const SizedBox(height: 14),
-
-              // ==================================================
-              // MAINTENANCE
-              // ==================================================
-
-              _buildEmptySection(
-                title: 'Maintenance',
-              ),
-            ],
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _loadDailyMovement,
+          child: SingleChildScrollView(
+            physics:
+            const AlwaysScrollableScrollPhysics(),
+            padding:
+            const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.stretch,
+              children: [
+                // ==================================================
+                // DATE CONTROLS
+                // ==================================================
+
+                _buildDateSection(),
+
+                const SizedBox(height: 14),
+
+                if (isLoading)
+                  const Padding(
+                    padding:
+                    EdgeInsets.all(40),
+                    child: Center(
+                      child:
+                      CircularProgressIndicator(),
+                    ),
+                  )
+                else if (errorMessage != null)
+                  _buildError()
+                else ...[
+                    // ================================================
+                    // RESERVED PLACEHOLDERS (SCREENS 1 & 2)
+                    // ================================================
+
+                    _buildPlaceholderSection(),
+
+                    const SizedBox(height: 14),
+
+                    // ================================================
+                    // INCOME
+                    // ================================================
+
+                    _buildIncomeSection(),
+
+                    const SizedBox(height: 14),
+
+                    // ================================================
+                    // EXPENSES
+                    // ================================================
+
+                    _buildExpenseSection(),
+
+                    const SizedBox(height: 14),
+
+                    // ================================================
+                    // OXYGEN
+                    // ================================================
+
+                    _buildEmptySection(
+                      title:
+                      'Oxygen Pipe Income',
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // ================================================
+                    // STERILIZATION
+                    // ================================================
+
+                    _buildEmptySection(
+                      title:
+                      'Sterilization Income',
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // ================================================
+                    // MAINTENANCE
+                    // ================================================
+
+                    _buildEmptySection(
+                      title: 'Maintenance',
+                    ),
+                  ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // PLACEHOLDER SECTION (NURSES & BOARDING)
+  // ============================================================
+
+  Widget _buildPlaceholderSection() {
+    return _buildSectionContainer(
+      title: 'Reserved Detail Slots',
+      titleColor: Colors.deepPurple,
+      child: Column(
+        children: [
+          _buildMovementRow(
+            title: 'Total for Nurses',
+            value: '0',
+            showDetails: true,
+            onDetailsPressed: () {
+              _showPlaceholderDetails('Screen 1: Total for Nurses');
+            },
+          ),
+          _buildMovementRow(
+            title: 'Total for Boarding',
+            value: '0',
+            showDetails: true,
+            onDetailsPressed: () {
+              _showPlaceholderDetails('Screen 2: Total for Boarding');
+            },
+          ),
+        ],
       ),
     );
   }
@@ -231,7 +349,8 @@ class _DailyMovementScreenState
 
   Widget _buildDateSection() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding:
+      const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.grey.shade400,
@@ -243,15 +362,14 @@ class _DailyMovementScreenState
         crossAxisAlignment:
         CrossAxisAlignment.stretch,
         children: [
-          // ------------------------------------------
-          // PREVIOUS DAY / TODAY
-          // ------------------------------------------
-
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: _previousDay,
+                  onPressed:
+                  isLoading
+                      ? null
+                      : _previousDay,
                   child: const Text(
                     'Previous Day',
                   ),
@@ -262,7 +380,10 @@ class _DailyMovementScreenState
 
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _today,
+                  onPressed:
+                  isLoading
+                      ? null
+                      : _today,
                   child: const Text(
                     'Today',
                   ),
@@ -273,16 +394,15 @@ class _DailyMovementScreenState
 
           const SizedBox(height: 12),
 
-          // ------------------------------------------
-          // DATE
-          // ------------------------------------------
-
           InkWell(
-            onTap: _selectDate,
+            onTap: isLoading
+                ? null
+                : _selectDate,
             child: InputDecorator(
               decoration:
               const InputDecoration(
-                labelText: 'Search By Date',
+                labelText:
+                'Search By Date',
                 border:
                 OutlineInputBorder(),
                 suffixIcon: Icon(
@@ -290,7 +410,9 @@ class _DailyMovementScreenState
                 ),
               ),
               child: Text(
-                _formatDate(selectedDate),
+                _formatDate(
+                  selectedDate,
+                ),
                 textAlign:
                 TextAlign.center,
               ),
@@ -299,14 +421,13 @@ class _DailyMovementScreenState
 
           const SizedBox(height: 10),
 
-          // ------------------------------------------
-          // SEARCH
-          // ------------------------------------------
-
           SizedBox(
             height: 46,
             child: ElevatedButton.icon(
-              onPressed: _searchByDate,
+              onPressed:
+              isLoading
+                  ? null
+                  : _searchByDate,
               icon: const Icon(
                 Icons.search,
               ),
@@ -321,7 +442,56 @@ class _DailyMovementScreenState
   }
 
   // ============================================================
-  // INCOME SECTION
+  // ERROR
+  // ============================================================
+
+  Widget _buildError() {
+    return Container(
+      padding:
+      const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.red.shade300,
+        ),
+        borderRadius:
+        BorderRadius.circular(6),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'Failed to load Daily Movement.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight:
+              FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            errorMessage ?? '',
+            textAlign:
+            TextAlign.center,
+          ),
+
+          const SizedBox(height: 14),
+
+          ElevatedButton(
+            onPressed:
+            _loadDailyMovement,
+            child: const Text(
+              'Retry',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // INCOME
   // ============================================================
 
   Widget _buildIncomeSection() {
@@ -334,39 +504,82 @@ class _DailyMovementScreenState
             title:
             'Total Today Receipts',
             value:
-            totalTodayReceipts,
+            _value(
+              'todayReceipts',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const StatementsTodayAccountScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Total Income From Nursery',
             value:
-            totalNurseryIncome,
+            _value(
+              'nurseryIncome',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NurseryDailyAccountsScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Total Income From Indoor',
             value:
-            totalIndoorIncome,
+            _value(
+              'indoorIncome',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const InternalDailyAccountsScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Total Other Income',
             value:
-            totalOtherIncome,
+            _value(
+              'otherIncome',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const OtherIncomeScreen(),
+                ),
+              );
+            },
           ),
 
           const Divider(),
 
           _buildTotalRow(
             title: 'Total',
-            value: incomeTotal,
+            value:
+            _value(
+              'totalIncome',
+            ),
             color: Colors.red,
           ),
         ],
@@ -375,7 +588,7 @@ class _DailyMovementScreenState
   }
 
   // ============================================================
-  // EXPENSE SECTION
+  // EXPENSES
   // ============================================================
 
   Widget _buildExpenseSection() {
@@ -388,55 +601,117 @@ class _DailyMovementScreenState
             title:
             'Total Expenses From Nursery',
             value:
-            totalNurseryExpenses,
+            _value(
+              'nurseryExpenses',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NurseryDailyAccountsScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Total Expenses From Indoor',
             value:
-            totalIndoorExpenses,
+            _value(
+              'indoorExpenses',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const InternalDailyAccountsScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Total Other Expenses',
             value:
-            totalOtherExpenses,
+            _value(
+              'otherExpenses',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const OtherExpensesScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Payments For Oxygen Account',
             value:
-            oxygenPayments,
+            _value(
+              'oxygenPayments',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const OxygenCalculationScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Payments For Sterilization Account',
             value:
-            sterilizationPayments,
+            _value(
+              'sterilizationPayments',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SterilizationMaterialAccountsScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Payments For Maintenance',
             value:
-            maintenancePayments,
+            _value(
+              'maintenancePayments',
+            ),
             showDetails: true,
+            onDetailsPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FaultsScreen(),
+                ),
+              );
+            },
           ),
 
           _buildMovementRow(
             title:
             'Discounts From Nursery',
             value:
-            nurseryDiscounts,
+            _value(
+              'nurseryDiscounts',
+            ),
             showDetails: false,
           ),
 
@@ -444,13 +719,18 @@ class _DailyMovementScreenState
             title:
             'Discounts From Indoor',
             value:
-            indoorDiscounts,
+            _value(
+              'indoorDiscounts',
+            ),
             showDetails: false,
           ),
 
           _buildMovementRow(
             title: 'Advances',
-            value: advances,
+            value:
+            _value(
+              'advances',
+            ),
             showDetails: false,
           ),
 
@@ -458,7 +738,10 @@ class _DailyMovementScreenState
 
           _buildTotalRow(
             title: 'Total',
-            value: expenseTotal,
+            value:
+            _value(
+              'totalExpenses',
+            ),
             color: Colors.red,
           ),
 
@@ -466,7 +749,10 @@ class _DailyMovementScreenState
 
           _buildTotalRow(
             title: 'Daily Net',
-            value: dailyNet,
+            value:
+            _value(
+              'dailyNet',
+            ),
             color: Colors.red,
           ),
         ],
@@ -503,7 +789,7 @@ class _DailyMovementScreenState
   }
 
   // ============================================================
-  // SECTION CONTAINER
+  // SECTION
   // ============================================================
 
   Widget _buildSectionContainer({
@@ -533,7 +819,8 @@ class _DailyMovementScreenState
             ),
             child: Text(
               title,
-              textAlign: TextAlign.right,
+              textAlign:
+              TextAlign.right,
               style: TextStyle(
                 color: titleColor,
                 fontSize: 20,
@@ -565,6 +852,7 @@ class _DailyMovementScreenState
     required String title,
     required String value,
     required bool showDetails,
+    VoidCallback? onDetailsPressed,
   }) {
     return Container(
       padding:
@@ -572,16 +860,12 @@ class _DailyMovementScreenState
         vertical: 6,
       ),
       child: Row(
-        crossAxisAlignment:
-        CrossAxisAlignment.center,
         children: [
           if (showDetails)
             SizedBox(
               width: 82,
               child: OutlinedButton(
-                onPressed: () {
-                  _showDetails(title);
-                },
+                onPressed: onDetailsPressed ?? () {},
                 style:
                 OutlinedButton.styleFrom(
                   padding:
@@ -641,7 +925,7 @@ class _DailyMovementScreenState
   }
 
   // ============================================================
-  // TOTAL ROW
+  // TOTAL
   // ============================================================
 
   Widget _buildTotalRow({
@@ -690,4 +974,4 @@ class _DailyMovementScreenState
       ),
     );
   }
-}
+}
