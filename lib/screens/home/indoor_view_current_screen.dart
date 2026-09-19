@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/indoor_view_current_api_service.dart';
+
 class IndoorViewCurrentScreen extends StatefulWidget {
   const IndoorViewCurrentScreen({super.key});
 
@@ -10,17 +12,74 @@ class IndoorViewCurrentScreen extends StatefulWidget {
 
 class _IndoorViewCurrentScreenState
     extends State<IndoorViewCurrentScreen> {
-  // Will be loaded from the API later.
-  // Do not put sample/database records here.
-  final List<Map<String, String>> patients = [];
+  // ============================================================
+  // DATABASE DATA
+  // ============================================================
+
+  List<Map<String, dynamic>> patients = [];
 
   int? selectedIndex;
+
+  bool isLoading = true;
+
+  String? errorMessage;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadPatients();
+  }
+
+  // ============================================================
+  // LOAD PATIENTS
+  // ============================================================
+
+  Future<void> _loadPatients() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+      selectedIndex = null;
+    });
+
+    try {
+      final data =
+      await IndoorViewCurrentApiService
+          .getCurrentPatients();
+
+      if (!mounted) return;
+
+      setState(() {
+        patients = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  // ============================================================
+  // SELECT PATIENT
+  // ============================================================
 
   void _selectPatient(int index) {
     setState(() {
       selectedIndex = index;
     });
   }
+
+  // ============================================================
+  // MAIN BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +91,12 @@ class _IndoorViewCurrentScreenState
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
             children: [
-              // ==========================================
-              // CURRENT PATIENTS SECTION
-              // ==========================================
+              // ==================================================
+              // CURRENT PATIENTS
+              // ==================================================
 
               Container(
                 padding: const EdgeInsets.fromLTRB(
@@ -49,10 +109,12 @@ class _IndoorViewCurrentScreenState
                   border: Border.all(
                     color: Colors.grey.shade500,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius:
+                  BorderRadius.circular(4),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
                     const Text(
                       'Current Patients',
@@ -64,9 +126,9 @@ class _IndoorViewCurrentScreenState
 
                     const SizedBox(height: 16),
 
-                    // ==================================
+                    // ==========================================
                     // PATIENT TABLE
-                    // ==================================
+                    // ==========================================
 
                     Container(
                       decoration: BoxDecoration(
@@ -75,22 +137,25 @@ class _IndoorViewCurrentScreenState
                         ),
                       ),
                       child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+                        scrollDirection:
+                        Axis.horizontal,
                         child: SizedBox(
                           width: 520,
                           child: Column(
                             children: [
                               // ==================================
-                              // TABLE HEADER
+                              // HEADER
                               // ==================================
 
                               Container(
                                 height: 52,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
+                                  color:
+                                  Colors.grey.shade100,
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: Colors.grey.shade400,
+                                      color:
+                                      Colors.grey.shade400,
                                     ),
                                   ),
                                 ),
@@ -113,20 +178,97 @@ class _IndoorViewCurrentScreenState
                               ),
 
                               // ==================================
-                              // DATABASE DATA
+                              // LOADING
                               // ==================================
 
-                              if (patients.isEmpty)
-                                _buildEmptyRows()
-                              else
-                                ...patients.asMap().entries.map(
-                                      (entry) {
-                                    return _buildPatientRow(
-                                      entry.key,
-                                      entry.value,
-                                    );
-                                  },
-                                ),
+                              if (isLoading)
+                                const SizedBox(
+                                  height: 480,
+                                  child: Center(
+                                    child:
+                                    CircularProgressIndicator(),
+                                  ),
+                                )
+
+                              // ==================================
+                              // ERROR
+                              // ==================================
+
+                              else if (errorMessage !=
+                                  null)
+                                SizedBox(
+                                  height: 480,
+                                  child: Padding(
+                                    padding:
+                                    const EdgeInsets.all(
+                                      20,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                      children: [
+                                        const Text(
+                                          'Failed to load patients.',
+                                          textAlign:
+                                          TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight:
+                                            FontWeight.bold,
+                                          ),
+                                        ),
+
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+
+                                        Text(
+                                          errorMessage!,
+                                          textAlign:
+                                          TextAlign.center,
+                                        ),
+
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+
+                                        ElevatedButton(
+                                          onPressed:
+                                          _loadPatients,
+                                          child:
+                                          const Text(
+                                            'Retry',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+
+                              // ==================================
+                              // NO DATA
+                              // ==================================
+
+                              else if (patients.isEmpty)
+                                  _buildEmptyRows()
+
+                                // ==================================
+                                // DATA
+                                // ==================================
+
+                                else
+                                  ...patients
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                        (entry) {
+                                      return _buildPatientRow(
+                                        entry.key,
+                                        entry.value,
+                                      );
+                                    },
+                                  ),
                             ],
                           ),
                         ),
@@ -142,9 +284,9 @@ class _IndoorViewCurrentScreenState
     );
   }
 
-  // ==========================================
+  // ============================================================
   // EMPTY TABLE
-  // ==========================================
+  // ============================================================
 
   Widget _buildEmptyRows() {
     return Column(
@@ -173,15 +315,16 @@ class _IndoorViewCurrentScreenState
     );
   }
 
-  // ==========================================
+  // ============================================================
   // PATIENT ROW
-  // ==========================================
+  // ============================================================
 
   Widget _buildPatientRow(
       int index,
-      Map<String, String> patient,
+      Map<String, dynamic> patient,
       ) {
-    final bool isSelected = selectedIndex == index;
+    final bool isSelected =
+        selectedIndex == index;
 
     return InkWell(
       onTap: () {
@@ -190,20 +333,27 @@ class _IndoorViewCurrentScreenState
       child: Container(
         height: 44,
         color: isSelected
-            ? Colors.blue.withValues(alpha: 0.12)
+            ? Colors.blue.withValues(
+          alpha: 0.12,
+        )
             : Colors.transparent,
         child: Row(
           children: [
             _DataCell(
-              text: patient['name'] ?? '',
+              text:
+              patient['name']?.toString() ?? '',
               flex: 3,
             ),
+
             _DataCell(
-              text: patient['age'] ?? '',
+              text:
+              patient['age']?.toString() ?? '',
               flex: 2,
             ),
+
             _DataCell(
-              text: patient['dob'] ?? '',
+              text:
+              patient['dob']?.toString() ?? '',
               flex: 2,
             ),
           ],
@@ -213,12 +363,13 @@ class _IndoorViewCurrentScreenState
   }
 }
 
-// ======================================================
+// ================================================================
 // HEADER CELL
-// ======================================================
+// ================================================================
 
 class _HeaderCell extends StatelessWidget {
   final String title;
+
   final int flex;
 
   const _HeaderCell({
@@ -255,9 +406,9 @@ class _HeaderCell extends StatelessWidget {
   }
 }
 
-// ======================================================
+// ================================================================
 // EMPTY CELL
-// ======================================================
+// ================================================================
 
 class _EmptyCell extends StatelessWidget {
   final int flex;
@@ -283,12 +434,13 @@ class _EmptyCell extends StatelessWidget {
   }
 }
 
-// ======================================================
+// ================================================================
 // DATA CELL
-// ======================================================
+// ================================================================
 
 class _DataCell extends StatelessWidget {
   final String text;
+
   final int flex;
 
   const _DataCell({
