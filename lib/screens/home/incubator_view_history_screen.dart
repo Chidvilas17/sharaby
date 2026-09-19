@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/incubator_view_history_api_service.dart';
 
 class IncubatorViewHistoryScreen extends StatefulWidget {
   const IncubatorViewHistoryScreen({super.key});
@@ -10,15 +11,120 @@ class IncubatorViewHistoryScreen extends StatefulWidget {
 
 class _IncubatorViewHistoryScreenState
     extends State<IncubatorViewHistoryScreen> {
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
   final TextEditingController _searchController =
   TextEditingController();
 
-  // This will come from the API later.
-  // Keep empty for now.
-  final List<Map<String, String>> patients = [];
+  // ============================================================
+  // DATA
+  // ============================================================
+
+  List<Map<String, dynamic>> patients = [];
 
   String? message;
-  bool isSearching = false;
+
+  bool isLoading = true;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Load ALL history immediately.
+    _loadAllHistory();
+  }
+
+  // ============================================================
+  // LOAD ALL HISTORY
+  // ============================================================
+
+  Future<void> _loadAllHistory() async {
+    setState(() {
+      isLoading = true;
+      message = null;
+    });
+
+    try {
+      final results =
+      await IncubatorViewHistoryApiService.getHistory();
+
+      if (!mounted) return;
+
+      setState(() {
+        patients = results;
+        isLoading = false;
+
+        if (results.isEmpty) {
+          message = 'No history found';
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        patients = [];
+        message = e.toString();
+      });
+    }
+  }
+
+  // ============================================================
+  // SEARCH HISTORY
+  // ============================================================
+
+  Future<void> _searchPatients() async {
+    final name = _searchController.text.trim();
+
+    // Empty search:
+    // show ALL history again.
+    if (name.isEmpty) {
+      await _loadAllHistory();
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      message = null;
+      patients = [];
+    });
+
+    try {
+      final results =
+      await IncubatorViewHistoryApiService.getHistory(
+        name: name,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        patients = results;
+        isLoading = false;
+
+        if (results.isEmpty) {
+          message = 'Not found';
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+        patients = [];
+        message = e.toString();
+      });
+    }
+  }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
@@ -26,33 +132,9 @@ class _IncubatorViewHistoryScreenState
     super.dispose();
   }
 
-  void _searchPatients() {
-    final name = _searchController.text.trim();
-
-    setState(() {
-      isSearching = true;
-
-      if (name.isEmpty) {
-        message = 'Enter Name to search';
-      } else if (patients.isEmpty) {
-        // There is no database/API connection yet.
-        message = 'Not found';
-      } else {
-        final results = patients.where((patient) {
-          final patientName =
-          (patient['name'] ?? '').toLowerCase();
-
-          return patientName.contains(name.toLowerCase());
-        }).toList();
-
-        if (results.isEmpty) {
-          message = 'Not found';
-        } else {
-          message = null;
-        }
-      }
-    });
-  }
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +146,12 @@ class _IncubatorViewHistoryScreenState
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
             children: [
-              // ==========================================
+              // ==================================================
               // SEARCH BY NAME
-              // ==========================================
+              // ==================================================
 
               Container(
                 padding: const EdgeInsets.all(16),
@@ -76,10 +159,12 @@ class _IncubatorViewHistoryScreenState
                   border: Border.all(
                     color: Colors.grey.shade500,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius:
+                  BorderRadius.circular(4),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
                   children: [
                     const Text(
                       'Search By Name',
@@ -92,26 +177,30 @@ class _IncubatorViewHistoryScreenState
 
                     const SizedBox(height: 14),
 
-                    // Search text field
                     TextField(
                       controller: _searchController,
-                      textInputAction: TextInputAction.search,
+                      textInputAction:
+                      TextInputAction.search,
                       onSubmitted: (_) {
                         _searchPatients();
                       },
-                      decoration: const InputDecoration(
+                      decoration:
+                      const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'Enter patient name',
+                        hintText:
+                        'Enter patient name',
                       ),
                     ),
 
                     const SizedBox(height: 12),
 
-                    // Search button
                     SizedBox(
                       height: 48,
                       child: ElevatedButton(
-                        onPressed: _searchPatients,
+                        onPressed:
+                        isLoading
+                            ? null
+                            : _searchPatients,
                         child: const Text(
                           'Search',
                           style: TextStyle(
@@ -126,31 +215,31 @@ class _IncubatorViewHistoryScreenState
 
               const SizedBox(height: 16),
 
-              // ==========================================
+              // ==================================================
               // MESSAGE
-              // ==========================================
+              // ==================================================
 
               if (message != null)
                 Padding(
-                  padding: const EdgeInsets.only(
+                  padding:
+                  const EdgeInsets.only(
                     bottom: 12,
                   ),
                   child: Text(
                     message!,
                     textAlign: TextAlign.left,
-                    style: TextStyle(
-                      color: message == 'Not found'
-                          ? Colors.red
-                          : Colors.red,
+                    style: const TextStyle(
+                      color: Colors.red,
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontWeight:
+                      FontWeight.w500,
                     ),
                   ),
                 ),
 
-              // ==========================================
+              // ==================================================
               // HISTORY TABLE
-              // ==========================================
+              // ==================================================
 
               Container(
                 decoration: BoxDecoration(
@@ -158,23 +247,29 @@ class _IncubatorViewHistoryScreenState
                     color: Colors.grey.shade500,
                   ),
                 ),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                child:
+                SingleChildScrollView(
+                  scrollDirection:
+                  Axis.horizontal,
                   child: SizedBox(
                     width: 700,
                     child: Column(
                       children: [
-                        // ==================================
-                        // TABLE HEADER
-                        // ==================================
+                        // ==========================================
+                        // HEADER
+                        // ==========================================
 
                         Container(
                           height: 52,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
+                          decoration:
+                          BoxDecoration(
+                            color:
+                            Colors.grey.shade100,
                             border: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey.shade400,
+                              bottom:
+                              BorderSide(
+                                color: Colors
+                                    .grey.shade400,
                               ),
                             ),
                           ),
@@ -193,35 +288,61 @@ class _IncubatorViewHistoryScreenState
                                 flex: 2,
                               ),
                               _HeaderCell(
-                                title: 'Discharge Date',
+                                title:
+                                'Discharge Date',
                                 flex: 2,
                               ),
                               _HeaderCell(
-                                title: 'Transferred To',
+                                title:
+                                'Transferred To',
                                 flex: 2,
                               ),
                             ],
                           ),
                         ),
 
-                        // ==================================
-                        // DATA
-                        // ==================================
+                        // ==========================================
+                        // LOADING
+                        // ==========================================
 
-                        if (patients.isEmpty)
-                          _buildEmptyRows()
-                        else
-                          ...patients.asMap().entries.map(
+                        if (isLoading)
+                          const SizedBox(
+                            height: 480,
+                            child: Center(
+                              child:
+                              CircularProgressIndicator(),
+                            ),
+                          )
+
+                        // ==========================================
+                        // DATA
+                        // ==========================================
+
+                        else if (patients.isNotEmpty)
+                          ...patients
+                              .asMap()
+                              .entries
+                              .map(
                                 (entry) {
-                              final index = entry.key;
-                              final patient = entry.value;
+                              final index =
+                                  entry.key;
+
+                              final patient =
+                                  entry.value;
 
                               return _buildPatientRow(
                                 index,
                                 patient,
                               );
                             },
-                          ),
+                          )
+
+                        // ==========================================
+                        // EMPTY
+                        // ==========================================
+
+                        else
+                          _buildEmptyRows(),
                       ],
                     ),
                   ),
@@ -234,9 +355,9 @@ class _IncubatorViewHistoryScreenState
     );
   }
 
-  // ==========================================
-  // EMPTY TABLE ROWS
-  // ==========================================
+  // ============================================================
+  // EMPTY ROWS
+  // ============================================================
 
   Widget _buildEmptyRows() {
     return Column(
@@ -248,7 +369,8 @@ class _IncubatorViewHistoryScreenState
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.grey.shade200,
+                  color:
+                  Colors.grey.shade200,
                 ),
               ),
             ),
@@ -267,15 +389,15 @@ class _IncubatorViewHistoryScreenState
     );
   }
 
-  // ==========================================
-  // PATIENT DATA ROW
-  // ==========================================
+  // ============================================================
+  // DATA ROW
+  // ============================================================
 
   Widget _buildPatientRow(
       int index,
-      Map<String, String> patient,
+      Map<String, dynamic> patient,
       ) {
-    return Container(
+    return SizedBox(
       height: 44,
       child: Row(
         children: [
@@ -283,20 +405,34 @@ class _IncubatorViewHistoryScreenState
             text: '${index + 1}',
             flex: 1,
           ),
+
           _DataCell(
-            text: patient['name'] ?? '',
+            text:
+            patient['name']?.toString() ??
+                '',
             flex: 3,
           ),
+
           _DataCell(
-            text: patient['phone'] ?? '',
+            text:
+            patient['phone']?.toString() ??
+                '',
             flex: 2,
           ),
+
           _DataCell(
-            text: patient['dischargeDate'] ?? '',
+            text:
+            patient['dischargeDate']
+                ?.toString() ??
+                '',
             flex: 2,
           ),
+
           _DataCell(
-            text: patient['transferredTo'] ?? '',
+            text:
+            patient['transferredTo']
+                ?.toString() ??
+                '',
             flex: 2,
           ),
         ],
@@ -305,9 +441,9 @@ class _IncubatorViewHistoryScreenState
   }
 }
 
-// ======================================================
+// ================================================================
 // HEADER CELL
-// ======================================================
+// ================================================================
 
 class _HeaderCell extends StatelessWidget {
   final String title;
@@ -324,13 +460,15 @@ class _HeaderCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade300,
+              color:
+              Colors.grey.shade300,
             ),
           ),
         ),
@@ -339,7 +477,8 @@ class _HeaderCell extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.bold,
+            fontWeight:
+            FontWeight.bold,
           ),
         ),
       ),
@@ -347,9 +486,9 @@ class _HeaderCell extends StatelessWidget {
   }
 }
 
-// ======================================================
+// ================================================================
 // EMPTY CELL
-// ======================================================
+// ================================================================
 
 class _EmptyCell extends StatelessWidget {
   final int flex;
@@ -366,7 +505,8 @@ class _EmptyCell extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),
@@ -375,9 +515,9 @@ class _EmptyCell extends StatelessWidget {
   }
 }
 
-// ======================================================
+// ================================================================
 // DATA CELL
-// ======================================================
+// ================================================================
 
 class _DataCell extends StatelessWidget {
   final String text;
@@ -394,16 +534,19 @@ class _DataCell extends StatelessWidget {
       flex: flex,
       child: Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(
+        padding:
+        const EdgeInsets.symmetric(
           horizontal: 8,
         ),
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
             bottom: BorderSide(
-              color: Colors.grey.shade200,
+              color:
+              Colors.grey.shade200,
             ),
           ),
         ),
