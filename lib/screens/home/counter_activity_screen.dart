@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'daily_movement_screen.dart';
+
 class CounterActivityScreen extends StatelessWidget {
   const CounterActivityScreen({super.key});
 
@@ -19,21 +21,37 @@ class CounterActivityScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment.stretch,
             children: [
+              // ==================================================
+              // DAILY MOVEMENT
+              // ==================================================
+
               _menuButton(
                 title: 'Daily Movement',
                 icon: Icons.today_outlined,
                 onPressed: () {
-                  // We will build Daily Movement next
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                      const DailyMovementScreen(),
+                    ),
+                  );
                 },
               ),
 
+              // ==================================================
+              // MOVEMENT DURING THE PERIOD
+              // ==================================================
+
               _menuButton(
-                title: 'Movement During the Period',
+                title:
+                'Movement During the Period',
                 icon: Icons.date_range_outlined,
                 onPressed: () {
-                  // We will build Movement During the Period next
+                  // We will build this screen next.
                 },
               ),
             ],
@@ -43,23 +61,32 @@ class CounterActivityScreen extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // MENU BUTTON
+  // ============================================================
+
   Widget _menuButton({
     required String title,
     required IconData icon,
     required VoidCallback onPressed,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
+      margin:
+      const EdgeInsets.only(bottom: 15),
       height: 75,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(
+          alignment:
+          Alignment.centerLeft,
+          padding:
+          const EdgeInsets.symmetric(
             horizontal: 20,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+          shape:
+          RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.circular(15),
           ),
         ),
         child: Row(
@@ -68,16 +95,21 @@ class CounterActivityScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
+
             const SizedBox(width: 18),
+
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style:
+                const TextStyle(
                   fontSize: 19,
-                  fontWeight: FontWeight.w600,
+                  fontWeight:
+                  FontWeight.w600,
                 ),
               ),
             ),
+
             const Icon(
               Icons.arrow_forward_ios,
               size: 18,
