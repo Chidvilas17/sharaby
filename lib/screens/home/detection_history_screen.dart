@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'doctors_manage_screen.dart';
 import '../../services/detection_history_api_service.dart';
 
 class DetectionHistoryScreen extends StatefulWidget {
@@ -1138,10 +1139,14 @@ class _DetectionHistoryScreenState
 
               child:
               ElevatedButton(
-                onPressed:
-                    () {
-                  _showDetail(
-                    patient,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DoctorsManageScreen(
+                        patient: patient,
+                      ),
+                    ),
                   );
                 },
 
