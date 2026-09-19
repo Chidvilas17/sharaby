@@ -1,862 +1,508 @@
 import 'package:flutter/material.dart';
+import '../../services/doctors_manage_api_service.dart';
 
 class DoctorsManageScreen extends StatefulWidget {
-  final Map<String, dynamic>? patient;
+  final int? medId;
+  final int? patientId;
 
   const DoctorsManageScreen({
     super.key,
-    this.patient,
+    this.medId,
+    this.patientId,
   });
 
   @override
-  State<DoctorsManageScreen> createState() =>
-      _DoctorsManageScreenState();
+  State<DoctorsManageScreen> createState() => _DoctorsManageScreenState();
 }
 
-class _DoctorsManageScreenState
-    extends State<DoctorsManageScreen> {
-  // ============================================================
-  // PATIENT DETAILS
-  // ============================================================
+class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
+  int? medId;
+  int? patientId;
 
-  late String _patientId;
-  late String _patientName;
-  late String _patientAddress;
-  late String _patientDateOfBirth;
-  late String _patientPhone;
+  Map<String, dynamic>? patient;
+  Map<String, dynamic>? medical;
 
-  // ============================================================
-  // CONTROLLERS
-  // ============================================================
+  bool loading = true;
+  bool saving = false;
+  bool loadingHistory = false;
+  String? message;
 
-  final TextEditingController _noteController =
-  TextEditingController();
+  final noteController = TextEditingController();
+  final ageController = TextEditingController();
+  final weightController = TextEditingController();
+  final heightController = TextEditingController();
+  final temperatureController = TextEditingController();
+  final hcController = TextEditingController();
+  final coController = TextEditingController();
+  final investigationController = TextEditingController();
+  final previousTttController = TextEditingController();
+  final diagnosisController = TextEditingController();
+  final notesController = TextEditingController();
 
-  final TextEditingController _weightController =
-  TextEditingController();
+  DateTime selectedDate = DateTime.now();
+  DateTime dayOfRevision = DateTime.now();
 
-  final TextEditingController _heightController =
-  TextEditingController();
+  List<Map<String, dynamic>> types = [];
+  List<Map<String, dynamic>> coItems = [];
+  List<Map<String, dynamic>> diagnosisItems = [];
+  List<Map<String, dynamic>> tttItems = [];
+  List<Map<String, dynamic>> doseItems = [];
 
-  final TextEditingController _temperatureController =
-  TextEditingController();
+  int? selectedTypeId;
+  String? selectedCo;
+  String? selectedDiagnosis;
+  String? selectedTtt;
+  String? selectedDose;
 
-  final TextEditingController _hcController =
-  TextEditingController();
-
-  final TextEditingController _coTextController =
-  TextEditingController();
-
-  final TextEditingController _investigationController =
-  TextEditingController();
-
-  final TextEditingController _previousTttController =
-  TextEditingController();
-
-  final TextEditingController _diagnosisTextController =
-  TextEditingController();
-
-  final TextEditingController _tttTextController =
-  TextEditingController();
-
-  final TextEditingController _notesController =
-  TextEditingController();
-
-  // ============================================================
-  // DATE
-  // ============================================================
-
-  DateTime _medicalDate = DateTime.now();
-  DateTime _revisionDate = DateTime.now();
-
-  // ============================================================
-  // DROPDOWNS
-  // ============================================================
-
-  String? _type;
-
-  String? _co;
-
-  String? _diagnosis;
-
-  String? _ttt;
-
-  String? _dose;
-
-  // ============================================================
-  // AGE
-  // ============================================================
-
-  String _age = '';
-
-  // ============================================================
-  // TTT TEMPORARY LIST
-  //
-  // UI ONLY FOR NOW.
-  // DATABASE MAPPING WILL BE DONE LATER.
-  // ============================================================
-
-  final List<Map<String, String>> _tttItems = [];
-
-  // ============================================================
-  // MEDICAL HISTORY TEMPORARY LIST
-  //
-  // UI ONLY FOR NOW.
-  // ============================================================
-
-  final List<Map<String, String>> _medicalHistory = [];
-
-  // ============================================================
-  // OPTIONS
-  //
-  // These are only UI placeholders for now.
-  // We will replace them with real database values later.
-  // ============================================================
-
-  final List<String> _typeOptions = [
-    'كشف',
-    'كشف جديد',
-  ];
-
-  final List<String> _coOptions = [
-    'Cough',
-    'Fever',
-    'Vomiting',
-    'Headache',
-  ];
-
-  final List<String> _diagnosisOptions = [
-    'Diagnosis 1',
-    'Diagnosis 2',
-  ];
-
-  final List<String> _tttOptions = [
-    'Treatment 1',
-    'Treatment 2',
-  ];
-
-  final List<String> _doseOptions = [
-    '1',
-    '2',
-    '3',
-  ];
-
-  // ============================================================
-  // INIT
-  // ============================================================
+  final List<_TttRow> tttRows = [];
+  List<Map<String, dynamic>> history = [];
 
   @override
   void initState() {
     super.initState();
-
-    final patient = widget.patient;
-
-    _patientId =
-        _value(patient?['id'] ?? patient?['medId']);
-
-    _patientName =
-        _value(patient?['patientName'] ?? patient?['name']);
-
-    _patientAddress =
-        _value(patient?['address']);
-
-    _patientDateOfBirth =
-        _value(patient?['dateOfBirth']);
-
-    _patientPhone =
-        _value(patient?['phone']);
-
-    _age = _value(patient?['age']);
+    medId = widget.medId;
+    patientId = widget.patientId;
+    _load();
   }
-
-  // ============================================================
-  // VALUE HELPER
-  // ============================================================
-
-  String _value(dynamic value) {
-    if (value == null) {
-      return '';
-    }
-
-    return value.toString();
-  }
-
-  // ============================================================
-  // DISPOSE
-  // ============================================================
 
   @override
   void dispose() {
-    _noteController.dispose();
-    _weightController.dispose();
-    _heightController.dispose();
-    _temperatureController.dispose();
-    _hcController.dispose();
-    _coTextController.dispose();
-    _investigationController.dispose();
-    _previousTttController.dispose();
-    _diagnosisTextController.dispose();
-    _tttTextController.dispose();
-    _notesController.dispose();
-
+    noteController.dispose();
+    ageController.dispose();
+    weightController.dispose();
+    heightController.dispose();
+    temperatureController.dispose();
+    hcController.dispose();
+    coController.dispose();
+    investigationController.dispose();
+    previousTttController.dispose();
+    diagnosisController.dispose();
+    notesController.dispose();
     super.dispose();
   }
 
-  // ============================================================
-  // DATE PICKER
-  // ============================================================
+  Future<void> _load() async {
+    if (mounted) {
+      setState(() {
+        loading = true;
+        message = null;
+      });
+    }
 
-  Future<void> _selectMedicalDate() async {
+    try {
+      await _loadMasters();
+
+      if (medId != null) {
+        final result = await DoctorsManageApiService.getMedical(medId!);
+        medical = _asMap(result['medical']);
+        patient = _asMap(result['patient']);
+
+        if (medical != null) {
+          patientId = _intValue(medical, 'patiant_id') ??
+              _intValue(medical, 'patientId') ??
+              patientId;
+          _fillMedical();
+        }
+      } else if (patientId != null) {
+        patient = await DoctorsManageApiService.getPatient(patientId!);
+      }
+
+      if (patientId != null) {
+        await _loadHistory();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          message = e.toString();
+        });
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      loading = false;
+    });
+  }
+
+  Future<void> _loadMasters() async {
+    final results = await Future.wait<List<Map<String, dynamic>>>([
+      DoctorsManageApiService.getTypes(),
+      DoctorsManageApiService.getCo(),
+      DoctorsManageApiService.getDiagnosis(),
+      DoctorsManageApiService.getTtt(),
+      DoctorsManageApiService.getDose(),
+    ]);
+
+    types = results[0];
+    coItems = results[1];
+    diagnosisItems = results[2];
+    tttItems = results[3];
+    doseItems = results[4];
+  }
+
+  void _fillMedical() {
+    final m = medical;
+    if (m == null) return;
+
+    ageController.text = _stringValue(m, 'age');
+    weightController.text = _stringValue(m, 'weight');
+    heightController.text = _stringValue(m, 'height');
+    temperatureController.text = _stringValue(m, 'temp');
+    hcController.text = _stringValue(m, 'HC');
+    coController.text = _stringValue(m, 'c_o');
+    investigationController.text = _stringValue(m, 'Medical_Tests');
+    previousTttController.text = _stringValue(m, 'Previous_TTT');
+    diagnosisController.text = _stringValue(m, 'Diagnosis');
+    notesController.text = _stringValue(m, 'Notes');
+    noteController.text = _stringValue(m, 'Notes');
+
+    selectedTypeId = _intValue(m, 'Type');
+
+    final dod = _dateValue(m, 'DOD');
+    if (dod != null) selectedDate = dod;
+
+    final revision = _dateValue(m, 'DOBack');
+    if (revision != null) dayOfRevision = revision;
+
+    tttRows.clear();
+    final existing = _stringValue(m, 'New_TTT').trim();
+    if (existing.isEmpty) return;
+
+    for (final line in existing.split(RegExp(r'[\r\n]+'))) {
+      final value = line.trim();
+      if (value.isEmpty) continue;
+
+      final parts = value.split('|');
+      tttRows.add(
+        _TttRow(
+          treatment: parts.first.trim(),
+          dose: parts.length > 1 ? parts.sublist(1).join('|').trim() : '',
+        ),
+      );
+    }
+  }
+
+  Future<void> _pickDate({required bool revision}) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _medicalDate,
+      initialDate: revision ? dayOfRevision : selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (picked == null) {
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      if (revision) {
+        dayOfRevision = picked;
+      } else {
+        selectedDate = picked;
+      }
+    });
+  }
+
+  Future<void> _addCo() async {
+    final value = selectedCo?.trim() ?? '';
+    if (value.isEmpty) {
+      _showMessage('Select a C/O first.');
+      return;
+    }
+
+    try {
+      final result = await DoctorsManageApiService.addCo(value);
+      final name = _stringValue(result, 'name').isEmpty
+          ? value
+          : _stringValue(result, 'name');
+
+      setState(() {
+        final old = coController.text.trim();
+        coController.text = old.isEmpty ? name : '$old, $name';
+      });
+    } catch (e) {
+      _showMessage(e.toString());
+    }
+  }
+
+  Future<void> _addDiagnosis() async {
+    final value = selectedDiagnosis?.trim() ?? '';
+    if (value.isEmpty) {
+      _showMessage('Select a diagnosis first.');
+      return;
+    }
+
+    try {
+      final result = await DoctorsManageApiService.addDiagnosis(value);
+      final name = _stringValue(result, 'name').isEmpty
+          ? value
+          : _stringValue(result, 'name');
+
+      setState(() {
+        final old = diagnosisController.text.trim();
+        diagnosisController.text = old.isEmpty ? name : '$old, $name';
+      });
+    } catch (e) {
+      _showMessage(e.toString());
+    }
+  }
+
+  void _addTttRow() {
+    final treatment = selectedTtt?.trim() ?? '';
+    if (treatment.isEmpty) {
+      _showMessage('Select TTT first.');
       return;
     }
 
     setState(() {
-      _medicalDate = picked;
+      tttRows.add(
+        _TttRow(
+          treatment: treatment,
+          dose: selectedDose?.trim() ?? '',
+        ),
+      );
+      selectedTtt = null;
+      selectedDose = null;
     });
   }
 
-  Future<void> _selectRevisionDate() async {
-    final picked = await showDatePicker(
+  void _deleteTttRow(int index) {
+    if (index < 0 || index >= tttRows.length) return;
+    setState(() => tttRows.removeAt(index));
+  }
+
+  String _serializeTtt() {
+    return tttRows
+        .map((row) {
+      final treatment = row.treatment.trim();
+      final dose = row.dose.trim();
+      if (dose.isEmpty) return treatment;
+      return '$treatment | $dose';
+    })
+        .where((value) => value.isNotEmpty)
+        .join('\n');
+  }
+
+  Future<void> _save({bool recent = false}) async {
+    if (patientId == null || patientId! <= 0) {
+      _showMessage('Patient ID is missing.');
+      return;
+    }
+
+    setState(() {
+      saving = true;
+      message = null;
+    });
+
+    try {
+      final data = <String, dynamic>{
+        'patientId': patientId,
+        'typeId': selectedTypeId,
+        'dod': selectedDate.toIso8601String(),
+        'age': ageController.text.trim(),
+        'weight': weightController.text.trim(),
+        'height': heightController.text.trim(),
+        'temperature': temperatureController.text.trim(),
+        'previousTtt': previousTttController.text.trim(),
+        'investigations': investigationController.text.trim(),
+        'co': coController.text.trim(),
+        'diagnosis': diagnosisController.text.trim(),
+        'newTtt': _serializeTtt(),
+        'dayOfRevision': dayOfRevision.toIso8601String(),
+        'notes': notesController.text.trim().isEmpty
+            ? noteController.text.trim()
+            : notesController.text.trim(),
+        'hc': hcController.text.trim(),
+      };
+
+      if (medId == null) {
+        final newId = await DoctorsManageApiService.createMedical(data);
+        medId = newId > 0 ? newId : null;
+      } else {
+        await DoctorsManageApiService.updateMedical(medId!, data);
+      }
+
+      if (medId != null) {
+        final result = await DoctorsManageApiService.getMedical(medId!);
+        medical = _asMap(result['medical']);
+        patient = _asMap(result['patient']) ?? patient;
+        await _loadHistory();
+      }
+
+      if (!mounted) return;
+      setState(() {
+        message = recent
+            ? 'Medical record saved successfully.'
+            : 'Medical record saved successfully.';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        message = e.toString();
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() => saving = false);
+    }
+  }
+
+  Future<void> _deleteMedical() async {
+    if (medId == null) {
+      _showMessage('There is no saved medical record to delete.');
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
       context: context,
-      initialDate: _revisionDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Medical Record'),
+        content: const Text(
+          'Are you sure you want to delete this medical record?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
 
-    if (picked == null) {
-      return;
-    }
+    if (confirmed != true) return;
 
-    setState(() {
-      _revisionDate = picked;
-    });
+    try {
+      await DoctorsManageApiService.deleteMedical(medId!);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Medical record deleted.')),
+      );
+      Navigator.pop(context, true);
+    } catch (e) {
+      _showMessage(e.toString());
+    }
   }
 
-  // ============================================================
-  // DATE FORMAT
-  // ============================================================
+  Future<void> _loadHistory() async {
+    if (patientId == null) return;
+
+    if (mounted) {
+      setState(() => loadingHistory = true);
+    } else {
+      loadingHistory = true;
+    }
+
+    try {
+      history = await DoctorsManageApiService.getHistory(patientId!);
+    } catch (e) {
+      message = e.toString();
+    } finally {
+      loadingHistory = false;
+    }
+
+    if (mounted) setState(() {});
+  }
+
+  void _showMessage(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text)),
+    );
+  }
+
+  Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
+  dynamic _findValue(Map<String, dynamic>? map, String key) {
+    if (map == null) return null;
+    for (final entry in map.entries) {
+      if (entry.key.toLowerCase() == key.toLowerCase()) {
+        return entry.value;
+      }
+    }
+    return null;
+  }
+
+  String _stringValue(Map<String, dynamic>? map, String key) {
+    final value = _findValue(map, key);
+    return value == null ? '' : value.toString();
+  }
+
+  int? _intValue(Map<String, dynamic>? map, String key) {
+    final value = _findValue(map, key);
+    if (value == null) return null;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
+  }
+
+  DateTime? _dateValue(Map<String, dynamic>? map, String key) {
+    final value = _findValue(map, key);
+    if (value == null) return null;
+    return DateTime.tryParse(value.toString());
+  }
+
+  String _patientValue(List<String> keys) {
+    for (final key in keys) {
+      final value = _findValue(patient, key);
+      if (value != null && value.toString().trim().isNotEmpty) {
+        return value.toString();
+      }
+    }
+    return '';
+  }
+
+  String _itemName(Map<String, dynamic> item) {
+    final value = _findValue(item, 'name');
+    return value?.toString() ?? '';
+  }
+
+  int? _itemId(Map<String, dynamic> item) {
+    final value = _findValue(item, 'id');
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
 
   String _formatDate(DateTime date) {
-    final day =
-    date.day.toString().padLeft(2, '0');
-
-    final month =
-    date.month.toString().padLeft(2, '0');
-
-    final year =
-    date.year.toString();
-
-    return '$day-$month-$year';
+    final d = date.day.toString().padLeft(2, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    return '$d-$m-${date.year}';
   }
 
-  // ============================================================
-  // TTT ADD
-  // ============================================================
-
-  void _addTtt() {
-    final selectedTtt =
-        _ttt ?? _tttTextController.text.trim();
-
-    final selectedDose =
-        _dose ?? '';
-
-    if (selectedTtt.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      _tttItems.add({
-        'ttt': selectedTtt,
-        'dose': selectedDose,
-      });
-
-      _ttt = null;
-      _dose = null;
-      _tttTextController.clear();
-    });
+  String _formatApiDate(dynamic value) {
+    if (value == null) return '';
+    final date = DateTime.tryParse(value.toString());
+    return date == null ? value.toString() : _formatDate(date);
   }
-
-  // ============================================================
-  // TTT DELETE
-  // ============================================================
-
-  void _deleteTtt(int index) {
-    setState(() {
-      _tttItems.removeAt(index);
-    });
-  }
-
-  // ============================================================
-  // SAVE NOTE
-  //
-  // UI ONLY FOR NOW.
-  // ============================================================
-
-  void _saveNote() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Note saved locally for now.',
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // SAVE MEDICAL
-  //
-  // DATABASE CONNECTION WILL BE ADDED LATER.
-  // ============================================================
-
-  void _saveMedical() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Medical record save will be connected later.',
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // SAVE RECENT
-  // ============================================================
-
-  void _saveRecent() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Save Recent will be connected later.',
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // ADD C/O
-  // ============================================================
-
-  void _addCo() {
-    final value =
-    _coTextController.text.trim();
-
-    if (value.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      _co = value;
-      _coTextController.clear();
-    });
-  }
-
-  // ============================================================
-  // ADD DIAGNOSIS
-  // ============================================================
-
-  void _addDiagnosis() {
-    final value =
-    _diagnosisTextController.text.trim();
-
-    if (value.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      _diagnosis = value;
-      _diagnosisTextController.clear();
-    });
-  }
-
-  // ============================================================
-  // SCREEN
-  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'DoctorsManage',
-        ),
+        title: const Text('Doctors Manage'),
+        actions: [
+          IconButton(
+            onPressed: loading ? null : _load,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
-      body: SafeArea(
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(12),
           child: Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
-              // ==================================================
-              // PATIENT DETAILS
-              // ==================================================
-
-              _buildSection(
-                title: 'Patient Details',
-                titleColor: Colors.red,
-                child: Column(
-                  children: [
-                    _buildReadOnlyField(
-                      label: 'ID',
-                      value: _patientId,
-                    ),
-
-                    _buildReadOnlyField(
-                      label: 'Name',
-                      value: _patientName,
-                    ),
-
-                    _buildReadOnlyField(
-                      label: 'Address',
-                      value: _patientAddress,
-                    ),
-
-                    _buildReadOnlyField(
-                      label: 'Date Of Birth',
-                      value: _patientDateOfBirth,
-                    ),
-
-                    _buildReadOnlyField(
-                      label: 'Phone',
-                      value: _patientPhone,
-                    ),
-                  ],
-                ),
-              ),
-
+              _buildPatientDetails(),
               const SizedBox(height: 12),
-
-              // ==================================================
-              // NEW MEDICAL
-              // ==================================================
-
-              _buildSection(
-                title: 'New Medical',
-                titleColor: Colors.blue,
-                child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.stretch,
-                  children: [
-
-                    // ------------------------------------------
-                    // NOTE
-                    // ------------------------------------------
-
-                    const Text(
-                      'Note',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Row(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller:
-                            _noteController,
-                            decoration:
-                            const InputDecoration(
-                              border:
-                              OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        ElevatedButton(
-                          onPressed: _saveNote,
-                          child:
-                          const Text('Save'),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ------------------------------------------
-                    // DATE + TYPE
-                    // ------------------------------------------
-
-                    _buildDateField(
-                      label: 'Date',
-                      date: _medicalDate,
-                      onTap:
-                      _selectMedicalDate,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _buildDropdown(
-                      label: 'Type',
-                      value: _type,
-                      items: _typeOptions,
-                      onChanged: (value) {
-                        setState(() {
-                          _type = value;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ------------------------------------------
-                    // ADDED BY
-                    // ------------------------------------------
-
-                    _buildDisplayLine(
-                      label: 'Added By',
-                      value: '',
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ------------------------------------------
-                    // AGE
-                    // ------------------------------------------
-
-                    _buildAgeSection(),
-
-                    const SizedBox(height: 12),
-
-                    // ------------------------------------------
-                    // WEIGHT / HEIGHT
-                    // ------------------------------------------
-
-                    _buildInputField(
-                      label: 'Weight',
-                      controller:
-                      _weightController,
-                      keyboardType:
-                      TextInputType.number,
-                    ),
-
-                    _buildInputField(
-                      label: 'Height',
-                      controller:
-                      _heightController,
-                      keyboardType:
-                      TextInputType.number,
-                    ),
-
-                    _buildInputField(
-                      label: 'Temperature',
-                      controller:
-                      _temperatureController,
-                      keyboardType:
-                      TextInputType.number,
-                    ),
-
-                    _buildInputField(
-                      label: 'H.C.',
-                      controller:
-                      _hcController,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ------------------------------------------
-                    // C/O
-                    // ------------------------------------------
-
-                    _buildRedLabel(
-                      'C \\ O',
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: _buildDropdown(
-                            label: '',
-                            value: _co,
-                            items: _coOptions,
-                            onChanged: (value) {
-                              setState(() {
-                                _co = value;
-                              });
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        ElevatedButton(
-                          onPressed: _addCo,
-                          child:
-                          const Text('Add'),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        Expanded(
-                          flex: 5,
-                          child: TextField(
-                            controller:
-                            _coTextController,
-                            decoration:
-                            const InputDecoration(
-                              border:
-                              OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // ------------------------------------------
-                    // INVESTIGATIONS
-                    // ------------------------------------------
-
-                    _buildInputField(
-                      label: 'Investigations',
-                      controller:
-                      _investigationController,
-                    ),
-
-                    // ------------------------------------------
-                    // PREVIOUS TTT
-                    // ------------------------------------------
-
-                    _buildInputField(
-                      label: 'Previous TTT',
-                      controller:
-                      _previousTttController,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ------------------------------------------
-                    // DIAGNOSIS
-                    // ------------------------------------------
-
-                    _buildRedLabel(
-                      'Diagnosis',
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: _buildDropdown(
-                            label: '',
-                            value: _diagnosis,
-                            items:
-                            _diagnosisOptions,
-                            onChanged: (value) {
-                              setState(() {
-                                _diagnosis =
-                                    value;
-                              });
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        ElevatedButton(
-                          onPressed:
-                          _addDiagnosis,
-                          child:
-                          const Text('Add'),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        Expanded(
-                          flex: 5,
-                          child: TextField(
-                            controller:
-                            _diagnosisTextController,
-                            decoration:
-                            const InputDecoration(
-                              border:
-                              OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // ------------------------------------------
-                    // TTT
-                    // ------------------------------------------
-
-                    _buildRedLabel(
-                      'T T T',
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: _buildDropdown(
-                            label: '',
-                            value: _ttt,
-                            items: _tttOptions,
-                            onChanged: (value) {
-                              setState(() {
-                                _ttt = value;
-                              });
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        ElevatedButton(
-                          onPressed: _addTtt,
-                          child:
-                          const Text('Add'),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        Expanded(
-                          flex: 5,
-                          child: TextField(
-                            controller:
-                            _tttTextController,
-                            decoration:
-                            const InputDecoration(
-                              border:
-                              OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ------------------------------------------
-                    // DOSE
-                    // ------------------------------------------
-
-                    _buildDropdown(
-                      label: 'Dose',
-                      value: _dose,
-                      items: _doseOptions,
-                      onChanged: (value) {
-                        setState(() {
-                          _dose = value;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // ------------------------------------------
-                    // TTT TABLE
-                    // ------------------------------------------
-
-                    _buildTttTable(),
-
-                    const SizedBox(height: 16),
-
-                    // ------------------------------------------
-                    // NOTES
-                    // ------------------------------------------
-
-                    _buildInputField(
-                      label: 'Notes',
-                      controller:
-                      _notesController,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ------------------------------------------
-                    // DAY OF REVISION
-                    // ------------------------------------------
-
-                    _buildDateField(
-                      label: 'Day Of Revision',
-                      date: _revisionDate,
-                      onTap:
-                      _selectRevisionDate,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ------------------------------------------
-                    // SAVE
-                    // ------------------------------------------
-
-                    Align(
-                      alignment:
-                      Alignment.centerRight,
-                      child: ElevatedButton(
-                        onPressed:
-                        _saveMedical,
-                        child:
-                        const Text('Save'),
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ------------------------------------------
-                    // SAVE RECENT
-                    // ------------------------------------------
-
-                    Align(
-                      alignment:
-                      Alignment.centerRight,
-                      child: ElevatedButton(
-                        onPressed:
-                        _saveRecent,
-                        child:
-                        const Text(
-                          'Save Recent',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
+              _buildNewMedical(),
               const SizedBox(height: 12),
-
-              // ==================================================
-              // MEDICAL HISTORY
-              // ==================================================
-
-              _buildSection(
-                title: 'Medical History',
-                titleColor: Colors.grey,
-                child: _buildMedicalHistoryTable(),
-              ),
+              _buildHistory(),
             ],
           ),
         ),
@@ -864,75 +510,395 @@ class _DoctorsManageScreenState
     );
   }
 
-  // ============================================================
-  // SECTION
-  // ============================================================
+  Widget _buildPatientDetails() {
+    return _section(
+      title: 'Patient Details',
+      child: Column(
+        children: [
+          _infoRow('ID', patientId?.toString() ?? ''),
+          _infoRow('Name', _patientValue(['Name', 'name'])),
+          _infoRow('Address', _patientValue(['Address', 'address'])),
+          _infoRow(
+            'Date Of Birth',
+            _patientValue([
+              'DateOfBirth',
+              'Date_Of_Birth',
+              'date_of_birth',
+              'DOB',
+              'BirthDate',
+              'dateOfBirth',
+            ]),
+          ),
+          _infoRow(
+            'Phone',
+            _patientValue(['Phone', 'phone', 'Phone1', 'phone1']),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _buildSection({
-    required String title,
-    required Color titleColor,
-    required Widget child,
-  }) {
+  Widget _buildNewMedical() {
+    return _section(
+      title: 'New Medical',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _field('Note', noteController, maxLines: 2),
+          const SizedBox(height: 10),
+          _dateField('Date', selectedDate, () => _pickDate(revision: false)),
+          const SizedBox(height: 10),
+          _dropdownInt(
+            label: 'Type',
+            value: selectedTypeId,
+            items: types,
+            onChanged: (value) => setState(() => selectedTypeId = value),
+          ),
+          const SizedBox(height: 10),
+          _infoRow('Added By', _stringValue(medical, 'user_id')),
+          const SizedBox(height: 10),
+          _fieldRow([
+            _field('Age', ageController),
+            _field('Weight', weightController),
+            _field('Height', heightController),
+            _field('Temperature', temperatureController),
+            _field('H.C.', hcController),
+          ]),
+          const SizedBox(height: 10),
+          _masterAddRow(
+            label: 'C / O',
+            items: coItems,
+            value: selectedCo,
+            onChanged: (value) => setState(() => selectedCo = value),
+            onAdd: _addCo,
+            controller: coController,
+          ),
+          const SizedBox(height: 10),
+          _field('Investigations', investigationController, maxLines: 2),
+          const SizedBox(height: 10),
+          _field('Previous TTT', previousTttController, maxLines: 2),
+          const SizedBox(height: 10),
+          _masterAddRow(
+            label: 'Diagnosis',
+            items: diagnosisItems,
+            value: selectedDiagnosis,
+            onChanged: (value) => setState(() => selectedDiagnosis = value),
+            onAdd: _addDiagnosis,
+            controller: diagnosisController,
+          ),
+          const SizedBox(height: 10),
+          _buildTttSection(),
+          const SizedBox(height: 10),
+          _field('Notes', notesController, maxLines: 3),
+          const SizedBox(height: 10),
+          _dateField(
+            'Day Of Revision',
+            dayOfRevision,
+                () => _pickDate(revision: true),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: saving ? null : () => _save(),
+                  child: saving
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                      : const Text('Save'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: saving ? null : () => _save(recent: true),
+                  child: const Text('Save Recent'),
+                ),
+              ),
+              if (medId != null) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: saving ? null : _deleteMedical,
+                    child: const Text('Delete'),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (message != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              message!,
+              style: TextStyle(
+                color: message!.toLowerCase().contains('success')
+                    ? Colors.green
+                    : Colors.red,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _fieldRow(List<Widget> fields) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 650) {
+          return Column(
+            children: fields
+                .map((field) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: field,
+            ))
+                .toList(),
+          );
+        }
+
+        return Row(
+          children: fields
+              .asMap()
+              .entries
+              .map(
+                (entry) => Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: entry.key == fields.length - 1 ? 0 : 6,
+                ),
+                child: entry.value,
+              ),
+            ),
+          )
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildTttSection() {
     return Container(
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.shade400,
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _dropdownString(
+                  label: 'TTT',
+                  value: selectedTtt,
+                  items: tttItems,
+                  onChanged: (value) => setState(() => selectedTtt = value),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _dropdownString(
+                  label: 'Dose',
+                  value: selectedDose,
+                  items: doseItems,
+                  onChanged: (value) => setState(() => selectedDose = value),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _addTttRow,
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade500),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 44,
+                  color: Colors.grey.shade100,
+                  child: const Row(
+                    children: [
+                      _HeaderCell(title: 'TTT', flex: 3),
+                      _HeaderCell(title: 'Dose', flex: 3),
+                      _HeaderCell(title: 'Delete', flex: 1),
+                    ],
+                  ),
+                ),
+                if (tttRows.isEmpty)
+                  const SizedBox(
+                    height: 80,
+                    child: Center(child: Text('No TTT added')),
+                  )
+                else
+                  ...tttRows.asMap().entries.map(
+                        (entry) => Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: Text(entry.value.treatment),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: Text(entry.value.dose),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: IconButton(
+                              onPressed: () => _deleteTttRow(entry.key),
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistory() {
+    return _section(
+      title: 'Medical History',
+      child: loadingHistory
+          ? const SizedBox(
+        height: 120,
+        child: Center(child: CircularProgressIndicator()),
+      )
+          : SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SizedBox(
+          width: 900,
+          child: Column(
+            children: [
+              Container(
+                height: 48,
+                color: Colors.grey.shade100,
+                child: const Row(
+                  children: [
+                    _HeaderCell(title: 'Type', flex: 2),
+                    _HeaderCell(title: 'Date', flex: 2),
+                    _HeaderCell(title: 'W', flex: 1),
+                    _HeaderCell(title: 'Investigation', flex: 3),
+                    _HeaderCell(title: 'Diagnosis', flex: 3),
+                    _HeaderCell(title: 'TTT', flex: 3),
+                    _HeaderCell(title: 'By Dr', flex: 2),
+                  ],
+                ),
+              ),
+              if (history.isEmpty)
+                _emptyHistoryRows()
+              else
+                ...history.map(_historyRow),
+            ],
+          ),
         ),
       ),
-      padding: const EdgeInsets.all(10),
+    );
+  }
+
+  Widget _emptyHistoryRows() {
+    return Column(
+      children: List.generate(
+        6,
+            (_) => Container(
+          height: 40,
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(color: Colors.grey.shade300),
+              right: BorderSide(color: Colors.grey.shade300),
+              bottom: BorderSide(color: Colors.grey.shade200),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _historyRow(Map<String, dynamic> row) {
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(color: Colors.grey.shade300),
+          right: BorderSide(color: Colors.grey.shade300),
+          bottom: BorderSide(color: Colors.grey.shade200),
+        ),
+      ),
+      child: Row(
+        children: [
+          _DataCell(text: _stringValue(row, 'typeName'), flex: 2),
+          _DataCell(text: _formatApiDate(_findValue(row, 'dod')), flex: 2),
+          _DataCell(text: _stringValue(row, 'weight'), flex: 1),
+          _DataCell(text: _stringValue(row, 'investigation'), flex: 3),
+          _DataCell(text: _stringValue(row, 'diagnosis'), flex: 3),
+          _DataCell(text: _stringValue(row, 'treatment'), flex: 3),
+          _DataCell(text: _stringValue(row, 'byDoctor'), flex: 2),
+        ],
+      ),
+    );
+  }
+
+  Widget _section({required String title, required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 18, 12, 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade500),
+        borderRadius: BorderRadius.circular(4),
+      ),
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             title,
-            style: TextStyle(
-              color: titleColor,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
-
-          const SizedBox(height: 8),
-
+          const SizedBox(height: 12),
           child,
         ],
       ),
     );
   }
 
-  // ============================================================
-  // READ ONLY FIELD
-  // ============================================================
-
-  Widget _buildReadOnlyField({
-    required String label,
-    required String value,
-  }) {
+  Widget _infoRow(String label, String value) {
     return Padding(
-      padding:
-      const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 105,
-            child: Text(
-              '$label :',
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
-            ),
+            width: 110,
+            child: Text('$label:', style: const TextStyle(fontWeight: FontWeight.w500)),
           ),
           Expanded(
             child: Text(
               value.isEmpty ? 'None' : value,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: value.isEmpty ? Colors.red : null),
             ),
           ),
         ],
@@ -940,566 +906,177 @@ class _DoctorsManageScreenState
     );
   }
 
-  // ============================================================
-  // DISPLAY LINE
-  // ============================================================
-
-  Widget _buildDisplayLine({
-    required String label,
-    required String value,
-  }) {
-    return Row(
-      children: [
-        Text(
-          '$label :',
-          style: const TextStyle(
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          value.isEmpty ? '-' : value,
-          style: const TextStyle(
-            color: Colors.red,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // AGE SECTION
-  // ============================================================
-
-  Widget _buildAgeSection() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 8,
-      crossAxisAlignment:
-      WrapCrossAlignment.center,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Age :',
-              style: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              _age.isEmpty ? '-' : _age,
-              style: const TextStyle(
-                color: Colors.blue,
-              ),
-            ),
-          ],
-        ),
-
-        const Text(
-          'Age Y',
-          style: TextStyle(
-            color: Colors.blue,
-          ),
-        ),
-
-        const Text(
-          'Ag M',
-          style: TextStyle(
-            color: Colors.blue,
-          ),
-        ),
-
-        const Text(
-          'Ag D',
-          style: TextStyle(
-            color: Colors.blue,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ============================================================
-  // INPUT FIELD
-  // ============================================================
-
-  Widget _buildInputField({
-    required String label,
-    required TextEditingController controller,
-    TextInputType? keyboardType,
-  }) {
-    return Padding(
-      padding:
-      const EdgeInsets.only(bottom: 9),
-      child: Row(
-        crossAxisAlignment:
-        CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 115,
-            child: Text(
-              '$label :',
-              style: const TextStyle(
-                color: Colors.blue,
-              ),
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              keyboardType: keyboardType,
-              decoration:
-              const InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // RED LABEL
-  // ============================================================
-
-  Widget _buildRedLabel(String label) {
-    return Text(
-      '$label :',
-      style: const TextStyle(
-        color: Colors.red,
-        fontSize: 18,
-      ),
-    );
-  }
-
-  // ============================================================
-  // DROPDOWN
-  // ============================================================
-
-  Widget _buildDropdown({
-    required String label,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      isExpanded: true,
+  Widget _field(String label, TextEditingController controller, {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
       decoration: InputDecoration(
-        labelText:
-        label.isEmpty ? null : label,
-        border:
-        const OutlineInputBorder(),
-        isDense: true,
+        labelText: label,
+        border: const OutlineInputBorder(),
       ),
-      items: items.map(
-            (item) {
-          return DropdownMenuItem<String>(
-            value: item,
-            child: Text(
-              item,
-              overflow:
-              TextOverflow.ellipsis,
-            ),
-          );
-        },
-      ).toList(),
-      onChanged: onChanged,
     );
   }
 
-  // ============================================================
-  // DATE FIELD
-  // ============================================================
-
-  Widget _buildDateField({
-    required String label,
-    required DateTime date,
-    required VoidCallback onTap,
-  }) {
+  Widget _dateField(String label, DateTime date, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          border:
-          const OutlineInputBorder(),
-          suffixIcon:
-          const Icon(Icons.calendar_today),
-          isDense: true,
+          border: const OutlineInputBorder(),
         ),
-        child: Text(
-          _formatDate(date),
-        ),
+        child: Text(_formatDate(date)),
       ),
     );
   }
 
-  // ============================================================
-  // TTT TABLE
-  // ============================================================
+  Widget _dropdownInt({
+    required String label,
+    required int? value,
+    required List<Map<String, dynamic>> items,
+    required ValueChanged<int?> onChanged,
+  }) {
+    final ids = items.map(_itemId).whereType<int>().toSet();
+    final validValue = value != null && ids.contains(value) ? value : null;
 
-  Widget _buildTttTable() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.shade500,
-        ),
+    return DropdownButtonFormField<int>(
+      value: validValue,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
       ),
-      child: Column(
-        children: [
-          Container(
-            height: 42,
-            color: Colors.grey.shade100,
-            child: const Row(
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: _TableHeader(
-                    'TTT',
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: _TableHeader(
-                    'Dose',
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: _TableHeader(
-                    'Delete',
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          if (_tttItems.isEmpty)
-            Container(
-              height: 100,
-              alignment:
-              Alignment.center,
-              child: const Text(
-                '',
-              ),
-            )
-          else
-            ..._tttItems.asMap().entries.map(
-                  (entry) {
-                final index =
-                    entry.key;
-                final item =
-                    entry.value;
-
-                return SizedBox(
-                  height: 44,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child:
-                        _TableCell(
-                          item['ttt'] ?? '',
-                        ),
-                      ),
-                      Expanded(
-                        flex: 4,
-                        child:
-                        _TableCell(
-                          item['dose'] ?? '',
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child:
-                        IconButton(
-                          onPressed: () {
-                            _deleteTtt(
-                              index,
-                            );
-                          },
-                          icon:
-                          const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-        ],
-      ),
+      items: items.map((item) {
+        final id = _itemId(item);
+        if (id == null) return null;
+        return DropdownMenuItem<int>(
+          value: id,
+          child: Text(_itemName(item)),
+        );
+      }).whereType<DropdownMenuItem<int>>().toList(),
+      onChanged: onChanged,
     );
   }
 
-  // ============================================================
-  // MEDICAL HISTORY TABLE
-  // ============================================================
+  Widget _dropdownString({
+    required String label,
+    required String? value,
+    required List<Map<String, dynamic>> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    final names = items.map(_itemName).where((v) => v.isNotEmpty).toSet();
+    final validValue = value != null && names.contains(value) ? value : null;
 
-  Widget _buildMedicalHistoryTable() {
-    const headers = [
-      'Type',
-      'Date',
-      'W',
-      'Investigation',
-      'Diagnosis',
-      'TTT',
-      'By Dr',
-    ];
+    return DropdownButtonFormField<String>(
+      value: validValue,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      items: names
+          .map(
+            (name) => DropdownMenuItem<String>(
+          value: name,
+          child: Text(name),
+        ),
+      )
+          .toList(),
+      onChanged: onChanged,
+    );
+  }
 
-    return SingleChildScrollView(
-      scrollDirection:
-      Axis.horizontal,
-      child: SizedBox(
-        width: 850,
-        child: Column(
+  Widget _masterAddRow({
+    required String label,
+    required List<Map<String, dynamic>> items,
+    required String? value,
+    required ValueChanged<String?> onChanged,
+    required VoidCallback onAdd,
+    required TextEditingController controller,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 46,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                border: Border.all(
-                  color: Colors.grey.shade400,
-                ),
-              ),
-              child: Row(
-                children:
-                headers.asMap().entries.map(
-                      (entry) {
-                    return Expanded(
-                      flex: _historyFlex(
-                        entry.key,
-                      ),
-                      child:
-                      _TableHeader(
-                        entry.value,
-                      ),
-                    );
-                  },
-                ).toList(),
+            Expanded(
+              child: _dropdownString(
+                label: label,
+                value: value,
+                items: items,
+                onChanged: onChanged,
               ),
             ),
-
-            if (_medicalHistory.isEmpty)
-              ...List.generate(
-                8,
-                    (index) {
-                  return Container(
-                    height: 38,
-                    decoration:
-                    BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: Colors
-                              .grey
-                              .shade300,
-                        ),
-                        right: BorderSide(
-                          color: Colors
-                              .grey
-                              .shade300,
-                        ),
-                        bottom: BorderSide(
-                          color: Colors
-                              .grey
-                              .shade200,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children:
-                      List.generate(
-                        headers.length,
-                            (column) {
-                          return Expanded(
-                            flex:
-                            _historyFlex(
-                              column,
-                            ),
-                            child:
-                            Container(
-                              decoration:
-                              BoxDecoration(
-                                border:
-                                Border(
-                                  right:
-                                  BorderSide(
-                                    color: Colors
-                                        .grey
-                                        .shade200,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              )
-            else
-              ..._medicalHistory
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) {
-                  final item =
-                      entry.value;
-
-                  final values = [
-                    item['type'] ?? '',
-                    item['date'] ?? '',
-                    item['w'] ?? '',
-                    item['investigation'] ??
-                        '',
-                    item['diagnosis'] ??
-                        '',
-                    item['ttt'] ?? '',
-                    item['byDr'] ?? '',
-                  ];
-
-                  return Container(
-                    height: 44,
-                    child: Row(
-                      children: values
-                          .asMap()
-                          .entries
-                          .map(
-                            (value) {
-                          return Expanded(
-                            flex:
-                            _historyFlex(
-                              value.key,
-                            ),
-                            child:
-                            _TableCell(
-                              value.value,
-                            ),
-                          );
-                        },
-                      ).toList(),
-                    ),
-                  );
-                },
-              ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: onAdd,
+              child: const Text('Add'),
+            ),
           ],
         ),
-      ),
+        const SizedBox(height: 8),
+        _field(label, controller, maxLines: 2),
+      ],
     );
-  }
-
-  // ============================================================
-  // HISTORY COLUMN WIDTH
-  // ============================================================
-
-  int _historyFlex(int index) {
-    switch (index) {
-      case 0:
-        return 2;
-
-      case 1:
-        return 2;
-
-      case 2:
-        return 1;
-
-      case 3:
-        return 4;
-
-      case 4:
-        return 4;
-
-      case 5:
-        return 4;
-
-      case 6:
-        return 3;
-
-      default:
-        return 2;
-    }
   }
 }
 
-// ================================================================
-// TABLE HEADER
-// ================================================================
+class _TttRow {
+  final String treatment;
+  final String dose;
 
-class _TableHeader extends StatelessWidget {
-  final String text;
+  _TttRow({required this.treatment, required this.dose});
+}
 
-  const _TableHeader(this.text);
+class _HeaderCell extends StatelessWidget {
+  final String title;
+  final int flex;
+
+  const _HeaderCell({required this.title, required this.flex});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding:
-      const EdgeInsets.symmetric(
-        horizontal: 5,
-      ),
-      decoration: BoxDecoration(
-        border: Border(
-          right: BorderSide(
-            color: Colors.grey.shade300,
-          ),
+    return Expanded(
+      flex: flex,
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          border: Border(right: BorderSide(color: Colors.grey.shade300)),
         ),
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
 }
 
-// ================================================================
-// TABLE CELL
-// ================================================================
-
-class _TableCell extends StatelessWidget {
+class _DataCell extends StatelessWidget {
   final String text;
+  final int flex;
 
-  const _TableCell(this.text);
+  const _DataCell({required this.text, required this.flex});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding:
-      const EdgeInsets.symmetric(
-        horizontal: 5,
-      ),
-      decoration: BoxDecoration(
-        border: Border(
-          right: BorderSide(
-            color: Colors.grey.shade200,
-          ),
-          bottom: BorderSide(
-            color: Colors.grey.shade200,
-          ),
+    return Expanded(
+      flex: flex,
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          border: Border(right: BorderSide(color: Colors.grey.shade200)),
         ),
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 12,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 12),
         ),
       ),
     );
