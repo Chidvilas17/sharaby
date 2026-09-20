@@ -1,20 +1,27 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-class StatementsTodayAccountScreen extends StatefulWidget {
-  const StatementsTodayAccountScreen({super.key});
+import '../../services/today_statements_api_service.dart';
+
+class StatementsTodayAccountScreen
+    extends StatefulWidget {
+  const StatementsTodayAccountScreen({
+    super.key,
+  });
 
   @override
-  State<StatementsTodayAccountScreen> createState() =>
+  State<StatementsTodayAccountScreen>
+  createState() =>
       _StatementsTodayAccountScreenState();
 }
 
 class _StatementsTodayAccountScreenState
     extends State<StatementsTodayAccountScreen> {
   DateTime selectedDate = DateTime.now();
+
   int? selectedRow;
+
   bool isLoading = false;
+
   List<Map<String, dynamic>> statements = [];
 
   final List<String> headers = [
@@ -26,17 +33,34 @@ class _StatementsTodayAccountScreenState
     'الدكتور / Doctor',
   ];
 
+  // =========================================================
+  // INITIAL LOAD
+  // =========================================================
+
   @override
   void initState() {
     super.initState();
+
     _loadStatements();
   }
 
+  // =========================================================
+  // FORMAT DATE
+  // =========================================================
+
   String _formatDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
+    final day =
+    date.day.toString().padLeft(2, '0');
+
+    final month =
+    date.month.toString().padLeft(2, '0');
+
     return '$day-$month-${date.year}';
   }
+
+  // =========================================================
+  // LOAD STATEMENTS
+  // =========================================================
 
   Future<void> _loadStatements() async {
     setState(() {
@@ -44,87 +68,154 @@ class _StatementsTodayAccountScreenState
       selectedRow = null;
     });
 
-    final dateText =
-        '${selectedDate.year.toString().padLeft(4, '0')}-'
-        '${selectedDate.month.toString().padLeft(2, '0')}-'
-        '${selectedDate.day.toString().padLeft(2, '0')}';
-
     try {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:5137/api/TodayStatements?date=$dateText'),
+      final result =
+      await TodayStatementsApiService
+          .getStatements(
+        selectedDate,
       );
 
-      if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
-        if (decoded is List) {
-          if (mounted) {
-            setState(() {
-              statements = decoded.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
-            });
-          }
-        }
+      if (!mounted) {
+        return;
       }
-    } catch (_) {
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+
+      setState(() {
+        statements = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
       }
+
+      setState(() {
+        statements = [];
+        isLoading = false;
+      });
+
+      _showMessage(
+        'Failed to load statements.\n$e',
+      );
     }
   }
 
+  // =========================================================
+  // DATE PICKER
+  // =========================================================
+
   Future<void> _selectDate() async {
-    final picked = await showDatePicker(
+    final picked =
+    await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (picked == null) return;
+    if (picked == null) {
+      return;
+    }
 
     setState(() {
       selectedDate = picked;
     });
-    _loadStatements();
+
+    await _loadStatements();
   }
+
+  // =========================================================
+  // TOTAL
+  // =========================================================
 
   double _calculateTotalIncome() {
     double total = 0;
+
     for (final item in statements) {
-      total += double.tryParse(item['price']?.toString() ?? item['amount']?.toString() ?? '') ?? 0;
+      total +=
+          double.tryParse(
+            item['price']?.toString() ??
+                item['Price']?.toString() ??
+                '0',
+          ) ??
+              0;
     }
+
     return total;
   }
 
+  // =========================================================
+  // MESSAGE
+  // =========================================================
+
+  void _showMessage(String message) {
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  // =========================================================
+  // TABLE
+  // =========================================================
+
   Widget _buildTable() {
-    final displayCount = statements.length < 10 ? 10 : statements.length;
+    final displayCount =
+    statements.length < 10
+        ? 10
+        : statements.length;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+
       child: Table(
-        defaultColumnWidth: const FixedColumnWidth(140),
+        defaultColumnWidth:
+        const FixedColumnWidth(140),
+
         border: TableBorder.all(
           color: Colors.black54,
           width: 0.7,
         ),
+
         children: [
+          // ===================================================
+          // HEADER
+          // ===================================================
+
           TableRow(
-            decoration: const BoxDecoration(
+            decoration:
+            const BoxDecoration(
               color: Color(0xFF4D88B5),
             ),
-            children: headers.map((header) {
+
+            children:
+            headers.map((header) {
               return Container(
                 height: 48,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(6),
+                alignment:
+                Alignment.center,
+
+                padding:
+                const EdgeInsets.all(6),
+
                 child: Text(
                   header,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  textAlign:
+                  TextAlign.center,
+
+                  style:
+                  const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                    FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
@@ -132,15 +223,94 @@ class _StatementsTodayAccountScreenState
             }).toList(),
           ),
 
-          for (int index = 0; index < displayCount; index++)
+          // ===================================================
+          // ROWS
+          // ===================================================
+
+          for (
+          int index = 0;
+          index < displayCount;
+          index++
+          )
             TableRow(
               children: [
-                _dataCell(index, index < statements.length ? '${index + 1}' : ''),
-                _dataCell(index, index < statements.length ? (statements[index]['name']?.toString() ?? statements[index]['patientName']?.toString() ?? '') : ''),
-                _dataCell(index, index < statements.length ? (statements[index]['type']?.toString() ?? '') : ''),
-                _dataCell(index, index < statements.length ? (statements[index]['price']?.toString() ?? statements[index]['amount']?.toString() ?? '') : ''),
-                _dataCell(index, index < statements.length ? (statements[index]['time']?.toString() ?? '') : ''),
-                _dataCell(index, index < statements.length ? (statements[index]['doctor']?.toString() ?? statements[index]['doctorName']?.toString() ?? '') : ''),
+                _dataCell(
+                  index,
+                  index <
+                      statements.length
+                      ? '${index + 1}'
+                      : '',
+                ),
+
+                _dataCell(
+                  index,
+                  index <
+                      statements.length
+                      ? (
+                      statements[index]
+                      ['name'] ??
+                          statements[index]
+                          ['Name'] ??
+                          ''
+                  ).toString()
+                      : '',
+                ),
+
+                _dataCell(
+                  index,
+                  index <
+                      statements.length
+                      ? (
+                      statements[index]
+                      ['type'] ??
+                          statements[index]
+                          ['Type'] ??
+                          ''
+                  ).toString()
+                      : '',
+                ),
+
+                _dataCell(
+                  index,
+                  index <
+                      statements.length
+                      ? (
+                      statements[index]
+                      ['price'] ??
+                          statements[index]
+                          ['Price'] ??
+                          ''
+                  ).toString()
+                      : '',
+                ),
+
+                _dataCell(
+                  index,
+                  index <
+                      statements.length
+                      ? (
+                      statements[index]
+                      ['time'] ??
+                          statements[index]
+                          ['Time'] ??
+                          ''
+                  ).toString()
+                      : '',
+                ),
+
+                _dataCell(
+                  index,
+                  index <
+                      statements.length
+                      ? (
+                      statements[index]
+                      ['doctor'] ??
+                          statements[index]
+                          ['Doctor'] ??
+                          ''
+                  ).toString()
+                      : '',
+                ),
               ],
             ),
         ],
@@ -148,117 +318,261 @@ class _StatementsTodayAccountScreenState
     );
   }
 
-  Widget _dataCell(int index, String text) {
+  // =========================================================
+  // DATA CELL
+  // =========================================================
+
+  Widget _dataCell(
+      int index,
+      String text,
+      ) {
     return GestureDetector(
       onTap: () {
         setState(() {
           selectedRow = index;
         });
       },
+
       child: Container(
         height: 42,
-        alignment: Alignment.center,
-        color: selectedRow == index
-            ? Colors.blue.withOpacity(0.2)
-            : const Color(0xFFD3DFE9),
+
+        alignment:
+        Alignment.center,
+
+        color:
+        selectedRow == index
+            ? Colors.blue
+            .withOpacity(0.2)
+            : const Color(
+          0xFFD3DFE9,
+        ),
+
         child: Text(
           text,
-          textAlign: TextAlign.center,
+          textAlign:
+          TextAlign.center,
         ),
       ),
     );
   }
 
+  // =========================================================
+  // BUILD
+  // =========================================================
+
   @override
-  Widget build(BuildContext context) {
-    final totalIncome = _calculateTotalIncome();
+  Widget build(
+      BuildContext context,
+      ) {
+    final totalIncome =
+    _calculateTotalIncome();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Today\'s Total Statements / بيانات الكشف اليومية'),
+        title: const Text(
+          'Today\'s Total Statements / بيانات الكشف اليومية',
+        ),
       ),
+
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+        child:
+        SingleChildScrollView(
+          padding:
+          const EdgeInsets.all(16),
+
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+
             children: [
+              // ===============================================
+              // DATE
+              // ===============================================
+
               const Text(
                 'التاريخ / Date',
-                textAlign: TextAlign.center,
+                textAlign:
+                TextAlign.center,
+
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontWeight:
+                  FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+
+              const SizedBox(
+                height: 8,
+              ),
+
               InkWell(
-                onTap: _selectDate,
+                onTap:
+                isLoading
+                    ? null
+                    : _selectDate,
+
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_month),
+                  decoration:
+                  const InputDecoration(
+                    border:
+                    OutlineInputBorder(),
+                    suffixIcon:
+                    Icon(
+                      Icons
+                          .calendar_month,
+                    ),
                   ),
+
                   child: Text(
-                    _formatDate(selectedDate),
-                    textAlign: TextAlign.center,
+                    _formatDate(
+                      selectedDate,
+                    ),
+
+                    textAlign:
+                    TextAlign.center,
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+
+              const SizedBox(
+                height: 12,
+              ),
+
+              // ===============================================
+              // SEARCH
+              // ===============================================
+
               SizedBox(
                 height: 48,
-                child: ElevatedButton.icon(
-                  onPressed: isLoading ? null : _loadStatements,
-                  icon: const Icon(Icons.search),
-                  label: const Text(
+
+                child:
+                ElevatedButton.icon(
+                  onPressed:
+                  isLoading
+                      ? null
+                      : _loadStatements,
+
+                  icon: const Icon(
+                    Icons.search,
+                  ),
+
+                  label:
+                  const Text(
                     'Search / بحث',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+
+                    style:
+                    TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                      FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+
+              const SizedBox(
+                height: 20,
+              ),
+
+              // ===============================================
+              // DATA
+              // ===============================================
+
               Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(
+                padding:
+                const EdgeInsets.all(8),
+
+                decoration:
+                BoxDecoration(
+                  border:
+                  Border.all(
                     color: Colors.grey,
                   ),
                 ),
+
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                  CrossAxisAlignment
+                      .stretch,
+
                   children: [
                     const Text(
                       'بيانات الكشف / Statement Data',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
+
+                      textAlign:
+                      TextAlign.right,
+
+                      style:
+                      TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight:
+                        FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+
+                    const SizedBox(
+                      height: 8,
+                    ),
+
+                    if (isLoading)
+                      const Padding(
+                        padding:
+                        EdgeInsets.all(
+                          20,
+                        ),
+
+                        child:
+                        Center(
+                          child:
+                          CircularProgressIndicator(),
+                        ),
+                      ),
+
                     _buildTable(),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+
+              const SizedBox(
+                height: 20,
+              ),
+
+              // ===============================================
+              // TOTAL
+              // ===============================================
+
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment
+                    .center,
+
                 children: [
                   const Text(
                     'إجمالي الواردات / Total Income: ',
-                    style: TextStyle(
+
+                    style:
+                    TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 12),
+
+                  const SizedBox(
+                    width: 12,
+                  ),
+
                   Text(
-                    totalIncome.toStringAsFixed(0),
-                    style: const TextStyle(
+                    totalIncome
+                        .toStringAsFixed(0),
+
+                    style:
+                    const TextStyle(
                       color: Colors.red,
                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
                 ],
@@ -269,4 +583,4 @@ class _StatementsTodayAccountScreenState
       ),
     );
   }
-}
+}
