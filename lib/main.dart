@@ -11,11 +11,19 @@ class SharabyCenterApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Sharaby Center',
-      theme: AppTheme.lightTheme,
-      home: const LoginScreen(),
+    return ListenableBuilder(
+      listenable: ThemeController.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Sharaby Center',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeController.instance.themeMode,
+          locale: ThemeController.instance.locale,
+          home: const LoginScreen(),
+        );
+      },
     );
   }
 }

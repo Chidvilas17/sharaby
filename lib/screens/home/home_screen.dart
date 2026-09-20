@@ -9,6 +9,7 @@ import 'management_followups_screen.dart';
 import 'inpatient_rates_screen.dart';
 import 'screening_time_screen.dart';
 import 'screen_data_edit_screen.dart';
+import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -103,7 +104,15 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                onTap: null,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MedicalFollowupsScreen(),
+                    ),
+                  );
+                },
               ),
 
               // ----------------------------------------------------
@@ -121,7 +130,15 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                onTap: null,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ManagementFollowupsScreen(),
+                    ),
+                  );
+                },
               ),
 
               // ----------------------------------------------------
@@ -139,7 +156,15 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                onTap: null,
+                onTap: () {
+                  Navigator.pop(context); // Close drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
               ),
 
               // ----------------------------------------------------
