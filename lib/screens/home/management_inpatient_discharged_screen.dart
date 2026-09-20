@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../services/internal_discharged_api_service.dart';
 
-class ManagementInpatientDischargedScreen extends StatefulWidget {
-  const ManagementInpatientDischargedScreen({super.key});
+class ManagementInpatientDischargedScreen
+    extends StatefulWidget {
+  const ManagementInpatientDischargedScreen({
+    super.key,
+  });
 
   @override
-  State<ManagementInpatientDischargedScreen> createState() =>
+  State<ManagementInpatientDischargedScreen>
+  createState() =>
       _ManagementInpatientDischargedScreenState();
 }
 
@@ -15,23 +20,132 @@ class _ManagementInpatientDischargedScreenState
 
   int? selectedRow;
 
-  // Empty until the API/database is connected.
-  final List<Map<String, String>> dischargedPatients = [];
+  List<Map<String, dynamic>> dischargedPatients = [];
 
-  void _search() {
-    final name = searchController.text.trim();
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // =========================================================
+    // LOAD ALL DATA AUTOMATICALLY WHEN SCREEN OPENS
+    // =========================================================
+    _loadAll();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  // =========================================================
+  // LOAD ALL DISCHARGED CASES
+  // =========================================================
+
+  Future<void> _loadAll() async {
+    setState(() {
+      loading = true;
+      selectedRow = null;
+    });
+
+    try {
+      final result =
+      await InternalDischargedApiService.getAll();
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        dischargedPatients = result;
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        loading = false;
+        dischargedPatients = [];
+      });
+
+      _showMessage(
+        'Failed to load discharged cases.\n$e',
+      );
+    }
+  }
+
+  // =========================================================
+  // SEARCH
+  // =========================================================
+
+  Future<void> _search() async {
+    final name =
+    searchController.text.trim();
+
+    // =======================================================
+    // EMPTY SEARCH = SHOW ALL DATA AGAIN
+    // =======================================================
 
     if (name.isEmpty) {
-      _showMessage('Please enter a name to search.');
+      await _loadAll();
       return;
     }
 
-    // Real database search will be connected through the API later.
-    _showMessage('Searching for: $name');
+    setState(() {
+      loading = true;
+      selectedRow = null;
+    });
+
+    try {
+      final result =
+      await InternalDischargedApiService.search(
+        name,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        dischargedPatients = result;
+        loading = false;
+      });
+
+      if (result.isEmpty) {
+        _showMessage(
+          'No discharged cases found.',
+        );
+      }
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        loading = false;
+      });
+
+      _showMessage(
+        'Failed to search discharged cases.\n$e',
+      );
+    }
   }
 
+  // =========================================================
+  // MESSAGE
+  // =========================================================
+
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context)
+        .hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -40,7 +154,14 @@ class _ManagementInpatientDischargedScreenState
     );
   }
 
-  Widget _headerCell(String text, double width) {
+  // =========================================================
+  // HEADER CELL
+  // =========================================================
+
+  Widget _headerCell(
+      String text,
+      double width,
+      ) {
     return Container(
       width: width,
       height: 52,
@@ -59,6 +180,10 @@ class _ManagementInpatientDischargedScreenState
     );
   }
 
+  // =========================================================
+  // DATA CELL
+  // =========================================================
+
   Widget _dataCell(
       int row,
       String text,
@@ -74,6 +199,9 @@ class _ManagementInpatientDischargedScreenState
         width: width,
         height: 38,
         alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 6,
+        ),
         color: selectedRow == row
             ? Theme.of(context)
             .colorScheme
@@ -82,17 +210,27 @@ class _ManagementInpatientDischargedScreenState
         child: Text(
           text,
           textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
   }
 
-  Widget _buildTable() {
-    const int emptyRows = 20;
+  // =========================================================
+  // TABLE
+  // =========================================================
 
+  Widget _buildTable() {
     const double nameWidth = 220;
     const double phoneWidth = 160;
     const double transferredWidth = 200;
+
+    // When data exists, show ALL returned rows.
+    // When there is no data, keep the empty grid.
+    final int rowCount =
+    dischargedPatients.isEmpty
+        ? 20
+        : dischargedPatients.length;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -109,9 +247,9 @@ class _ManagementInpatientDischargedScreenState
           2: FixedColumnWidth(transferredWidth),
         },
         children: [
-          // =========================
+          // ===================================================
           // HEADER
-          // =========================
+          // ===================================================
 
           TableRow(
             children: [
@@ -130,31 +268,55 @@ class _ManagementInpatientDischargedScreenState
             ],
           ),
 
-          // =========================
-          // EMPTY ROWS
-          // =========================
+          // ===================================================
+          // DATA ROWS
+          // ===================================================
 
-          for (int row = 0; row < emptyRows; row++)
+          for (
+          int row = 0;
+          row < rowCount;
+          row++
+          )
             TableRow(
               children: [
                 _dataCell(
                   row,
                   row < dischargedPatients.length
-                      ? dischargedPatients[row]['name'] ?? ''
+                      ? (
+                      dischargedPatients[row]
+                      ['name'] ??
+                          dischargedPatients[row]
+                          ['Name'] ??
+                          ''
+                  ).toString()
                       : '',
                   nameWidth,
                 ),
+
                 _dataCell(
                   row,
                   row < dischargedPatients.length
-                      ? dischargedPatients[row]['phone'] ?? ''
+                      ? (
+                      dischargedPatients[row]
+                      ['phone'] ??
+                          dischargedPatients[row]
+                          ['Phone'] ??
+                          ''
+                  ).toString()
                       : '',
                   phoneWidth,
                 ),
+
                 _dataCell(
                   row,
                   row < dischargedPatients.length
-                      ? dischargedPatients[row]['transferredTo'] ?? ''
+                      ? (
+                      dischargedPatients[row]
+                      ['transferredTo'] ??
+                          dischargedPatients[row]
+                          ['TransferredTo'] ??
+                          ''
+                  ).toString()
                       : '',
                   transferredWidth,
                 ),
@@ -165,6 +327,10 @@ class _ManagementInpatientDischargedScreenState
     );
   }
 
+  // =========================================================
+  // BUILD
+  // =========================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,19 +339,23 @@ class _ManagementInpatientDischargedScreenState
           'Discharged Cases',
         ),
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
+
           child: Column(
             crossAxisAlignment:
             CrossAxisAlignment.stretch,
+
             children: [
-              // =========================
-              // SEARCH BY NAME
-              // =========================
+              // =================================================
+              // SEARCH
+              // =================================================
 
               Container(
                 padding: const EdgeInsets.all(16),
+
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.grey.shade400,
@@ -193,42 +363,73 @@ class _ManagementInpatientDischargedScreenState
                   borderRadius:
                   BorderRadius.circular(4),
                 ),
+
                 child: Column(
                   crossAxisAlignment:
                   CrossAxisAlignment.stretch,
+
                   children: [
                     const Text(
                       'Search by Name',
-                      textAlign: TextAlign.center,
+
+                      textAlign:
+                      TextAlign.center,
+
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight:
+                        FontWeight.bold,
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(
+                      height: 14,
+                    ),
 
                     TextField(
-                      controller: searchController,
+                      controller:
+                      searchController,
+
                       textInputAction:
                       TextInputAction.search,
-                      onSubmitted: (_) => _search(),
+
+                      onSubmitted: (_) =>
+                          _search(),
+
                       decoration:
                       const InputDecoration(
                         labelText: 'Name',
-                        border: OutlineInputBorder(),
+                        border:
+                        OutlineInputBorder(),
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(
+                      height: 14,
+                    ),
 
                     SizedBox(
                       height: 48,
+
                       child: ElevatedButton(
-                        onPressed: _search,
-                        child: const Text(
+                        onPressed:
+                        loading
+                            ? null
+                            : _search,
+
+                        child: loading
+                            ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child:
+                          CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Text(
                           'Search',
-                          style: TextStyle(
+                          style:
+                          TextStyle(
                             fontSize: 16,
                           ),
                         ),
@@ -238,11 +439,13 @@ class _ManagementInpatientDischargedScreenState
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(
+                height: 24,
+              ),
 
-              // =========================
+              // =================================================
               // TABLE
-              // =========================
+              // =================================================
 
               _buildTable(),
             ],
