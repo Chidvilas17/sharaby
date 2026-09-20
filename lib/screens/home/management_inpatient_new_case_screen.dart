@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/hdan_patients_api_service.dart';
 
 class ManagementInpatientNewCaseScreen extends StatefulWidget {
   const ManagementInpatientNewCaseScreen({super.key});
@@ -10,9 +11,9 @@ class ManagementInpatientNewCaseScreen extends StatefulWidget {
 
 class _ManagementInpatientNewCaseScreenState
     extends State<ManagementInpatientNewCaseScreen> {
-  // =========================
+  // =========================================================
   // TEXT FIELDS
-  // =========================
+  // =========================================================
 
   final TextEditingController nameController =
   TextEditingController();
@@ -32,36 +33,95 @@ class _ManagementInpatientNewCaseScreenState
   final TextEditingController notesController =
   TextEditingController();
 
-  // =========================
+  // =========================================================
   // DATABASE DROPDOWNS
-  // =========================
+  // =========================================================
 
   String? transferFromDoctor;
   String? consultingDoctor;
   String? doctorReferral;
   String? treatmentType;
 
-  // =========================
+  // =========================================================
+  // DATABASE DATA
+  // =========================================================
+
+  List<Map<String, dynamic>> doctors = [];
+  List<Map<String, dynamic>> treatmentTypes = [];
+
+  bool loadingData = true;
+  bool saving = false;
+
+  // =========================================================
   // BIRTH DATE
-  // =========================
+  // =========================================================
 
   int birthDay = 1;
   int birthMonth = 1;
   int birthYear = 2000;
 
-  // =========================
+  // =========================================================
   // ADMISSION DATE
-  // =========================
+  // =========================================================
 
   DateTime admissionDate = DateTime.now();
 
-  // =========================
+  // =========================================================
   // ADMISSION TIME
-  // =========================
+  // =========================================================
 
   int admissionHour = 1;
   int admissionMinute = 0;
   String admissionPeriod = 'AM';
+
+  // =========================================================
+  // INIT
+  // =========================================================
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDatabaseData();
+  }
+
+  // =========================================================
+  // LOAD DOCTORS + TREATMENT TYPES
+  // =========================================================
+
+  Future<void> _loadDatabaseData() async {
+    try {
+      final results = await Future.wait([
+        HdanPatientsApiService.getDoctors(),
+        HdanPatientsApiService.getTreatmentTypes(),
+      ]);
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        doctors = results[0];
+        treatmentTypes = results[1];
+        loadingData = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        loadingData = false;
+      });
+
+      _showMessage(
+        'Failed to load doctors or treatment types.\n$e',
+      );
+    }
+  }
+
+  // =========================================================
+  // DISPOSE
+  // =========================================================
 
   @override
   void dispose() {
@@ -70,14 +130,16 @@ class _ManagementInpatientNewCaseScreenState
     addressController.dispose();
     phone1Controller.dispose();
     phone2Controller.dispose();
+    notesController;
+
     notesController.dispose();
 
     super.dispose();
   }
 
-  // =========================
+  // =========================================================
   // DATE FORMAT
-  // =========================
+  // =========================================================
 
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
@@ -87,9 +149,9 @@ class _ManagementInpatientNewCaseScreenState
     return '$day-$month-$year';
   }
 
-  // =========================
+  // =========================================================
   // ADMISSION DATE PICKER
-  // =========================
+  // =========================================================
 
   Future<void> _selectAdmissionDate() async {
     final DateTime? picked = await showDatePicker(
@@ -108,49 +170,248 @@ class _ManagementInpatientNewCaseScreenState
     });
   }
 
-  // =========================
-  // SAVE
-  // =========================
+  // =========================================================
+  // BUILD BIRTH DATE
+  // =========================================================
 
-  void _save() {
-    if (nameController.text.trim().isEmpty) {
-      _showMessage('Please enter the patient name.');
-      return;
+  DateTime? _getBirthDate() {
+    final date = DateTime(
+      birthYear,
+      birthMonth,
+      birthDay,
+    );
+
+    // Prevent invalid dates such as 31-02-2000
+    if (date.year != birthYear ||
+        date.month != birthMonth ||
+        date.day != birthDay) {
+      return null;
     }
 
-    if (phone1Controller.text.trim().isEmpty) {
-      _showMessage('Please enter Phone 1.');
-      return;
+    return date;
+  }
+
+  // =========================================================
+  // BUILD ADMISSION DATETIME
+  // =========================================================
+
+  DateTime _getAdmissionDateTime() {
+    int hour = admissionHour;
+
+    if (admissionPeriod == 'PM' && hour != 12) {
+      hour += 12;
     }
 
-    if (treatmentType == null) {
-      _showMessage('Please select the treatment type.');
-      return;
+    if (admissionPeriod == 'AM' && hour == 12) {
+      hour = 0;
     }
 
-    // Database/API connection will be added later.
-    _showMessage(
-      'Patient information is ready to be saved.',
+    return DateTime(
+      admissionDate.year,
+      admissionDate.month,
+      admissionDate.day,
+      hour,
+      admissionMinute,
     );
   }
 
-  // =========================
+  // =========================================================
+  // SAVE
+  // =========================================================
+
+  Future<void> _save() async {
+    if (saving) {
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // NAME
+    // ---------------------------------------------------------
+
+    final name = nameController.text.trim();
+
+    if (name.isEmpty) {
+      _showMessage(
+        'Please enter the patient name.',
+      );
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // PHONE 1
+    // ---------------------------------------------------------
+
+    final phone = phone1Controller.text.trim();
+
+    if (phone.isEmpty) {
+      _showMessage(
+        'Please enter Phone 1.',
+      );
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // TREATMENT
+    // ---------------------------------------------------------
+
+    if (treatmentType == null ||
+        treatmentType!.trim().isEmpty) {
+      _showMessage(
+        'Please select the treatment type.',
+      );
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // BIRTH DATE
+    // ---------------------------------------------------------
+
+    final birthDate = _getBirthDate();
+
+    if (birthDate == null) {
+      _showMessage(
+        'Please select a valid date of birth.',
+      );
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // OTHER VALUES
+    // ---------------------------------------------------------
+
+    final guardianId =
+    guardianIdController.text.trim();
+
+    final address =
+    addressController.text.trim();
+
+    final phone2 =
+    phone2Controller.text.trim();
+
+    // Notes are kept in the UI.
+    // The verified HdanPatients API currently has no Notes field,
+    // so we do not send Notes into an unverified database column.
+
+    // ---------------------------------------------------------
+    // ADMISSION DATETIME
+    // ---------------------------------------------------------
+
+    final timeOfIn =
+    _getAdmissionDateTime();
+
+    // ---------------------------------------------------------
+    // START SAVING
+    // ---------------------------------------------------------
+
+    setState(() {
+      saving = true;
+    });
+
+    try {
+      final result =
+      await HdanPatientsApiService.addPatient(
+        name: name,
+
+        address: address.isEmpty
+            ? null
+            : address,
+
+        phone: phone,
+
+        phone2: phone2.isEmpty
+            ? null
+            : phone2,
+
+        // Guardian ID -> HdanPatients.Card
+        card: guardianId.isEmpty
+            ? null
+            : guardianId,
+
+        // Transfer From Doctor -> From_Dr
+        fromDr: transferFromDoctor,
+
+        // Doctor Referral -> Shift_Dr
+        shiftDr: doctorReferral,
+
+        // Consulting Doctor -> Manager_Dr
+        managerDr: consultingDoctor,
+
+        // Admission date + time -> Time_of_in
+        timeOfIn: timeOfIn,
+
+        // Birth date -> Time_of_born
+        timeOfBorn: birthDate,
+
+        // Treatment Type -> type
+        type: treatmentType,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        saving = false;
+      });
+
+      _showMessage(
+        'Patient added successfully. ID: ${result['id'] ?? ''}',
+      );
+
+      // -------------------------------------------------------
+      // CLEAR FORM AFTER SUCCESS
+      // -------------------------------------------------------
+
+      nameController.clear();
+      guardianIdController.clear();
+      addressController.clear();
+      phone1Controller.clear();
+      phone2Controller.clear();
+      notesController.clear();
+
+      setState(() {
+        transferFromDoctor = null;
+        consultingDoctor = null;
+        doctorReferral = null;
+        treatmentType = null;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        saving = false;
+      });
+
+      _showMessage(
+        'Failed to save patient.\n$e',
+      );
+    }
+  }
+
+  // =========================================================
   // MESSAGE
-  // =========================
+  // =========================================================
 
   void _showMessage(String message) {
+    if (!mounted) {
+      return;
+    }
+
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
+        duration: const Duration(seconds: 4),
       ),
     );
   }
 
-  // =========================
+  // =========================================================
   // TEXT FIELD
-  // =========================
+  // =========================================================
 
   Widget _textField({
     required String label,
@@ -167,15 +428,37 @@ class _ManagementInpatientNewCaseScreenState
     );
   }
 
-  // =========================
-  // DATABASE DROPDOWN
-  // =========================
+  // =========================================================
+  // DOCTOR DROPDOWN
+  // =========================================================
 
-  Widget _databaseDropdown({
+  Widget _doctorDropdown({
     required String label,
     required String? value,
     required ValueChanged<String?> onChanged,
   }) {
+    if (loadingData) {
+      return InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        child: const SizedBox(
+          height: 24,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return DropdownButtonFormField<String>(
       value: value,
       isExpanded: true,
@@ -183,21 +466,86 @@ class _ManagementInpatientNewCaseScreenState
         labelText: label,
         border: const OutlineInputBorder(),
       ),
-      items: const [
-        DropdownMenuItem<String>(
-          value: 'SELECT',
-          child: Text('Select'),
-        ),
-      ],
-      onChanged: (value) {
-        onChanged(value);
-      },
+      items: doctors.map((doctor) {
+        final doctorName =
+        (doctor['name'] ?? '').toString();
+
+        if (doctorName.isEmpty) {
+          return null;
+        }
+
+        return DropdownMenuItem<String>(
+          value: doctorName,
+          child: Text(
+            doctorName,
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).whereType<DropdownMenuItem<String>>().toList(),
+      onChanged: onChanged,
     );
   }
 
-  // =========================
+  // =========================================================
+  // TREATMENT DROPDOWN
+  // =========================================================
+
+  Widget _treatmentDropdown({
+    required String? value,
+    required ValueChanged<String?> onChanged,
+  }) {
+    if (loadingData) {
+      return InputDecorator(
+        decoration: const InputDecoration(
+          labelText: 'Treatment Type',
+          border: OutlineInputBorder(),
+        ),
+        child: const SizedBox(
+          height: 24,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return DropdownButtonFormField<String>(
+      value: value,
+      isExpanded: true,
+      decoration: const InputDecoration(
+        labelText: 'Treatment Type',
+        border: OutlineInputBorder(),
+      ),
+      items: treatmentTypes.map((treatment) {
+        final treatmentName =
+        (treatment['type'] ?? '').toString();
+
+        if (treatmentName.isEmpty) {
+          return null;
+        }
+
+        return DropdownMenuItem<String>(
+          value: treatmentName,
+          child: Text(
+            treatmentName,
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).whereType<DropdownMenuItem<String>>().toList(),
+      onChanged: onChanged,
+    );
+  }
+
+  // =========================================================
   // SECTION TITLE
-  // =========================
+  // =========================================================
 
   Widget _sectionTitle(String title) {
     return Padding(
@@ -214,9 +562,9 @@ class _ManagementInpatientNewCaseScreenState
     );
   }
 
-  // =========================
+  // =========================================================
   // BIRTH DATE
-  // =========================
+  // =========================================================
 
   Widget _birthDateSection() {
     return Column(
@@ -333,9 +681,9 @@ class _ManagementInpatientNewCaseScreenState
     );
   }
 
-  // =========================
+  // =========================================================
   // ADMISSION DATE
-  // =========================
+  // =========================================================
 
   Widget _admissionDateSection() {
     return Column(
@@ -355,7 +703,8 @@ class _ManagementInpatientNewCaseScreenState
               border: Border.all(
                 color: Colors.grey.shade500,
               ),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius:
+              BorderRadius.circular(4),
             ),
             child: Row(
               children: [
@@ -385,9 +734,9 @@ class _ManagementInpatientNewCaseScreenState
     );
   }
 
-  // =========================
+  // =========================================================
   // ADMISSION TIME
-  // =========================
+  // =========================================================
 
   Widget _admissionTimeSection() {
     return Column(
@@ -504,9 +853,9 @@ class _ManagementInpatientNewCaseScreenState
     );
   }
 
-  // =========================
+  // =========================================================
   // BUILD
-  // =========================
+  // =========================================================
 
   @override
   Widget build(BuildContext context) {
@@ -526,9 +875,9 @@ class _ManagementInpatientNewCaseScreenState
             CrossAxisAlignment.stretch,
 
             children: [
-              // =================================
+              // =================================================
               // PATIENT INFORMATION
-              // =================================
+              // =================================================
 
               _sectionTitle(
                 'Patient Information',
@@ -577,101 +926,96 @@ class _ManagementInpatientNewCaseScreenState
 
               const SizedBox(height: 26),
 
-              // =================================
+              // =================================================
               // DOCTOR INFORMATION
-              // =================================
+              // =================================================
 
               _sectionTitle(
                 'Doctor Information',
               ),
 
-              _databaseDropdown(
+              _doctorDropdown(
                 label: 'Transfer From Doctor',
                 value: transferFromDoctor,
                 onChanged: (value) {
                   setState(() {
-                    transferFromDoctor =
-                        value;
+                    transferFromDoctor = value;
                   });
                 },
               ),
 
               const SizedBox(height: 14),
 
-              _databaseDropdown(
+              _doctorDropdown(
                 label: 'Consulting Doctor',
                 value: consultingDoctor,
                 onChanged: (value) {
                   setState(() {
-                    consultingDoctor =
-                        value;
+                    consultingDoctor = value;
                   });
                 },
               ),
 
               const SizedBox(height: 14),
 
-              _databaseDropdown(
+              _doctorDropdown(
                 label: 'Doctor Referral',
                 value: doctorReferral,
                 onChanged: (value) {
                   setState(() {
-                    doctorReferral =
-                        value;
+                    doctorReferral = value;
                   });
                 },
               ),
 
               const SizedBox(height: 26),
 
-              // =================================
+              // =================================================
               // TREATMENT
-              // =================================
+              // =================================================
 
               _sectionTitle(
                 'Treatment',
               ),
 
-              _databaseDropdown(
-                label: 'Treatment Type',
+              _treatmentDropdown(
                 value: treatmentType,
                 onChanged: (value) {
                   setState(() {
-                    treatmentType =
-                        value;
+                    treatmentType = value;
                   });
                 },
               ),
 
               const SizedBox(height: 26),
 
-              // =================================
+              // =================================================
               // DATE OF BIRTH
-              // =================================
+              // =================================================
 
               _birthDateSection(),
 
               const SizedBox(height: 26),
 
-              // =================================
+              // =================================================
               // ADMISSION DATE
-              // =================================
+              // =================================================
 
               _admissionDateSection(),
 
               const SizedBox(height: 26),
 
-              // =================================
+              // =================================================
               // ADMISSION TIME
-              // =================================
+              // =================================================
 
               _admissionTimeSection(),
 
               const SizedBox(height: 26),
 
-              // =================================
+              // =================================================
               // NOTES
-              // =================================
+              // =================================================
 
               _sectionTitle(
                 'Notes',
@@ -685,17 +1029,26 @@ class _ManagementInpatientNewCaseScreenState
 
               const SizedBox(height: 30),
 
-              // =================================
+              // =================================================
               // SAVE
-              // =================================
+              // =================================================
 
               SizedBox(
                 height: 52,
-
                 child: ElevatedButton(
-                  onPressed: _save,
+                  onPressed:
+                  saving ? null : _save,
 
-                  child: const Text(
+                  child: saving
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child:
+                    CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
                     'Save',
                     style: TextStyle(
                       fontSize: 17,
