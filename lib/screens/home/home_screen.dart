@@ -45,13 +45,14 @@ class HomeScreen extends StatelessWidget {
                   vertical: 30,
                   horizontal: 20,
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    Icon(
-                      Icons.local_hospital_outlined,
-                      size: 48,
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 60,
+                      fit: BoxFit.contain,
                     ),
 
                     SizedBox(height: 12),
