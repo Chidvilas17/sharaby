@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
+import '../../theme/app_theme.dart';
 import 'maintenance_screen.dart';
 import 'counter_activity_screen.dart';
 import 'staff_screen.dart';
@@ -10,7 +12,6 @@ import 'nursery_screen.dart';
 import 'statements_screen.dart';
 import 'other_income_screen.dart';
 
-
 class ManagementFollowupsScreen extends StatelessWidget {
   const ManagementFollowupsScreen({super.key});
 
@@ -18,9 +19,9 @@ class ManagementFollowupsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Management Follow-ups',
-          style: TextStyle(
+        title: Text(
+          AppTranslations.tr('Management Follow-ups'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -39,7 +40,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Maintenance',
+                title: AppTranslations.tr('Maintenance'),
                 icon: Icons.build_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -56,7 +57,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Counter Activity',
+                title: AppTranslations.tr('Counter Activity'),
                 icon: Icons.point_of_sale_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -73,7 +74,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Staff',
+                title: AppTranslations.tr('Staff'),
                 icon: Icons.groups_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -90,7 +91,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Other Income',
+                title: AppTranslations.tr('Other Income'),
                 icon: Icons.attach_money_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -107,7 +108,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'General Expenses',
+                title: AppTranslations.tr('General Expenses'),
                 icon: Icons.money_off_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -124,7 +125,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Sterilization',
+                title: AppTranslations.tr('Sterilization'),
                 icon: Icons.clean_hands_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -139,7 +140,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
               // 7. OXYGEN
               _menuButton(
-                title: 'Oxygen',
+                title: AppTranslations.tr('Oxygen'),
                 icon: Icons.air_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -152,14 +153,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
               ),
               // ==========================================
 
-
-
               // ==========================================
               // 8. INPATIENT
               // ==========================================
 
               _menuButton(
-                title: 'Inpatient',
+                title: AppTranslations.tr('Inpatient'),
                 icon: Icons.local_hospital_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -176,7 +175,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Nursery',
+                title: AppTranslations.tr('Nursery'),
                 icon: Icons.child_care_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -193,7 +192,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
               // ==========================================
 
               _menuButton(
-                title: 'Statements',
+                title: AppTranslations.tr('Statements'),
                 icon: Icons.receipt_long_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -262,7 +261,7 @@ class ManagementFollowupsScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 18),
+                SizedBox(width: 18),
 
                 Expanded(
                   child: Text(
@@ -275,10 +274,12 @@ class ManagementFollowupsScreen extends StatelessWidget {
                   ),
                 ),
 
-                const Icon(
-                  Icons.arrow_forward_ios,
+                Icon(
+                  ThemeController.instance.isArabic
+                      ? Icons.arrow_back_ios
+                      : Icons.arrow_forward_ios,
                   size: 18,
-                  color: Color(0xFF0EA5E9),
+                  color: const Color(0xFF0EA5E9),
                 ),
               ],
             ),

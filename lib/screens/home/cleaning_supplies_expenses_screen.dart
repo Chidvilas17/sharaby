@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class CleaningSuppliesExpensesScreen extends StatefulWidget {
   const CleaningSuppliesExpensesScreen({super.key});
@@ -103,11 +104,9 @@ class _CleaningSuppliesExpensesScreenState
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -164,7 +163,7 @@ class _CleaningSuppliesExpensesScreenState
         child: Row(
           children: [
             const Icon(Icons.calendar_today_outlined),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Text(
                 _formatDate(selectedDate),
@@ -340,7 +339,7 @@ class _CleaningSuppliesExpensesScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cleaning Supplies Expenses'),
+        title: Text(AppTranslations.tr('Cleaning Supplies Expenses')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -349,10 +348,9 @@ class _CleaningSuppliesExpensesScreenState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Current User
-              const Row(
+              Row(
                 children: [
-                  Text(
-                    'Current User: ',
+                  Text(AppTranslations.tr('Current User: '),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -361,23 +359,22 @@ class _CleaningSuppliesExpensesScreenState
                 ],
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Search by Date
               _sectionTitle('Search by Date'),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _dateField(),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
                   onPressed: _search,
-                  child: const Text(
-                    'Search',
+                  child: Text(AppTranslations.tr('Search'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -386,30 +383,29 @@ class _CleaningSuppliesExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
-              const Center(
-                child: Text(
-                  'No operations this day',
+              Center(
+                child: Text(AppTranslations.tr('No operations this day'),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Add Expense
               _sectionTitle('Add Expense'),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               _textField(
                 controller: receiptNumberController,
                 label: 'Receipt Number',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller: costController,
@@ -420,21 +416,20 @@ class _CleaningSuppliesExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller: notesController,
                 label: 'Notes',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
                   onPressed: _saveExpense,
-                  child: const Text(
-                    'Save',
+                  child: Text(AppTranslations.tr('Save'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -443,22 +438,21 @@ class _CleaningSuppliesExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Expense Data
               _sectionTitle('Expense Data'),
 
               _buildTable(),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Delete
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
                   onPressed: _deleteExpense,
-                  child: const Text(
-                    'Delete',
+                  child: Text(AppTranslations.tr('Delete'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -467,14 +461,13 @@ class _CleaningSuppliesExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Total
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Total Expenses: ',
+                  Text(AppTranslations.tr('Total Expenses: '),
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,

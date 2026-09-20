@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/indoor_view_history_api_service.dart';
 
@@ -135,8 +136,7 @@ class _IndoorViewHistoryScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Internal History',
+        title: Text(AppTranslations.tr('Internal History'),
         ),
       ),
       body: SafeArea(
@@ -163,8 +163,7 @@ class _IndoorViewHistoryScreenState
                   crossAxisAlignment:
                   CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Search By Name',
+                    Text(AppTranslations.tr('Search By Name'),
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 18,
@@ -172,7 +171,7 @@ class _IndoorViewHistoryScreenState
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // ==========================================
                     // NAME INPUT
@@ -187,8 +186,8 @@ class _IndoorViewHistoryScreenState
                         _search();
                       },
                       decoration:
-                      const InputDecoration(
-                        labelText: 'Name',
+                      InputDecoration(
+                        labelText: AppTranslations.tr('Name'),
                         border:
                         OutlineInputBorder(),
                         prefixIcon:
@@ -196,7 +195,7 @@ class _IndoorViewHistoryScreenState
                       ),
                     ),
 
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     // ==========================================
                     // SEARCH BUTTON
@@ -212,8 +211,7 @@ class _IndoorViewHistoryScreenState
                         icon: const Icon(
                           Icons.search,
                         ),
-                        label: const Text(
-                          'Search',
+                        label: Text(AppTranslations.tr('Search'),
                           style: TextStyle(
                             fontSize: 16,
                           ),
@@ -221,7 +219,7 @@ class _IndoorViewHistoryScreenState
                       ),
                     ),
 
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
 
                     // ==========================================
                     // CLEAR BUTTON
@@ -237,8 +235,7 @@ class _IndoorViewHistoryScreenState
                         icon: const Icon(
                           Icons.clear,
                         ),
-                        label: const Text(
-                          'Clear',
+                        label: Text(AppTranslations.tr('Clear'),
                           style: TextStyle(
                             fontSize: 16,
                           ),
@@ -249,7 +246,7 @@ class _IndoorViewHistoryScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // MESSAGE
@@ -296,8 +293,7 @@ class _IndoorViewHistoryScreenState
                   crossAxisAlignment:
                   CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'History',
+                    Text(AppTranslations.tr('History'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight:
@@ -305,7 +301,7 @@ class _IndoorViewHistoryScreenState
                       ),
                     ),
 
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     // ==========================================
                     // TABLE
@@ -345,7 +341,7 @@ class _IndoorViewHistoryScreenState
                                     ),
                                   ),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     _HeaderCell(
                                       title: 'Name',
@@ -364,7 +360,7 @@ class _IndoorViewHistoryScreenState
                               // ==================================
 
                               if (isLoading)
-                                const SizedBox(
+                                SizedBox(
                                   height: 576,
                                   child: Center(
                                     child:
@@ -392,8 +388,7 @@ class _IndoorViewHistoryScreenState
                                       MainAxisAlignment
                                           .center,
                                       children: [
-                                        const Text(
-                                          'Failed to load history.',
+                                        Text(AppTranslations.tr('Failed to load history.'),
                                           textAlign:
                                           TextAlign
                                               .center,
@@ -407,7 +402,7 @@ class _IndoorViewHistoryScreenState
                                           ),
                                         ),
 
-                                        const SizedBox(
+                                        SizedBox(
                                           height: 10,
                                         ),
 
@@ -418,7 +413,7 @@ class _IndoorViewHistoryScreenState
                                               .center,
                                         ),
 
-                                        const SizedBox(
+                                        SizedBox(
                                           height: 16,
                                         ),
 
@@ -428,8 +423,7 @@ class _IndoorViewHistoryScreenState
                                             _loadHistory();
                                           },
                                           child:
-                                          const Text(
-                                            'Retry',
+                                          Text(AppTranslations.tr('Retry'),
                                           ),
                                         ),
                                       ],
@@ -495,7 +489,7 @@ class _IndoorViewHistoryScreenState
                 ),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 _EmptyCell(flex: 3),
                 _EmptyCell(flex: 2),

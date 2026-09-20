@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'oxygen_sterilization_screen.dart';
 
 class OtherScreen extends StatelessWidget {
@@ -8,8 +10,7 @@ class OtherScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Other',
+        title: Text(AppTranslations.tr('Other'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -65,7 +66,7 @@ class OtherScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
             Text(
               title,
               style: const TextStyle(
@@ -74,8 +75,7 @@ class OtherScreen extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

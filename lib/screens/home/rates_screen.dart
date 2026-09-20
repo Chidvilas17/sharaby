@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/staff_rates_api_service.dart';
 
 class RatesScreen extends StatefulWidget {
@@ -87,8 +88,7 @@ class _RatesScreenState extends State<RatesScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to load employee rates.\n$e',
+          content: Text(AppTranslations.tr('Failed to load employee rates.\n$e'),
           ),
         ),
       );
@@ -115,11 +115,11 @@ class _RatesScreenState extends State<RatesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Employees Rates'),
+        title: Text(AppTranslations.tr('Employees Rates')),
       ),
 
       body: loading
-          ? const Center(
+          ? Center(
         child: CircularProgressIndicator(),
       )
           : RefreshIndicator(
@@ -142,7 +142,7 @@ class _RatesScreenState extends State<RatesScreen> {
 
               _buildDoctorsSection(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // NURSING
@@ -150,7 +150,7 @@ class _RatesScreenState extends State<RatesScreen> {
 
               _buildNursingSection(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // ACCOUNTANTS & WORKERS
@@ -158,7 +158,7 @@ class _RatesScreenState extends State<RatesScreen> {
 
               _buildAccountantsWorkersSection(),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -174,7 +174,7 @@ class _RatesScreenState extends State<RatesScreen> {
     return _buildTableSection(
       title: 'Doctors',
 
-      columns: const [
+      columns: [
         'Name',
         'Rate',
         'Rate In Special Days',
@@ -204,7 +204,7 @@ class _RatesScreenState extends State<RatesScreen> {
     return _buildTableSection(
       title: 'Nursing',
 
-      columns: const [
+      columns: [
         'Name',
         'A',
         'B',
@@ -237,7 +237,7 @@ class _RatesScreenState extends State<RatesScreen> {
     return _buildTableSection(
       title: 'Accountants - and - Workers',
 
-      columns: const [
+      columns: [
         'Name',
         'Salary',
       ],
@@ -288,7 +288,7 @@ class _RatesScreenState extends State<RatesScreen> {
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         // --------------------------------------------------------
         // TABLE
@@ -375,12 +375,11 @@ class _RatesScreenState extends State<RatesScreen> {
                   // ==================================================
 
                   if (rows.isEmpty)
-                    const SizedBox(
+                    SizedBox(
                       height: 100,
 
                       child: Center(
-                        child: Text(
-                          'No data',
+                        child: Text(AppTranslations.tr('No data'),
                           style:
                           TextStyle(
                             color:

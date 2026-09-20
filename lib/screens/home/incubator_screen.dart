@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'incubator_add_new_screen.dart';
 import 'incubator_view_current_screen.dart';
 import 'incubator_view_history_screen.dart';
@@ -10,8 +12,7 @@ class IncubatorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Incubator',
+        title: Text(AppTranslations.tr('Incubator'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -100,7 +101,7 @@ class IncubatorScreen extends StatelessWidget {
               size: 32,
             ),
 
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
 
             Text(
               title,
@@ -112,8 +113,7 @@ class IncubatorScreen extends StatelessWidget {
 
             const Spacer(),
 
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

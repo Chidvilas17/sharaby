@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/tbl_flasha_api_service.dart';
 
@@ -121,9 +122,8 @@ class _ScreenDataEditScreenState
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'تم حفظ بيانات الشاشة بنجاح',
+        SnackBar(
+          content: Text(AppTranslations.tr('تم حفظ بيانات الشاشة بنجاح'),
             textDirection: TextDirection.rtl,
           ),
         ),
@@ -139,8 +139,7 @@ class _ScreenDataEditScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'حدث خطأ أثناء الحفظ:\n$e',
+          content: Text(AppTranslations.tr('حدث خطأ أثناء الحفظ:\n$e'),
             textDirection: TextDirection.rtl,
           ),
         ),
@@ -179,7 +178,7 @@ class _ScreenDataEditScreenState
             maxLines: 1,
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           // ======================================================
           // POINT 1
@@ -190,7 +189,7 @@ class _ScreenDataEditScreenState
             controller: row.text1Controller,
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           // ======================================================
           // POINT 2
@@ -201,7 +200,7 @@ class _ScreenDataEditScreenState
             controller: row.text2Controller,
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           // ======================================================
           // POINT 3
@@ -212,7 +211,7 @@ class _ScreenDataEditScreenState
             controller: row.text3Controller,
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           // ======================================================
           // POINT 4
@@ -258,7 +257,7 @@ class _ScreenDataEditScreenState
           ),
         ),
 
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
 
         Expanded(
           child: TextField(
@@ -267,7 +266,7 @@ class _ScreenDataEditScreenState
             textAlign: TextAlign.right,
             minLines: 1,
             maxLines: maxLines,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(),
@@ -290,8 +289,7 @@ class _ScreenDataEditScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'تعديل بيانات الشاشة',
+        title: Text(AppTranslations.tr('تعديل بيانات الشاشة'),
         ),
       ),
 
@@ -308,7 +306,7 @@ class _ScreenDataEditScreenState
 
   Widget _buildBody() {
     if (_loading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -325,7 +323,7 @@ class _ScreenDataEditScreenState
                 size: 50,
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Text(
                 _errorMessage!,
@@ -333,12 +331,11 @@ class _ScreenDataEditScreenState
                 textDirection: TextDirection.ltr,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               ElevatedButton(
                 onPressed: _loadData,
-                child: const Text(
-                  'إعادة المحاولة',
+                child: Text(AppTranslations.tr('إعادة المحاولة'),
                 ),
               ),
             ],
@@ -352,11 +349,10 @@ class _ScreenDataEditScreenState
         onRefresh: _loadData,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          children: const [
+          children: [
             SizedBox(height: 180),
             Center(
-              child: Text(
-                'لا توجد بيانات للشاشة',
+              child: Text(AppTranslations.tr('لا توجد بيانات للشاشة'),
               ),
             ),
           ],
@@ -402,7 +398,7 @@ class _ScreenDataEditScreenState
                     ? null
                     : _save,
                 icon: _saving
-                    ? const SizedBox(
+                    ? SizedBox(
                   width: 20,
                   height: 20,
                   child:

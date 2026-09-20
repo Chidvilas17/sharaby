@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/nursery_reserved_api_service.dart';
 
@@ -70,11 +71,9 @@ class _NurseryReservedCasesScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -102,7 +101,7 @@ class _NurseryReservedCasesScreenState
 
   Widget _buildTable() {
     if (loading) {
-      return const SizedBox(
+      return SizedBox(
         height: 250,
         child: Center(
           child: CircularProgressIndicator(),
@@ -196,7 +195,7 @@ class _NurseryReservedCasesScreenState
                     height: 42,
                     alignment: Alignment.center,
                     color: isSelected
-                        ? Colors.blue.withOpacity(0.12)
+                        ? Colors.blue.withValues(alpha: 0.12)
                         : Colors.transparent,
                     child: Text(
                       header == 'No.'
@@ -224,7 +223,7 @@ class _NurseryReservedCasesScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reserved Cases'),
+        title: Text(AppTranslations.tr('Reserved Cases')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -232,15 +231,14 @@ class _NurseryReservedCasesScreenState
           crossAxisAlignment:
           CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Reserved Cases',
+            Text(AppTranslations.tr('Reserved Cases'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             _buildTable(),
           ],

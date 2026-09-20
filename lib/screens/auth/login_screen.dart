@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../home/home_screen.dart';
 import '../home/management_followups_screen.dart';
 import '../home/medical_followups_screen.dart';
@@ -141,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -195,10 +196,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 20),
 
-                      const Text(
-                        'Sharaby Center',
+                      Text(
+                        AppTranslations.tr('Sharaby Center'),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF0F172A),
@@ -208,9 +209,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 6),
 
-                      const Text(
-                        'Login',
-                        style: TextStyle(
+                      Text(
+                        AppTranslations.tr('Login'),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF0284C7),
@@ -223,9 +224,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _usernameController,
                         textInputAction: TextInputAction.next,
                         enabled: !_isLoggingIn,
-                        decoration: const InputDecoration(
-                          labelText: 'Username',
-                          prefixIcon: Icon(Icons.person, color: Color(0xFF0284C7)),
+                        decoration: InputDecoration(
+                          labelText: AppTranslations.tr('Username'),
+                          prefixIcon: const Icon(Icons.person, color: Color(0xFF0284C7)),
                         ),
                       ),
 
@@ -238,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         enabled: !_isLoggingIn,
                         onSubmitted: (_) => _login(),
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: AppTranslations.tr('Password'),
                           prefixIcon: const Icon(Icons.lock, color: Color(0xFF0284C7)),
                           suffixIcon: IconButton(
                             onPressed: _isLoggingIn
@@ -298,9 +299,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 strokeWidth: 2.5,
                               ),
                             )
-                                : const Text(
-                              'Login',
-                              style: TextStyle(
+                                : Text(
+                              AppTranslations.tr('Login'),
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -323,9 +324,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text(
-                            'Bypass Login (Development)',
-                            style: TextStyle(
+                          child: Text(
+                            AppTranslations.tr('Bypass Login (Development)'),
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF0284C7),

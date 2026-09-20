@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/detection_new_api_service.dart';
 
 class DetectionNewScreen extends StatefulWidget {
@@ -405,8 +406,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Detection - New',
+        title: Text(AppTranslations.tr('Detection - New'),
         ),
       ),
       body: SafeArea(
@@ -424,7 +424,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
 
               _buildControlSection(),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // MESSAGE
@@ -451,7 +451,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
 
               // ==================================================
@@ -459,7 +459,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               // ==================================================
 
               if (_isLoading)
-                const Padding(
+                Padding(
                   padding:
                   EdgeInsets.only(
                     bottom: 16,
@@ -475,7 +475,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               _buildTableSection(
                 title:
                 'Delayed Booking',
-                columns: const [
+                columns: [
                   'No.',
                   'Booking',
                   'Name',
@@ -485,7 +485,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
                 delayedBookings,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // 2. CURRENT MORNING BOOKING
@@ -494,7 +494,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               _buildTableSection(
                 title:
                 'Current Morning Booking',
-                columns: const [
+                columns: [
                   'No.',
                   'Booking',
                   'Name',
@@ -506,7 +506,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
                 morningCurrentBookings,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // 3. CURRENT EVENING BOOKING
@@ -515,7 +515,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               _buildTableSection(
                 title:
                 'Current Evening Booking',
-                columns: const [
+                columns: [
                   'No.',
                   'Booking',
                   'Name',
@@ -527,7 +527,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
                 eveningCurrentBookings,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // 4. MORNING PHONE BOOKING
@@ -536,7 +536,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               _buildTableSection(
                 title:
                 'Morning Phone Booking',
-                columns: const [
+                columns: [
                   'No.',
                   'Booking',
                   'Name',
@@ -547,7 +547,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
                 morningPhoneBookings,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // 5. EVENING PHONE BOOKING
@@ -556,7 +556,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               _buildTableSection(
                 title:
                 'Evening Phone Booking',
-                columns: const [
+                columns: [
                   'No.',
                   'Booking',
                   'Name',
@@ -598,8 +598,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
           // Current User
           // -------------------------------
 
-          const Text(
-            'Current User',
+          Text(AppTranslations.tr('Current User'),
             style: TextStyle(
               fontSize: 16,
               fontWeight:
@@ -607,28 +606,26 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           TextField(
             controller:
             _currentUserController,
             decoration:
-            const InputDecoration(
+            InputDecoration(
               border:
               OutlineInputBorder(),
-              hintText:
-              'Enter current user',
+              hintText: AppTranslations.tr('Enter current user'),
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // -------------------------------
           // Time 1
           // -------------------------------
 
-          const Text(
-            'Time 1',
+          Text(AppTranslations.tr('Time 1'),
             style: TextStyle(
               fontSize: 16,
               fontWeight:
@@ -636,7 +633,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           TextField(
             controller:
@@ -644,22 +641,20 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             keyboardType:
             TextInputType.number,
             decoration:
-            const InputDecoration(
+            InputDecoration(
               border:
               OutlineInputBorder(),
-              hintText:
-              'Enter Time 1',
+              hintText: AppTranslations.tr('Enter Time 1'),
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // -------------------------------
           // Time 2
           // -------------------------------
 
-          const Text(
-            'Time 2',
+          Text(AppTranslations.tr('Time 2'),
             style: TextStyle(
               fontSize: 16,
               fontWeight:
@@ -667,7 +662,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           TextField(
             controller:
@@ -675,15 +670,14 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             keyboardType:
             TextInputType.number,
             decoration:
-            const InputDecoration(
+            InputDecoration(
               border:
               OutlineInputBorder(),
-              hintText:
-              'Enter Time 2',
+              hintText: AppTranslations.tr('Enter Time 2'),
             ),
           ),
 
-          const SizedBox(height: 18),
+          SizedBox(height: 18),
 
           // -------------------------------
           // Refresh
@@ -712,7 +706,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             ),
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // -------------------------------
           // Save
@@ -729,8 +723,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
               icon: const Icon(
                 Icons.save_outlined,
               ),
-              label: const Text(
-                'Save',
+              label: Text(AppTranslations.tr('Save'),
                 style:
                 TextStyle(
                   fontSize: 16,
@@ -784,7 +777,7 @@ class _DetectionNewScreenState extends State<DetectionNewScreen> {
             ),
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Table
 

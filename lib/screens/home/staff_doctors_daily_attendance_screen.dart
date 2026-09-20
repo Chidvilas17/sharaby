@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/doctor_attendance_api_service.dart';
 
 class StaffDoctorsDailyAttendanceScreen
@@ -355,7 +356,7 @@ class _StaffDoctorsDailyAttendanceScreenState
     required ValueChanged<int?> onChanged,
   }) {
     if (loadingDoctors) {
-      return const SizedBox(
+      return SizedBox(
         height: 56,
         child: Center(
           child: CircularProgressIndicator(),
@@ -378,8 +379,7 @@ class _StaffDoctorsDailyAttendanceScreenState
           borderRadius:
           BorderRadius.circular(4),
         ),
-        child: const Text(
-          'No doctors found in EmpsData.',
+        child: Text(AppTranslations.tr('No doctors found in EmpsData.'),
           style: TextStyle(
             color: Colors.red,
           ),
@@ -388,11 +388,11 @@ class _StaffDoctorsDailyAttendanceScreenState
     }
 
     return DropdownButtonFormField<int>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
       decoration:
-      const InputDecoration(
-        labelText: 'Doctor',
+      InputDecoration(
+        labelText: AppTranslations.tr('Doctor'),
         border:
         OutlineInputBorder(),
       ),
@@ -468,7 +468,7 @@ class _StaffDoctorsDailyAttendanceScreenState
             ),
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
 
@@ -478,7 +478,7 @@ class _StaffDoctorsDailyAttendanceScreenState
             onDoctorChanged,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
 
@@ -490,9 +490,8 @@ class _StaffDoctorsDailyAttendanceScreenState
                 onChanged:
                 onSpecialDayChanged,
               ),
-              const Expanded(
-                child: Text(
-                  'Special Day',
+              Expanded(
+                child: Text(AppTranslations.tr('Special Day'),
                   style:
                   TextStyle(
                     fontWeight:
@@ -503,7 +502,7 @@ class _StaffDoctorsDailyAttendanceScreenState
             ],
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
 
@@ -512,14 +511,14 @@ class _StaffDoctorsDailyAttendanceScreenState
             notesController,
             maxLines: 2,
             decoration:
-            const InputDecoration(
-              labelText: 'Notes',
+            InputDecoration(
+              labelText: AppTranslations.tr('Notes'),
               border:
               OutlineInputBorder(),
             ),
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
 
@@ -533,7 +532,7 @@ class _StaffDoctorsDailyAttendanceScreenState
               Icons.add,
             ),
             label:
-            const Text('Add'),
+            Text(AppTranslations.tr('Add')),
           ),
         ],
       ),
@@ -571,7 +570,7 @@ class _StaffDoctorsDailyAttendanceScreenState
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 4,
         ),
 
@@ -587,12 +586,12 @@ class _StaffDoctorsDailyAttendanceScreenState
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 10,
         ),
 
         if (loadingAttendance)
-          const Padding(
+          Padding(
             padding:
             EdgeInsets.all(20),
             child: Center(
@@ -714,7 +713,7 @@ class _StaffDoctorsDailyAttendanceScreenState
             ),
           ),
 
-        const SizedBox(
+        SizedBox(
           height: 10,
         ),
 
@@ -732,13 +731,12 @@ class _StaffDoctorsDailyAttendanceScreenState
               Icons.delete_outline,
             ),
             label:
-            const Text(
-              'Delete',
+            Text(AppTranslations.tr('Delete'),
             ),
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 16,
         ),
       ],
@@ -764,7 +762,7 @@ class _StaffDoctorsDailyAttendanceScreenState
         const EdgeInsets.all(5),
         color: selected
             ? Colors.blue
-            .withOpacity(0.15)
+            .withValues(alpha: 0.15)
             : const Color(
           0xFFD3DFE9,
         ),
@@ -806,8 +804,7 @@ class _StaffDoctorsDailyAttendanceScreenState
       ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Doctors Attendance',
+        title: Text(AppTranslations.tr('Doctors Attendance'),
         ),
       ),
       body:
@@ -830,9 +827,8 @@ class _StaffDoctorsDailyAttendanceScreenState
                     child:
                     InputDecorator(
                       decoration:
-                      const InputDecoration(
-                        labelText:
-                        'Date',
+                      InputDecoration(
+                        labelText: AppTranslations.tr('Date'),
                         border:
                         OutlineInputBorder(),
                         suffixIcon:
@@ -854,7 +850,7 @@ class _StaffDoctorsDailyAttendanceScreenState
                   ),
                 ),
 
-                const SizedBox(
+                SizedBox(
                   width: 10,
                 ),
 
@@ -864,14 +860,13 @@ class _StaffDoctorsDailyAttendanceScreenState
                       ? null
                       : _showData,
                   child:
-                  const Text(
-                    'Show',
+                  Text(AppTranslations.tr('Show'),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/doctor_monthly_net_api_service.dart';
 
@@ -327,12 +328,9 @@ class _CurrentDoctorsScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -345,8 +343,7 @@ class _CurrentDoctorsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Total Doctors' Salaries",
+        title: Text(AppTranslations.tr("Total Doctors' Salaries"),
         ),
       ),
       body: SingleChildScrollView(
@@ -373,8 +370,7 @@ class _CurrentDoctorsScreenState
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Select and Show',
+                  Text(AppTranslations.tr('Select and Show'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight:
@@ -382,32 +378,30 @@ class _CurrentDoctorsScreenState
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                  const Text(
-                    'Select the name',
+                  Text(AppTranslations.tr('Select the name'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   loadingDoctors
-                      ? const Center(
+                      ? Center(
                     child:
                     CircularProgressIndicator(),
                   )
                       : DropdownButtonFormField<int>(
-                    value:
+                    initialValue:
                     selectedDoctorId,
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
                     ),
-                    hint: const Text(
-                      'Select doctor',
+                    hint: Text(AppTranslations.tr('Select doctor'),
                     ),
                     isExpanded: true,
                     items: doctors.map<
@@ -459,16 +453,15 @@ class _CurrentDoctorsScreenState
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
-                  const Text(
-                    'Month',
+                  Text(AppTranslations.tr('Month'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   TextField(
                     controller:
@@ -476,14 +469,14 @@ class _CurrentDoctorsScreenState
                     keyboardType:
                     TextInputType.number,
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
-                      hintText: 'MM/YYYY',
+                      hintText: AppTranslations.tr('MM/YYYY'),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   Center(
                     child: SizedBox(
@@ -497,7 +490,7 @@ class _CurrentDoctorsScreenState
                             : _showSalary,
                         child:
                         loadingSalary
-                            ? const SizedBox(
+                            ? SizedBox(
                           width: 22,
                           height: 22,
                           child:
@@ -506,8 +499,7 @@ class _CurrentDoctorsScreenState
                             2,
                           ),
                         )
-                            : const Text(
-                          'Show',
+                            : Text(AppTranslations.tr('Show'),
                         ),
                       ),
                     ),
@@ -521,7 +513,7 @@ class _CurrentDoctorsScreenState
             // ==================================================
 
             if (errorMessage != null) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Text(
                 errorMessage!,
@@ -531,7 +523,7 @@ class _CurrentDoctorsScreenState
               ),
             ],
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // ==================================================
             // SHIFT A
@@ -546,7 +538,7 @@ class _CurrentDoctorsScreenState
               salary: shiftASalary,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // ==================================================
             // SHIFT B
@@ -561,7 +553,7 @@ class _CurrentDoctorsScreenState
               salary: shiftBSalary,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // ==================================================
             // SHIFT C
@@ -576,7 +568,7 @@ class _CurrentDoctorsScreenState
               salary: shiftCSalary,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // ==================================================
             // SALARY SUMMARY
@@ -620,10 +612,9 @@ class _CurrentDoctorsScreenState
               ),
             ),
 
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
 
-            Text(
-              '($count)',
+            Text(AppTranslations.tr('($count)'),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -633,7 +624,7 @@ class _CurrentDoctorsScreenState
           ],
         ),
 
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
 
         Text(
           time,
@@ -642,7 +633,7 @@ class _CurrentDoctorsScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         Container(
           height: 220,
@@ -679,12 +670,11 @@ class _CurrentDoctorsScreenState
                   ),
                 ),
                 child:
-                const Row(
+                Row(
                   children: [
                     SizedBox(
                       width: 45,
-                      child: Text(
-                        'No.',
+                      child: Text(AppTranslations.tr('No.'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -695,8 +685,7 @@ class _CurrentDoctorsScreenState
                     ),
                     Expanded(
                       flex: 2,
-                      child: Text(
-                        'Notes',
+                      child: Text(AppTranslations.tr('Notes'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -707,8 +696,7 @@ class _CurrentDoctorsScreenState
                     ),
                     Expanded(
                       flex: 2,
-                      child: Text(
-                        'Accountant',
+                      child: Text(AppTranslations.tr('Accountant'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -718,8 +706,7 @@ class _CurrentDoctorsScreenState
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        'Date',
+                      child: Text(AppTranslations.tr('Date'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -738,9 +725,8 @@ class _CurrentDoctorsScreenState
 
               Expanded(
                 child: records.isEmpty
-                    ? const Center(
-                  child: Text(
-                    'No data',
+                    ? Center(
+                  child: Text(AppTranslations.tr('No data'),
                     style:
                     TextStyle(
                       color:
@@ -842,13 +828,12 @@ class _CurrentDoctorsScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         Align(
           alignment:
           Alignment.centerRight,
-          child: Text(
-            'Shift Salary: ${_formatMoney(salary)}',
+          child: Text('${AppTranslations.tr("Shift Salary:")} ${_formatMoney(salary)}',
             style: const TextStyle(
               fontWeight:
               FontWeight.bold,
@@ -876,11 +861,10 @@ class _CurrentDoctorsScreenState
       ),
       child: Column(
         children: [
-          const Align(
+          Align(
             alignment:
             Alignment.centerLeft,
-            child: Text(
-              'Salary Summary',
+            child: Text(AppTranslations.tr('Salary Summary'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -889,15 +873,14 @@ class _CurrentDoctorsScreenState
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           Row(
             mainAxisAlignment:
             MainAxisAlignment
                 .spaceBetween,
             children: [
-              const Text(
-                'Shift A',
+              Text(AppTranslations.tr('Shift A'),
               ),
               Text(
                 '$shiftACount',
@@ -905,15 +888,14 @@ class _CurrentDoctorsScreenState
             ],
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           Row(
             mainAxisAlignment:
             MainAxisAlignment
                 .spaceBetween,
             children: [
-              const Text(
-                'Shift B',
+              Text(AppTranslations.tr('Shift B'),
               ),
               Text(
                 '$shiftBCount',
@@ -921,15 +903,14 @@ class _CurrentDoctorsScreenState
             ],
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           Row(
             mainAxisAlignment:
             MainAxisAlignment
                 .spaceBetween,
             children: [
-              const Text(
-                'Shift C',
+              Text(AppTranslations.tr('Shift C'),
               ),
               Text(
                 '$shiftCCount',
@@ -946,8 +927,7 @@ class _CurrentDoctorsScreenState
             MainAxisAlignment
                 .spaceBetween,
             children: [
-              const Text(
-                'Total Salary',
+              Text(AppTranslations.tr('Total Salary'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight:

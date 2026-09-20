@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/oxygen_intake_api_service.dart';
 
 class OxygenIntakeScreen extends StatefulWidget {
@@ -297,12 +298,9 @@ class _OxygenIntakeScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -654,8 +652,7 @@ class _OxygenIntakeScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Oxygen Intake',
+        title: Text(AppTranslations.tr('Oxygen Intake'),
         ),
       ),
       body: SafeArea(
@@ -675,7 +672,7 @@ class _OxygenIntakeScreenState
 
               _buildTable(),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // =================================
               // DELETE
@@ -701,7 +698,7 @@ class _OxygenIntakeScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // =================================
               // TOTAL COST
@@ -711,8 +708,7 @@ class _OxygenIntakeScreenState
                 mainAxisAlignment:
                 MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Total Cost: ',
+                  Text(AppTranslations.tr('Total Cost: '),
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: 17,
@@ -733,7 +729,7 @@ class _OxygenIntakeScreenState
                 ],
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // =================================
               // NEW PURCHASE
@@ -743,7 +739,7 @@ class _OxygenIntakeScreenState
                 'New Purchase',
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               _textField(
                 controller:
@@ -756,7 +752,7 @@ class _OxygenIntakeScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -769,7 +765,7 @@ class _OxygenIntakeScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -777,7 +773,7 @@ class _OxygenIntakeScreenState
                 label: 'Receipt Number',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -790,7 +786,7 @@ class _OxygenIntakeScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -798,7 +794,7 @@ class _OxygenIntakeScreenState
                 label: 'Discount Details',
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               SizedBox(
                 height: 48,

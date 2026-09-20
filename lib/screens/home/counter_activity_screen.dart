@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 
 import 'daily_movement_screen.dart';
 
@@ -9,8 +11,7 @@ class CounterActivityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Counter Activity',
+        title: Text(AppTranslations.tr('Counter Activity'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -96,7 +97,7 @@ class CounterActivityScreen extends StatelessWidget {
               size: 32,
             ),
 
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
 
             Expanded(
               child: Text(
@@ -110,8 +111,7 @@ class CounterActivityScreen extends StatelessWidget {
               ),
             ),
 
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

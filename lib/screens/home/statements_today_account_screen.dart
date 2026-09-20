@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/today_statements_api_service.dart';
 
@@ -148,17 +149,9 @@ class _StatementsTodayAccountScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -342,7 +335,7 @@ class _StatementsTodayAccountScreenState
         color:
         selectedRow == index
             ? Colors.blue
-            .withOpacity(0.2)
+            .withValues(alpha: 0.2)
             : const Color(
           0xFFD3DFE9,
         ),
@@ -369,9 +362,7 @@ class _StatementsTodayAccountScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Today\'s Total Statements / بيانات الكشف اليومية',
-        ),
+        title: Text(AppTranslations.tr("Today's Total Statements / بيانات الكشف اليومية")),
       ),
 
       body: SafeArea(
@@ -390,8 +381,7 @@ class _StatementsTodayAccountScreenState
               // DATE
               // ===============================================
 
-              const Text(
-                'التاريخ / Date',
+              Text(AppTranslations.tr('التاريخ / Date'),
                 textAlign:
                 TextAlign.center,
 
@@ -402,7 +392,7 @@ class _StatementsTodayAccountScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 8,
               ),
 
@@ -414,7 +404,7 @@ class _StatementsTodayAccountScreenState
 
                 child: InputDecorator(
                   decoration:
-                  const InputDecoration(
+                  InputDecoration(
                     border:
                     OutlineInputBorder(),
                     suffixIcon:
@@ -435,7 +425,7 @@ class _StatementsTodayAccountScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -458,8 +448,7 @@ class _StatementsTodayAccountScreenState
                   ),
 
                   label:
-                  const Text(
-                    'Search / بحث',
+                  Text(AppTranslations.tr('Search / بحث'),
 
                     style:
                     TextStyle(
@@ -471,7 +460,7 @@ class _StatementsTodayAccountScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
 
@@ -497,8 +486,7 @@ class _StatementsTodayAccountScreenState
                       .stretch,
 
                   children: [
-                    const Text(
-                      'بيانات الكشف / Statement Data',
+                    Text(AppTranslations.tr('بيانات الكشف / Statement Data'),
 
                       textAlign:
                       TextAlign.right,
@@ -511,12 +499,12 @@ class _StatementsTodayAccountScreenState
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 8,
                     ),
 
                     if (isLoading)
-                      const Padding(
+                      Padding(
                         padding:
                         EdgeInsets.all(
                           20,
@@ -534,7 +522,7 @@ class _StatementsTodayAccountScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
 
@@ -548,8 +536,7 @@ class _StatementsTodayAccountScreenState
                     .center,
 
                 children: [
-                  const Text(
-                    'إجمالي الواردات / Total Income: ',
+                  Text(AppTranslations.tr('إجمالي الواردات / Total Income: '),
 
                     style:
                     TextStyle(
@@ -559,7 +546,7 @@ class _StatementsTodayAccountScreenState
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     width: 12,
                   ),
 

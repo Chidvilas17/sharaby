@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/staff_discounts_api_service.dart';
 
 class StaffDiscountsScreen extends StatefulWidget {
@@ -132,8 +133,7 @@ class _StaffDiscountsScreenState
               setDialogState,
               ) {
             return AlertDialog(
-              title: const Text(
-                'Select Month',
+              title: Text(AppTranslations.tr('Select Month'),
                 textAlign:
                 TextAlign.center,
               ),
@@ -151,8 +151,8 @@ class _StaffDiscountsScreenState
                     isExpanded: true,
 
                     decoration:
-                    const InputDecoration(
-                      labelText: 'Month',
+                    InputDecoration(
+                      labelText: AppTranslations.tr('Month'),
                       border:
                       OutlineInputBorder(),
                     ),
@@ -192,7 +192,7 @@ class _StaffDiscountsScreenState
                     },
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 12,
                   ),
 
@@ -204,8 +204,8 @@ class _StaffDiscountsScreenState
                     isExpanded: true,
 
                     decoration:
-                    const InputDecoration(
-                      labelText: 'Year',
+                    InputDecoration(
+                      labelText: AppTranslations.tr('Year'),
                       border:
                       OutlineInputBorder(),
                     ),
@@ -250,8 +250,7 @@ class _StaffDiscountsScreenState
                     );
                   },
                   child:
-                  const Text(
-                    'Cancel',
+                  Text(AppTranslations.tr('Cancel'),
                   ),
                 ),
 
@@ -266,8 +265,7 @@ class _StaffDiscountsScreenState
                     );
                   },
                   child:
-                  const Text(
-                    'Select',
+                  Text(AppTranslations.tr('Select'),
                   ),
                 ),
               ],
@@ -392,7 +390,7 @@ class _StaffDiscountsScreenState
 
         color: selected
             ? Colors.blue
-            .withOpacity(0.12)
+            .withValues(alpha: 0.12)
             : Colors.transparent,
 
         child: Text(
@@ -434,7 +432,7 @@ class _StaffDiscountsScreenState
 
   Widget _buildTable() {
     if (loadingData) {
-      return const SizedBox(
+      return SizedBox(
         height: 300,
 
         child: Center(
@@ -710,8 +708,7 @@ class _StaffDiscountsScreenState
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text(
-          'Discounts',
+        Text(AppTranslations.tr('Discounts'),
         ),
       ),
 
@@ -734,8 +731,7 @@ class _StaffDiscountsScreenState
 
             Row(
               children: [
-                const Text(
-                  'Month:',
+                Text(AppTranslations.tr('Month:'),
                   style:
                   TextStyle(
                     fontSize: 17,
@@ -744,7 +740,7 @@ class _StaffDiscountsScreenState
                   ),
                 ),
 
-                const SizedBox(
+                SizedBox(
                   width: 12,
                 ),
 
@@ -756,7 +752,7 @@ class _StaffDiscountsScreenState
                     child:
                     InputDecorator(
                       decoration:
-                      const InputDecoration(
+                      InputDecoration(
                         border:
                         OutlineInputBorder(),
 
@@ -780,7 +776,7 @@ class _StaffDiscountsScreenState
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
 
@@ -812,7 +808,7 @@ class _StaffDiscountsScreenState
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 25,
             ),
 
@@ -834,7 +830,7 @@ class _StaffDiscountsScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 12,
             ),
 
@@ -844,7 +840,7 @@ class _StaffDiscountsScreenState
 
             _buildTable(),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
           ],

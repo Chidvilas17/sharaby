@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import 'nursery_new_screen.dart';
 import 'nursery_reserved_cases_screen.dart';
 import 'nursery_daily_accounts_screen.dart';
@@ -12,7 +13,7 @@ class NurseryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nursery'),
+        title: Text(AppTranslations.tr('Nursery')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -116,8 +117,8 @@ class NurseryScreen extends StatelessWidget {
 
   void _showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('This section will be added next.'),
+      SnackBar(
+        content: Text(AppTranslations.tr('This section will be added next.')),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/damages_api_service.dart';
 
 class FaultsArchiveScreen extends StatefulWidget {
@@ -67,12 +68,9 @@ class _FaultsArchiveScreenState
   // =========================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -152,7 +150,7 @@ class _FaultsArchiveScreenState
     ];
 
     if (isLoading) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.all(30),
         child: Center(
           child: CircularProgressIndicator(),
@@ -251,8 +249,7 @@ class _FaultsArchiveScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Faults Archive',
+        title: Text(AppTranslations.tr('Faults Archive'),
         ),
       ),
       body: SafeArea(
@@ -278,8 +275,7 @@ class _FaultsArchiveScreenState
                   color:
                   Colors.grey.shade100,
                 ),
-                child: const Text(
-                  'Faults Archive',
+                child: Text(AppTranslations.tr('Faults Archive'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight:

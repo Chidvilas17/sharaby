@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/detection_history_api_service.dart';
 import 'doctors_manage_screen.dart';
 
@@ -153,7 +154,7 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
         context: context,
         builder: (dialogContext) {
           return AlertDialog(
-            title: const Text('Patient Detail'),
+            title: Text(AppTranslations.tr('Patient Detail')),
             content: SizedBox(
               width: 500,
               child: SingleChildScrollView(
@@ -177,14 +178,14 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Close'),
+                child: Text(AppTranslations.tr('Close')),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(dialogContext);
                   _openDetail(detail);
                 },
-                child: const Text('Open'),
+                child: Text(AppTranslations.tr('Open')),
               ),
             ],
           );
@@ -243,7 +244,7 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 3),
+          SizedBox(height: 3),
           Text(value.trim().isEmpty ? '-' : value),
         ],
       ),
@@ -254,7 +255,7 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Patient'),
+        title: Text(AppTranslations.tr('Search Patient')),
         actions: [
           IconButton(
             onPressed: _loading ? null : _loadAllHistory,
@@ -269,7 +270,7 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildSearchSection(),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               if (_message != null) _buildMessage(),
               _buildHistoryTable(),
             ],
@@ -289,49 +290,48 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Search By Name',
+          Text(AppTranslations.tr('Search By Name'),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextField(
             controller: _searchController,
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => _search(),
-            decoration: const InputDecoration(
-              labelText: 'Patient Name',
+            decoration: InputDecoration(
+              labelText: AppTranslations.tr('Patient Name'),
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.search),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           InkWell(
             onTap: _selectDate,
             child: InputDecorator(
-              decoration: const InputDecoration(
-                labelText: 'Date',
+              decoration: InputDecoration(
+                labelText: AppTranslations.tr('Date'),
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.calendar_today_outlined),
               ),
               child: Text(_formatDate(_selectedDate)),
             ),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           SizedBox(
             height: 48,
             child: ElevatedButton.icon(
               onPressed: _loading ? null : _search,
               icon: const Icon(Icons.search),
-              label: const Text('Search', style: TextStyle(fontSize: 16)),
+              label: Text(AppTranslations.tr('Search'), style: TextStyle(fontSize: 16)),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           SizedBox(
             height: 48,
             child: OutlinedButton.icon(
               onPressed: _loading ? null : _clearSearch,
               icon: const Icon(Icons.clear),
-              label: const Text('Clear', style: TextStyle(fontSize: 16)),
+              label: Text(AppTranslations.tr('Clear'), style: TextStyle(fontSize: 16)),
             ),
           ),
         ],
@@ -379,13 +379,12 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Patient History',
+          Text(AppTranslations.tr('Patient History'),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           if (_loading)
-            const SizedBox(
+            SizedBox(
               height: 240,
               child: Center(child: CircularProgressIndicator()),
             )
@@ -500,7 +499,7 @@ class _DetectionHistoryScreenState extends State<DetectionHistoryScreen> {
               padding: const EdgeInsets.all(4),
               child: ElevatedButton(
                 onPressed: () => _showFullDetail(patient),
-                child: const Text('Detail', style: TextStyle(fontSize: 12)),
+                child: Text(AppTranslations.tr('Detail'), style: TextStyle(fontSize: 12)),
               ),
             ),
           ),

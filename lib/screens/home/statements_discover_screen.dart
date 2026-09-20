@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/statements_discover_api_service.dart';
 
@@ -235,11 +236,9 @@ class _StatementsDiscoverScreenState
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text(
-            'Delete Record',
+          title: Text(AppTranslations.tr('Delete Record'),
           ),
-          content: const Text(
-            'Are you sure you want to delete this record?',
+          content: Text(AppTranslations.tr('Are you sure you want to delete this record?'),
           ),
           actions: [
             TextButton(
@@ -249,8 +248,7 @@ class _StatementsDiscoverScreenState
                   false,
                 );
               },
-              child: const Text(
-                'Cancel',
+              child: Text(AppTranslations.tr('Cancel'),
               ),
             ),
             ElevatedButton(
@@ -260,8 +258,7 @@ class _StatementsDiscoverScreenState
                   true,
                 );
               },
-              child: const Text(
-                'Delete',
+              child: Text(AppTranslations.tr('Delete'),
               ),
             ),
           ],
@@ -454,8 +451,8 @@ class _StatementsDiscoverScreenState
                               color: isSelected
                                   ? Colors
                                   .blue
-                                  .withOpacity(
-                                0.12,
+                                  .withValues(
+                                alpha: 0.12,
                               )
                                   : const Color(
                                 0xFFD3DFE9,
@@ -726,8 +723,7 @@ class _StatementsDiscoverScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Screening Registration',
+        title: Text(AppTranslations.tr('Screening Registration'),
         ),
       ),
 
@@ -752,9 +748,8 @@ class _StatementsDiscoverScreenState
                       textDirection:
                       TextDirection.rtl,
                       decoration:
-                      const InputDecoration(
-                        labelText:
-                        'Child Name',
+                      InputDecoration(
+                        labelText: AppTranslations.tr('Child Name'),
                         border:
                         OutlineInputBorder(),
                         prefixIcon:
@@ -769,7 +764,7 @@ class _StatementsDiscoverScreenState
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     width: 10,
                   ),
 
@@ -784,8 +779,7 @@ class _StatementsDiscoverScreenState
                         Icons.refresh,
                       ),
                       label:
-                      const Text(
-                        'Update',
+                      Text(AppTranslations.tr('Update'),
                       ),
                     ),
                   ),
@@ -812,7 +806,7 @@ class _StatementsDiscoverScreenState
                       tableIndex: 0,
                       title:
                       'Delayed Booking',
-                      columns: const [
+                      columns: [
                         'No.',
                         'Booking',
                         'Name',
@@ -828,7 +822,7 @@ class _StatementsDiscoverScreenState
                       tableIndex: 1,
                       title:
                       'Current Morning Booking',
-                      columns: const [
+                      columns: [
                         'No.',
                         'Booking',
                         'Name',
@@ -845,7 +839,7 @@ class _StatementsDiscoverScreenState
                       tableIndex: 2,
                       title:
                       'Morning Phone Booking',
-                      columns: const [
+                      columns: [
                         'No.',
                         'Name',
                         'Type',
@@ -860,7 +854,7 @@ class _StatementsDiscoverScreenState
                       tableIndex: 3,
                       title:
                       'Current Evening Booking',
-                      columns: const [
+                      columns: [
                         'No.',
                         'Booking',
                         'Name',
@@ -877,7 +871,7 @@ class _StatementsDiscoverScreenState
                       tableIndex: 4,
                       title:
                       'Evening Phone Booking',
-                      columns: const [
+                      columns: [
                         'No.',
                         'Name',
                         'Type',
@@ -892,7 +886,7 @@ class _StatementsDiscoverScreenState
                       tableIndex: 5,
                       title:
                       'Phone Booking for Coming Days',
-                      columns: const [
+                      columns: [
                         'No.',
                         'Name',
                         'Type',
@@ -903,7 +897,7 @@ class _StatementsDiscoverScreenState
                       comingDays,
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 80,
                     ),
                   ],
@@ -930,8 +924,7 @@ class _StatementsDiscoverScreenState
           Icons.delete,
         ),
         label:
-        const Text(
-          'Delete',
+        Text(AppTranslations.tr('Delete'),
         ),
       )
           : null,

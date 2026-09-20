@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/sterilization_material_api_service.dart';
 
 class SterilizationMaterialIncomeScreen extends StatefulWidget {
@@ -359,12 +360,9 @@ class _SterilizationMaterialIncomeScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -421,9 +419,9 @@ class _SterilizationMaterialIncomeScreenState
 
   Widget _typeDropdown() {
     return DropdownButtonFormField<String>(
-      value: selectedType,
-      decoration: const InputDecoration(
-        labelText: 'Type',
+      initialValue: selectedType,
+      decoration: InputDecoration(
+        labelText: AppTranslations.tr('Type'),
         border: OutlineInputBorder(),
       ),
       items: materialTypes.map((item) {
@@ -692,8 +690,7 @@ class _SterilizationMaterialIncomeScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Sterilization Material',
+        title: Text(AppTranslations.tr('Sterilization Material'),
         ),
       ),
       body: SafeArea(
@@ -713,7 +710,7 @@ class _SterilizationMaterialIncomeScreenState
 
               _buildTable(),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Delete
               SizedBox(
@@ -736,15 +733,14 @@ class _SterilizationMaterialIncomeScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Total
               Row(
                 mainAxisAlignment:
                 MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Total Cost: ',
+                  Text(AppTranslations.tr('Total Cost: '),
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight:
@@ -763,7 +759,7 @@ class _SterilizationMaterialIncomeScreenState
                 ],
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ==========================
               // NEW PURCHASE
@@ -773,7 +769,7 @@ class _SterilizationMaterialIncomeScreenState
                 'New Purchase',
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               _textField(
                 controller:
@@ -786,11 +782,11 @@ class _SterilizationMaterialIncomeScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _typeDropdown(),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -798,7 +794,7 @@ class _SterilizationMaterialIncomeScreenState
                 label: 'Receipt Number',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -811,7 +807,7 @@ class _SterilizationMaterialIncomeScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -819,7 +815,7 @@ class _SterilizationMaterialIncomeScreenState
                 label: 'Discount Details',
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               SizedBox(
                 height: 48,

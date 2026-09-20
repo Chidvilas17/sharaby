@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'sterilization_material_income_screen.dart';
 import 'sterilization_material_accounts_screen.dart';
 
@@ -9,8 +11,7 @@ class SterilizationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Sterilization',
+        title: Text(AppTranslations.tr('Sterilization'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -87,7 +88,7 @@ class SterilizationScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
             Expanded(
               child: Text(
                 title,
@@ -97,8 +98,7 @@ class SterilizationScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

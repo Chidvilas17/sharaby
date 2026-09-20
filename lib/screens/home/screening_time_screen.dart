@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/screening_time_api_service.dart';
 
@@ -233,7 +234,7 @@ class _ScreeningTimeScreenState
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           ...children,
         ],
@@ -264,7 +265,7 @@ class _ScreeningTimeScreenState
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           Row(
             children: [
@@ -294,7 +295,7 @@ class _ScreeningTimeScreenState
                 ),
               ),
 
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
 
               Container(
                 width: 52,
@@ -319,7 +320,7 @@ class _ScreeningTimeScreenState
                             ),
                           );
                         },
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons
                                 .keyboard_arrow_up,
@@ -346,7 +347,7 @@ class _ScreeningTimeScreenState
                             ),
                           );
                         },
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons
                                 .keyboard_arrow_down,
@@ -492,10 +493,10 @@ class _ScreeningTimeScreenState
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text('Screening Time'),
+        Text(AppTranslations.tr('Screening Time')),
       ),
       body: loading
-          ? const Center(
+          ? Center(
         child:
         CircularProgressIndicator(),
       )
@@ -558,7 +559,7 @@ class _ScreeningTimeScreenState
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -613,7 +614,7 @@ class _ScreeningTimeScreenState
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -640,7 +641,7 @@ class _ScreeningTimeScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
           ],

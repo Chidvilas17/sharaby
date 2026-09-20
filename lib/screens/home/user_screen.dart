@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/user_api_service.dart';
 import 'doctor_screen.dart';
 import 'secretary_screen.dart';
@@ -51,7 +52,7 @@ class _UserScreenState extends State<UserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User'),
+        title: Text(AppTranslations.tr('User')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -67,22 +68,22 @@ class _UserScreenState extends State<UserScreen> {
                       Icons.people_outline,
                       size: 30,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: _loadingUsers
-                          ? const Text(
-                        'Loading users...',
-                        style: TextStyle(fontSize: 16),
+                          ? Text(
+                        AppTranslations.tr('Loading users...'),
+                        style: const TextStyle(fontSize: 16),
                       )
                           : _errorMessage != null
                           ? Text(
-                        'API error:\n$_errorMessage',
+                        '${AppTranslations.tr('API error:')}\n$_errorMessage',
                         style: const TextStyle(
                           fontSize: 14,
                         ),
                       )
                           : Text(
-                        'Users in database: $_userCount',
+                        '${AppTranslations.tr('Users in database:')} $_userCount',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -93,17 +94,17 @@ class _UserScreenState extends State<UserScreen> {
                       IconButton(
                         onPressed: _loadUsers,
                         icon: const Icon(Icons.refresh),
-                        tooltip: 'Refresh',
+                        tooltip: AppTranslations.tr('Refresh'),
                       ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             _menuButton(
-              title: 'Doctors',
+              title: AppTranslations.tr('Doctors'),
               icon: Icons.medical_services_outlined,
               onPressed: () {
                 Navigator.push(
@@ -116,7 +117,7 @@ class _UserScreenState extends State<UserScreen> {
             ),
 
             _menuButton(
-              title: 'Secretary',
+              title: AppTranslations.tr('Secretary'),
               icon: Icons.person_outline,
               onPressed: () {
                 Navigator.push(
@@ -129,7 +130,7 @@ class _UserScreenState extends State<UserScreen> {
             ),
 
             _menuButton(
-              title: 'Admin',
+              title: AppTranslations.tr('Admin'),
               icon: Icons.admin_panel_settings_outlined,
               onPressed: () {
                 Navigator.push(

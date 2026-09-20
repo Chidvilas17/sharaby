@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/user_api_service.dart';
 
 class SecretaryScreen extends StatefulWidget {
@@ -57,18 +58,18 @@ class _SecretaryScreenState extends State<SecretaryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Secretary Details'),
+        title: Text(AppTranslations.tr('Secretary Details')),
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(text: 'All'),
-              Tab(text: 'Add'),
-              Tab(text: 'Edit'),
+            tabs: [
+              Tab(text: AppTranslations.tr('All')),
+              Tab(text: AppTranslations.tr('Add')),
+              Tab(text: AppTranslations.tr('Edit')),
             ],
           ),
 
@@ -93,7 +94,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
 
   Widget _buildAllTab() {
     if (loadingUsers) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -103,17 +104,16 @@ class _SecretaryScreenState extends State<SecretaryScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'No secretary users found.',
+            Text(AppTranslations.tr('No secretary users found.'),
               style: TextStyle(
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _loadAllSecretaries,
               icon: const Icon(Icons.refresh),
-              label: const Text('Refresh'),
+              label: Text(AppTranslations.tr('Refresh')),
             ),
           ],
         ),
@@ -133,19 +133,17 @@ class _SecretaryScreenState extends State<SecretaryScreen>
                   color: Colors.grey.shade300,
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      'Log in ID',
+                    child: Text(AppTranslations.tr('Log in ID'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Text(
-                      'Password',
+                    child: Text(AppTranslations.tr('Password'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -165,8 +163,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
                     title: Text(
                       user['log_id']?.toString() ?? '',
                     ),
-                    subtitle: const Text(
-                      'Password hidden',
+                    subtitle: Text(AppTranslations.tr('Password hidden'),
                     ),
                   );
                 },
@@ -187,14 +184,14 @@ class _SecretaryScreenState extends State<SecretaryScreen>
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           _buildTextField(
             controller: loginController,
             label: 'Log In',
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           _buildTextField(
             controller: passwordController,
@@ -202,7 +199,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
             obscureText: true,
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           _buildTextField(
             controller: confirmPasswordController,
@@ -210,15 +207,14 @@ class _SecretaryScreenState extends State<SecretaryScreen>
             obscureText: true,
           ),
 
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
 
           SizedBox(
             width: 130,
             height: 50,
             child: ElevatedButton(
               onPressed: _saveUser,
-              child: const Text(
-                'Save',
+              child: Text(AppTranslations.tr('Save'),
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -237,39 +233,38 @@ class _SecretaryScreenState extends State<SecretaryScreen>
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
 
           Row(
             children: [
-              const Text(
-                'Search By Log in Id :',
+              Text(AppTranslations.tr('Search By Log in Id :'),
                 style: TextStyle(fontSize: 16),
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               Expanded(
                 child: TextField(
                   controller: searchController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: OutlineInputBorder(),
                   ),
                 ),
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _loadUser,
-                  child: const Text('Load'),
+                  child: Text(AppTranslations.tr('Load')),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
 
           if (loadedUserId != null) ...[
             _buildTextField(
@@ -277,7 +272,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
               label: 'Log In',
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             _buildTextField(
               controller: passwordController,
@@ -285,7 +280,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
               obscureText: true,
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             _buildTextField(
               controller: confirmPasswordController,
@@ -293,15 +288,14 @@ class _SecretaryScreenState extends State<SecretaryScreen>
               obscureText: true,
             ),
 
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
 
             SizedBox(
               width: 130,
               height: 50,
               child: ElevatedButton(
                 onPressed: _updateUser,
-                child: const Text(
-                  'Save',
+                child: Text(AppTranslations.tr('Save'),
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -540,7 +534,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }

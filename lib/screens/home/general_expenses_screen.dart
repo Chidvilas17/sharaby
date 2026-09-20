@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'household_expenses_screen.dart';
 import 'supplies_expenses_screen.dart';
 import 'electricity_water_expenses_screen.dart';
@@ -13,8 +15,7 @@ class GeneralExpensesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'General Expenses',
+        title: Text(AppTranslations.tr('General Expenses'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -133,7 +134,7 @@ class GeneralExpensesScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
             Expanded(
               child: Text(
                 title,
@@ -143,8 +144,7 @@ class GeneralExpensesScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/current_nurses_api_service.dart';
 
@@ -375,8 +376,7 @@ class _CurrentNursesScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Total Nurses' Salaries",
+        title: Text(AppTranslations.tr("Total Nurses' Salaries"),
         ),
       ),
       body: SingleChildScrollView(
@@ -408,8 +408,7 @@ class _CurrentNursesScreenState
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Select and Show',
+                  Text(AppTranslations.tr('Select and Show'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight:
@@ -417,38 +416,36 @@ class _CurrentNursesScreenState
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
 
-                  const Text(
-                    'Select the name',
+                  Text(AppTranslations.tr('Select the name'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
                   loadingNurses
-                      ? const Center(
+                      ? Center(
                     child:
                     CircularProgressIndicator(),
                   )
                       : DropdownButtonFormField<
                       int>(
-                    value:
+                    initialValue:
                     selectedNurseId,
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
                     ),
                     hint:
-                    const Text(
-                      'Select nurse',
+                    Text(AppTranslations.tr('Select nurse'),
                     ),
                     isExpanded: true,
                     items: nurses
@@ -485,18 +482,17 @@ class _CurrentNursesScreenState
                     },
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'Month',
+                  Text(AppTranslations.tr('Month'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -506,15 +502,14 @@ class _CurrentNursesScreenState
                     keyboardType:
                     TextInputType.number,
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
-                      hintText:
-                      'MM/YYYY',
+                      hintText: AppTranslations.tr('MM/YYYY'),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
 
@@ -530,7 +525,7 @@ class _CurrentNursesScreenState
                             : _showSalary,
                         child:
                         loadingData
-                            ? const SizedBox(
+                            ? SizedBox(
                           width: 22,
                           height: 22,
                           child:
@@ -539,8 +534,7 @@ class _CurrentNursesScreenState
                             2,
                           ),
                         )
-                            : const Text(
-                          'Show',
+                            : Text(AppTranslations.tr('Show'),
                         ),
                       ),
                     ),
@@ -550,7 +544,7 @@ class _CurrentNursesScreenState
             ),
 
             if (errorMessage != null) ...[
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
               Text(
@@ -562,7 +556,7 @@ class _CurrentNursesScreenState
               ),
             ],
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -580,7 +574,7 @@ class _CurrentNursesScreenState
               shiftACount,
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -598,7 +592,7 @@ class _CurrentNursesScreenState
               shiftBCount,
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -616,7 +610,7 @@ class _CurrentNursesScreenState
               shiftCCount,
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -661,7 +655,7 @@ class _CurrentNursesScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               width: 12,
             ),
 
@@ -676,7 +670,7 @@ class _CurrentNursesScreenState
           ],
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 4,
         ),
 
@@ -688,7 +682,7 @@ class _CurrentNursesScreenState
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 8,
         ),
 
@@ -726,12 +720,11 @@ class _CurrentNursesScreenState
                     ),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     SizedBox(
                       width: 45,
-                      child: Text(
-                        'No.',
+                      child: Text(AppTranslations.tr('No.'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -742,8 +735,7 @@ class _CurrentNursesScreenState
                     ),
                     Expanded(
                       flex: 2,
-                      child: Text(
-                        'Notes',
+                      child: Text(AppTranslations.tr('Notes'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -754,8 +746,7 @@ class _CurrentNursesScreenState
                     ),
                     Expanded(
                       flex: 2,
-                      child: Text(
-                        'Accountant',
+                      child: Text(AppTranslations.tr('Accountant'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -765,8 +756,7 @@ class _CurrentNursesScreenState
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        'Date',
+                      child: Text(AppTranslations.tr('Date'),
                         style:
                         TextStyle(
                           fontWeight:
@@ -782,9 +772,8 @@ class _CurrentNursesScreenState
               // DATA
               Expanded(
                 child: records.isEmpty
-                    ? const Center(
-                  child: Text(
-                    'No data',
+                    ? Center(
+                  child: Text(AppTranslations.tr('No data'),
                     style:
                     TextStyle(
                       color:
@@ -913,7 +902,7 @@ class _CurrentNursesScreenState
             Colors.red,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 12,
           ),
 
@@ -923,7 +912,7 @@ class _CurrentNursesScreenState
             Colors.blue,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 12,
           ),
 
@@ -933,7 +922,7 @@ class _CurrentNursesScreenState
             Colors.green,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 24,
           ),
 
@@ -945,7 +934,7 @@ class _CurrentNursesScreenState
             Colors.black,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 12,
           ),
 
@@ -957,7 +946,7 @@ class _CurrentNursesScreenState
             Colors.red,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 12,
           ),
 
@@ -969,7 +958,7 @@ class _CurrentNursesScreenState
             Colors.red,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 12,
           ),
 

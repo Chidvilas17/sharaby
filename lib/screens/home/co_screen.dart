@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/co_api_service.dart';
 
@@ -120,13 +121,9 @@ class _CoScreenState extends State<CoScreen> {
   // ============================================================
 
   void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppTranslations.tr(message)),
         ),
       );
   }
@@ -176,7 +173,7 @@ class _CoScreenState extends State<CoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('C/O Details'),
+        title: Text(AppTranslations.tr('C/O Details')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -202,8 +199,7 @@ class _CoScreenState extends State<CoScreen> {
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Add',
+                  Text(AppTranslations.tr('Add'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight:
@@ -211,18 +207,17 @@ class _CoScreenState extends State<CoScreen> {
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'C/O Name',
+                  Text(AppTranslations.tr('C/O Name'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -240,13 +235,12 @@ class _CoScreenState extends State<CoScreen> {
                     InputDecoration(
                       border:
                       const OutlineInputBorder(),
-                      hintText:
-                      'Enter C/O name',
+                      hintText: AppTranslations.tr('Enter C/O name'),
                       errorText: coError,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
@@ -260,7 +254,7 @@ class _CoScreenState extends State<CoScreen> {
                             ? null
                             : _addCo,
                         child: adding
-                            ? const SizedBox(
+                            ? SizedBox(
                           width: 20,
                           height: 20,
                           child:
@@ -268,8 +262,7 @@ class _CoScreenState extends State<CoScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                            : const Text(
-                          'Add',
+                            : Text(AppTranslations.tr('Add'),
                         ),
                       ),
                     ),
@@ -278,7 +271,7 @@ class _CoScreenState extends State<CoScreen> {
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
 
@@ -286,8 +279,7 @@ class _CoScreenState extends State<CoScreen> {
             // C/O LIST
             // =====================================================
 
-            const Text(
-              'C/O List',
+            Text(AppTranslations.tr('C/O List'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -295,7 +287,7 @@ class _CoScreenState extends State<CoScreen> {
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 8,
             ),
 
@@ -337,12 +329,11 @@ class _CoScreenState extends State<CoScreen> {
                           ),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           SizedBox(
                             width: 60,
-                            child: Text(
-                              'No.',
+                            child: Text(AppTranslations.tr('No.'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -352,8 +343,7 @@ class _CoScreenState extends State<CoScreen> {
                             ),
                           ),
                           Expanded(
-                            child: Text(
-                              'Name',
+                            child: Text(AppTranslations.tr('Name'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -372,14 +362,13 @@ class _CoScreenState extends State<CoScreen> {
 
                     Expanded(
                       child: loading
-                          ? const Center(
+                          ? Center(
                         child:
                         CircularProgressIndicator(),
                       )
                           : coList.isEmpty
-                          ? const Center(
-                        child: Text(
-                          'No data',
+                          ? Center(
+                        child: Text(AppTranslations.tr('No data'),
                           style:
                           TextStyle(
                             color:

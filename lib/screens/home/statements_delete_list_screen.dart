@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/tbl_archive_api_service.dart';
 
 class StatementsDeleteListScreen extends StatefulWidget {
@@ -202,7 +203,7 @@ class _StatementsDeleteListScreenState
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Delete'),
+          title: Text(AppTranslations.tr('Delete')),
           content: Text(
             name.isEmpty
                 ? 'Are you sure you want to delete this record?'
@@ -216,7 +217,7 @@ class _StatementsDeleteListScreenState
                   false,
                 );
               },
-              child: const Text('Cancel'),
+              child: Text(AppTranslations.tr('Cancel')),
             ),
             ElevatedButton(
               onPressed: () {
@@ -225,7 +226,7 @@ class _StatementsDeleteListScreenState
                   true,
                 );
               },
-              child: const Text('Delete'),
+              child: Text(AppTranslations.tr('Delete')),
             ),
           ],
         );
@@ -279,13 +280,9 @@ class _StatementsDeleteListScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -330,7 +327,7 @@ class _StatementsDeleteListScreenState
         height: 42,
         alignment: Alignment.center,
         color: selectedRow == rowIndex
-            ? Colors.blue.withOpacity(0.20)
+            ? Colors.blue.withValues(alpha: 0.20)
             : const Color(0xFFD3DFE9),
         padding: const EdgeInsets.symmetric(
           horizontal: 6,
@@ -490,8 +487,7 @@ class _StatementsDeleteListScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Delete List',
+        title: Text(AppTranslations.tr('Delete List'),
         ),
       ),
       body: SafeArea(
@@ -501,8 +497,7 @@ class _StatementsDeleteListScreenState
             crossAxisAlignment:
             CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Date',
+              Text(AppTranslations.tr('Date'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -510,7 +505,7 @@ class _StatementsDeleteListScreenState
                 ),
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               InkWell(
                 onTap:
@@ -519,7 +514,7 @@ class _StatementsDeleteListScreenState
                     : _selectDate,
                 child: InputDecorator(
                   decoration:
-                  const InputDecoration(
+                  InputDecoration(
                     border:
                     OutlineInputBorder(),
                     suffixIcon: Icon(
@@ -536,7 +531,7 @@ class _StatementsDeleteListScreenState
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               Container(
                 padding:
@@ -551,8 +546,7 @@ class _StatementsDeleteListScreenState
                   crossAxisAlignment:
                   CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Screening Data',
+                    Text(AppTranslations.tr('Screening Data'),
                       textAlign:
                       TextAlign.right,
                       style: TextStyle(
@@ -562,10 +556,10 @@ class _StatementsDeleteListScreenState
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
 
                     if (isLoading)
-                      const Padding(
+                      Padding(
                         padding:
                         EdgeInsets.all(30),
                         child:
@@ -580,7 +574,7 @@ class _StatementsDeleteListScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               SizedBox(
                 height: 48,
@@ -591,7 +585,7 @@ class _StatementsDeleteListScreenState
                       ? null
                       : _deleteSelectedRow,
                   icon: isDeleting
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 20,
                     height: 20,
                     child:

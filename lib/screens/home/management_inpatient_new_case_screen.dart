@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/hdan_patients_api_service.dart';
 
 class ManagementInpatientNewCaseScreen extends StatefulWidget {
@@ -395,15 +396,9 @@ class _ManagementInpatientNewCaseScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
         duration: const Duration(seconds: 4),
       ),
     );
@@ -443,7 +438,7 @@ class _ManagementInpatientNewCaseScreenState
           labelText: label,
           border: const OutlineInputBorder(),
         ),
-        child: const SizedBox(
+        child: SizedBox(
           height: 24,
           child: Align(
             alignment: Alignment.centerLeft,
@@ -460,7 +455,7 @@ class _ManagementInpatientNewCaseScreenState
     }
 
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(
         labelText: label,
@@ -496,11 +491,11 @@ class _ManagementInpatientNewCaseScreenState
   }) {
     if (loadingData) {
       return InputDecorator(
-        decoration: const InputDecoration(
-          labelText: 'Treatment Type',
+        decoration: InputDecoration(
+          labelText: AppTranslations.tr('Treatment Type'),
           border: OutlineInputBorder(),
         ),
-        child: const SizedBox(
+        child: SizedBox(
           height: 24,
           child: Align(
             alignment: Alignment.centerLeft,
@@ -517,10 +512,10 @@ class _ManagementInpatientNewCaseScreenState
     }
 
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Treatment Type',
+      decoration: InputDecoration(
+        labelText: AppTranslations.tr('Treatment Type'),
         border: OutlineInputBorder(),
       ),
       items: treatmentTypes.map((treatment) {
@@ -578,10 +573,10 @@ class _ManagementInpatientNewCaseScreenState
             // DAY
             Expanded(
               child: DropdownButtonFormField<int>(
-                value: birthDay,
+                initialValue: birthDay,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Day',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.tr('Day'),
                   border: OutlineInputBorder(),
                 ),
                 items: List.generate(
@@ -607,15 +602,15 @@ class _ManagementInpatientNewCaseScreenState
               ),
             ),
 
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
 
             // MONTH
             Expanded(
               child: DropdownButtonFormField<int>(
-                value: birthMonth,
+                initialValue: birthMonth,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Month',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.tr('Month'),
                   border: OutlineInputBorder(),
                 ),
                 items: List.generate(
@@ -641,16 +636,16 @@ class _ManagementInpatientNewCaseScreenState
               ),
             ),
 
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
 
             // YEAR
             Expanded(
               flex: 2,
               child: DropdownButtonFormField<int>(
-                value: birthYear,
+                initialValue: birthYear,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Year',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.tr('Year'),
                   border: OutlineInputBorder(),
                 ),
                 items: List.generate(
@@ -712,7 +707,7 @@ class _ManagementInpatientNewCaseScreenState
                   Icons.calendar_today_outlined,
                 ),
 
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
 
                 Expanded(
                   child: Text(
@@ -750,10 +745,10 @@ class _ManagementInpatientNewCaseScreenState
             // HOUR
             Expanded(
               child: DropdownButtonFormField<int>(
-                value: admissionHour,
+                initialValue: admissionHour,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Hour',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.tr('Hour'),
                   border: OutlineInputBorder(),
                 ),
                 items: List.generate(
@@ -779,15 +774,15 @@ class _ManagementInpatientNewCaseScreenState
               ),
             ),
 
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
 
             // MINUTE
             Expanded(
               child: DropdownButtonFormField<int>(
-                value: admissionMinute,
+                initialValue: admissionMinute,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Minute',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.tr('Minute'),
                   border: OutlineInputBorder(),
                 ),
                 items: List.generate(
@@ -815,25 +810,25 @@ class _ManagementInpatientNewCaseScreenState
               ),
             ),
 
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
 
             // AM / PM
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: admissionPeriod,
+                initialValue: admissionPeriod,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Period',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.tr('Period'),
                   border: OutlineInputBorder(),
                 ),
-                items: const [
+                items: [
                   DropdownMenuItem<String>(
                     value: 'AM',
-                    child: Text('AM'),
+                    child: Text(AppTranslations.tr('AM')),
                   ),
                   DropdownMenuItem<String>(
                     value: 'PM',
-                    child: Text('PM'),
+                    child: Text(AppTranslations.tr('PM')),
                   ),
                 ],
                 onChanged: (value) {
@@ -861,8 +856,7 @@ class _ManagementInpatientNewCaseScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Add Internal Case',
+        title: Text(AppTranslations.tr('Add Internal Case'),
         ),
       ),
 
@@ -888,7 +882,7 @@ class _ManagementInpatientNewCaseScreenState
                 controller: nameController,
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 label: 'Guardian ID',
@@ -896,7 +890,7 @@ class _ManagementInpatientNewCaseScreenState
                 guardianIdController,
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 label: 'Address',
@@ -904,7 +898,7 @@ class _ManagementInpatientNewCaseScreenState
                 addressController,
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 label: 'Phone 1',
@@ -914,7 +908,7 @@ class _ManagementInpatientNewCaseScreenState
                 TextInputType.phone,
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 label: 'Phone 2',
@@ -924,7 +918,7 @@ class _ManagementInpatientNewCaseScreenState
                 TextInputType.phone,
               ),
 
-              const SizedBox(height: 26),
+              SizedBox(height: 26),
 
               // =================================================
               // DOCTOR INFORMATION
@@ -944,7 +938,7 @@ class _ManagementInpatientNewCaseScreenState
                 },
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _doctorDropdown(
                 label: 'Consulting Doctor',
@@ -956,7 +950,7 @@ class _ManagementInpatientNewCaseScreenState
                 },
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _doctorDropdown(
                 label: 'Doctor Referral',
@@ -968,7 +962,7 @@ class _ManagementInpatientNewCaseScreenState
                 },
               ),
 
-              const SizedBox(height: 26),
+              SizedBox(height: 26),
 
               // =================================================
               // TREATMENT
@@ -987,7 +981,7 @@ class _ManagementInpatientNewCaseScreenState
                 },
               ),
 
-              const SizedBox(height: 26),
+              SizedBox(height: 26),
 
               // =================================================
               // DATE OF BIRTH
@@ -995,7 +989,7 @@ class _ManagementInpatientNewCaseScreenState
 
               _birthDateSection(),
 
-              const SizedBox(height: 26),
+              SizedBox(height: 26),
 
               // =================================================
               // ADMISSION DATE
@@ -1003,7 +997,7 @@ class _ManagementInpatientNewCaseScreenState
 
               _admissionDateSection(),
 
-              const SizedBox(height: 26),
+              SizedBox(height: 26),
 
               // =================================================
               // ADMISSION TIME
@@ -1011,7 +1005,7 @@ class _ManagementInpatientNewCaseScreenState
 
               _admissionTimeSection(),
 
-              const SizedBox(height: 26),
+              SizedBox(height: 26),
 
               // =================================================
               // NOTES
@@ -1027,7 +1021,7 @@ class _ManagementInpatientNewCaseScreenState
                 notesController,
               ),
 
-              const SizedBox(height: 30),
+              SizedBox(height: 30),
 
               // =================================================
               // SAVE
@@ -1040,7 +1034,7 @@ class _ManagementInpatientNewCaseScreenState
                   saving ? null : _save,
 
                   child: saving
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 24,
                     height: 24,
                     child:
@@ -1048,8 +1042,7 @@ class _ManagementInpatientNewCaseScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Save',
+                      : Text(AppTranslations.tr('Save'),
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight:
@@ -1059,7 +1052,7 @@ class _ManagementInpatientNewCaseScreenState
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),

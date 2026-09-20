@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/staff_salary_api_service.dart';
 
 class TotalSalariesScreen extends StatefulWidget {
@@ -225,10 +226,9 @@ class _TotalSalariesScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -241,13 +241,12 @@ class _TotalSalariesScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Total Salaries',
+        title: Text(AppTranslations.tr('Total Salaries'),
         ),
       ),
 
       body: loading
-          ? const Center(
+          ? Center(
         child:
         CircularProgressIndicator(),
       )
@@ -272,7 +271,7 @@ class _TotalSalariesScreenState
 
               _buildControls(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // DOCTORS SUMMARY
@@ -284,7 +283,7 @@ class _TotalSalariesScreenState
 
               _buildDoctorsTable(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // SHIFT A
@@ -297,7 +296,7 @@ class _TotalSalariesScreenState
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // ==================================================
               // SHIFT B
@@ -310,7 +309,7 @@ class _TotalSalariesScreenState
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // ==================================================
               // SHIFT C
@@ -323,7 +322,7 @@ class _TotalSalariesScreenState
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // NURSING
@@ -335,7 +334,7 @@ class _TotalSalariesScreenState
 
               _buildNursesTable(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // ACCOUNTANTS + WORKERS
@@ -347,7 +346,7 @@ class _TotalSalariesScreenState
 
               _buildStaffTable(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // TOTAL
@@ -369,13 +368,12 @@ class _TotalSalariesScreenState
                   ),
                 ),
 
-                child: const Row(
+                child: Row(
                   mainAxisAlignment:
                   MainAxisAlignment.center,
 
                   children: [
-                    Text(
-                      'Total : ',
+                    Text(AppTranslations.tr('Total : '),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight:
@@ -394,35 +392,33 @@ class _TotalSalariesScreenState
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // ==================================================
               // UNTIL DATE
               // ==================================================
 
-              const Text(
-                'Until Date',
+              Text(AppTranslations.tr('Until Date'),
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               TextField(
                 controller:
                 untilDateController,
 
                 decoration:
-                const InputDecoration(
+                InputDecoration(
                   border:
                   OutlineInputBorder(),
-                  hintText:
-                  'DD-MM-YYYY',
+                  hintText: AppTranslations.tr('DD-MM-YYYY'),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // FILTER
@@ -435,11 +431,11 @@ class _TotalSalariesScreenState
                   onPressed: _filter,
 
                   child:
-                  const Text('Filter'),
+                  Text(AppTranslations.tr('Filter')),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -469,8 +465,7 @@ class _TotalSalariesScreenState
         CrossAxisAlignment.stretch,
 
         children: [
-          const Text(
-            'Month',
+          Text(AppTranslations.tr('Month'),
             style: TextStyle(
               fontSize: 16,
               fontWeight:
@@ -478,22 +473,21 @@ class _TotalSalariesScreenState
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           TextField(
             controller:
             monthController,
 
             decoration:
-            const InputDecoration(
+            InputDecoration(
               border:
               OutlineInputBorder(),
-              hintText:
-              'MM/YYYY',
+              hintText: AppTranslations.tr('MM/YYYY'),
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           SizedBox(
             height: 45,
@@ -503,7 +497,7 @@ class _TotalSalariesScreenState
               _showSalaries,
 
               child:
-              const Text('Show'),
+              Text(AppTranslations.tr('Show')),
             ),
           ),
         ],
@@ -542,7 +536,7 @@ class _TotalSalariesScreenState
 
   Widget _buildDoctorsTable() {
     return _buildDataTable(
-      columns: const [
+      columns: [
         'Name',
         'Shift Count',
         'Special Shift',
@@ -583,7 +577,7 @@ class _TotalSalariesScreenState
 
   Widget _buildNursesTable() {
     return _buildDataTable(
-      columns: const [
+      columns: [
         'No.',
         'Name',
         'A',
@@ -638,7 +632,7 @@ class _TotalSalariesScreenState
 
   Widget _buildStaffTable() {
     return _buildDataTable(
-      columns: const [
+      columns: [
         'No.',
         'Name',
         'Salary',
@@ -703,10 +697,10 @@ class _TotalSalariesScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         _buildDataTable(
-          columns: const [
+          columns: [
             'No.',
             'Date',
             'Notes',
@@ -894,12 +888,11 @@ class _TotalSalariesScreenState
                 // ==================================================
 
                 if (rows.isEmpty)
-                  const Expanded(
+                  Expanded(
                     child:
                     Center(
                       child:
-                      Text(
-                        'No data',
+                      Text(AppTranslations.tr('No data'),
 
                         style:
                         TextStyle(

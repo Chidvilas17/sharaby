@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/diagnosis_api_service.dart';
 
@@ -122,13 +123,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   // ============================================================
 
   void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppTranslations.tr(message)),
         ),
       );
   }
@@ -178,8 +175,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Diagnosis Details',
+        title: Text(AppTranslations.tr('Diagnosis Details'),
         ),
       ),
       body: Padding(
@@ -206,8 +202,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Add',
+                  Text(AppTranslations.tr('Add'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight:
@@ -215,18 +210,17 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'Diagnosis Name',
+                  Text(AppTranslations.tr('Diagnosis Name'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -246,14 +240,13 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     InputDecoration(
                       border:
                       const OutlineInputBorder(),
-                      hintText:
-                      'Enter diagnosis name',
+                      hintText: AppTranslations.tr('Enter diagnosis name'),
                       errorText:
                       diagnosisError,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
@@ -267,7 +260,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                             ? null
                             : _addDiagnosis,
                         child: adding
-                            ? const SizedBox(
+                            ? SizedBox(
                           width: 20,
                           height: 20,
                           child:
@@ -275,8 +268,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                            : const Text(
-                          'Add',
+                            : Text(AppTranslations.tr('Add'),
                         ),
                       ),
                     ),
@@ -285,7 +277,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
 
@@ -293,8 +285,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
             // DATABASE LIST
             // =====================================================
 
-            const Text(
-              'Diagnosis List',
+            Text(AppTranslations.tr('Diagnosis List'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -302,7 +293,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 8,
             ),
 
@@ -344,12 +335,11 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                           ),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           SizedBox(
                             width: 60,
-                            child: Text(
-                              'No.',
+                            child: Text(AppTranslations.tr('No.'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -359,8 +349,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                             ),
                           ),
                           Expanded(
-                            child: Text(
-                              'Name',
+                            child: Text(AppTranslations.tr('Name'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -379,15 +368,14 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
 
                     Expanded(
                       child: loading
-                          ? const Center(
+                          ? Center(
                         child:
                         CircularProgressIndicator(),
                       )
                           : diagnosisList
                           .isEmpty
-                          ? const Center(
-                        child: Text(
-                          'No data',
+                          ? Center(
+                        child: Text(AppTranslations.tr('No data'),
                           style:
                           TextStyle(
                             color:

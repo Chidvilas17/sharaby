@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/auth/login_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -21,6 +22,15 @@ class SharabyCenterApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeController.instance.themeMode,
           locale: ThemeController.instance.locale,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ar'),
+            Locale('en'),
+          ],
           home: const LoginScreen(),
         );
       },

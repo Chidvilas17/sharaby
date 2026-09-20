@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/incubator_view_history_api_service.dart';
 
 class IncubatorViewHistoryScreen extends StatefulWidget {
@@ -140,7 +141,7 @@ class _IncubatorViewHistoryScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('View History'),
+        title: Text(AppTranslations.tr('View History')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -166,8 +167,7 @@ class _IncubatorViewHistoryScreenState
                   crossAxisAlignment:
                   CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Search By Name',
+                    Text(AppTranslations.tr('Search By Name'),
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 18,
@@ -175,7 +175,7 @@ class _IncubatorViewHistoryScreenState
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     TextField(
                       controller: _searchController,
@@ -185,14 +185,13 @@ class _IncubatorViewHistoryScreenState
                         _searchPatients();
                       },
                       decoration:
-                      const InputDecoration(
+                      InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText:
-                        'Enter patient name',
+                        hintText: AppTranslations.tr('Enter patient name'),
                       ),
                     ),
 
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     SizedBox(
                       height: 48,
@@ -201,8 +200,7 @@ class _IncubatorViewHistoryScreenState
                         isLoading
                             ? null
                             : _searchPatients,
-                        child: const Text(
-                          'Search',
+                        child: Text(AppTranslations.tr('Search'),
                           style: TextStyle(
                             fontSize: 16,
                           ),
@@ -213,7 +211,7 @@ class _IncubatorViewHistoryScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // MESSAGE
@@ -273,7 +271,7 @@ class _IncubatorViewHistoryScreenState
                               ),
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
                               _HeaderCell(
                                 title: 'No.',
@@ -306,7 +304,7 @@ class _IncubatorViewHistoryScreenState
                         // ==========================================
 
                         if (isLoading)
-                          const SizedBox(
+                          SizedBox(
                             height: 480,
                             child: Center(
                               child:
@@ -374,7 +372,7 @@ class _IncubatorViewHistoryScreenState
                 ),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 _EmptyCell(flex: 1),
                 _EmptyCell(flex: 3),

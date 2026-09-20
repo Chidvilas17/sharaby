@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/nurse_attendance_api_service.dart';
 
 class StaffNursesDailyMonthlyScreen extends StatefulWidget {
@@ -87,8 +88,7 @@ class _StaffNursesDailyMonthlyScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to load nurses.\n$e',
+          content: Text(AppTranslations.tr('Failed to load nurses.\n$e'),
           ),
         ),
       );
@@ -218,9 +218,7 @@ class _StaffNursesDailyMonthlyScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Attendance loaded for '
-                '${_formatDate(selectedDate)}.',
+          content: Text('${AppTranslations.tr('Attendance loaded for')} ${_formatDate(selectedDate)}.',
           ),
         ),
       );
@@ -233,8 +231,7 @@ class _StaffNursesDailyMonthlyScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to load attendance.\n$e',
+          content: Text(AppTranslations.tr('Failed to load attendance.\n$e'),
           ),
         ),
       );
@@ -280,8 +277,8 @@ class _StaffNursesDailyMonthlyScreenState
 
     if (empId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a nurse.'),
+        SnackBar(
+          content: Text(AppTranslations.tr('Please select a nurse.')),
         ),
       );
       return;
@@ -332,8 +329,7 @@ class _StaffNursesDailyMonthlyScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to save Shift A.\n$e',
+          content: Text(AppTranslations.tr('Failed to save Shift A.\n$e'),
           ),
         ),
       );
@@ -348,8 +344,8 @@ class _StaffNursesDailyMonthlyScreenState
 
     if (empId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a nurse.'),
+        SnackBar(
+          content: Text(AppTranslations.tr('Please select a nurse.')),
         ),
       );
       return;
@@ -400,8 +396,7 @@ class _StaffNursesDailyMonthlyScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to save Shift B.\n$e',
+          content: Text(AppTranslations.tr('Failed to save Shift B.\n$e'),
           ),
         ),
       );
@@ -416,8 +411,8 @@ class _StaffNursesDailyMonthlyScreenState
 
     if (empId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a nurse.'),
+        SnackBar(
+          content: Text(AppTranslations.tr('Please select a nurse.')),
         ),
       );
       return;
@@ -468,8 +463,7 @@ class _StaffNursesDailyMonthlyScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to save Shift C.\n$e',
+          content: Text(AppTranslations.tr('Failed to save Shift C.\n$e'),
           ),
         ),
       );
@@ -484,9 +478,9 @@ class _StaffNursesDailyMonthlyScreenState
     required ValueChanged<String?> onChanged,
   }) {
     if (loadingNurses) {
-      return const InputDecorator(
+      return InputDecorator(
         decoration: InputDecoration(
-          labelText: 'Nurse',
+          labelText: AppTranslations.tr('Nurse'),
           border: OutlineInputBorder(),
         ),
         child: Center(
@@ -499,16 +493,16 @@ class _StaffNursesDailyMonthlyScreenState
     }
 
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Nurse',
+      decoration: InputDecoration(
+        labelText: AppTranslations.tr('Nurse'),
         border: OutlineInputBorder(),
       ),
       items: [
-        const DropdownMenuItem<String>(
+        DropdownMenuItem<String>(
           value: 'SELECT',
-          child: Text('Select'),
+          child: Text(AppTranslations.tr('Select')),
         ),
         ...nurses.map(
               (nurse) {
@@ -561,30 +555,30 @@ class _StaffNursesDailyMonthlyScreenState
             ),
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           _nurseDropdown(
             value: nurse,
             onChanged: onNurseChanged,
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           TextField(
             controller: notesController,
             maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Notes',
+            decoration: InputDecoration(
+              labelText: AppTranslations.tr('Notes'),
               border: OutlineInputBorder(),
             ),
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           ElevatedButton.icon(
             onPressed: saving ? null : onAdd,
             icon: saving
-                ? const SizedBox(
+                ? SizedBox(
               width: 18,
               height: 18,
               child: CircularProgressIndicator(
@@ -632,7 +626,7 @@ class _StaffNursesDailyMonthlyScreenState
           ),
         ),
 
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
 
         Text(
           time,
@@ -643,7 +637,7 @@ class _StaffNursesDailyMonthlyScreenState
           ),
         ),
 
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
 
         Container(
           decoration: BoxDecoration(
@@ -756,7 +750,7 @@ class _StaffNursesDailyMonthlyScreenState
           ),
         ),
 
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
       ],
     );
   }
@@ -776,7 +770,7 @@ class _StaffNursesDailyMonthlyScreenState
         alignment: Alignment.center,
         padding: const EdgeInsets.all(5),
         color: selected
-            ? Colors.blue.withOpacity(0.12)
+            ? Colors.blue.withValues(alpha: 0.12)
             : Colors.transparent,
         child: Text(
           text,
@@ -793,8 +787,7 @@ class _StaffNursesDailyMonthlyScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Nurses Daily Attendance',
+        title: Text(AppTranslations.tr('Nurses Daily Attendance'),
         ),
       ),
       body: SingleChildScrollView(
@@ -811,8 +804,8 @@ class _StaffNursesDailyMonthlyScreenState
                     onTap: _selectDate,
                     child: InputDecorator(
                       decoration:
-                      const InputDecoration(
-                        labelText: 'Date',
+                      InputDecoration(
+                        labelText: AppTranslations.tr('Date'),
                         border:
                         OutlineInputBorder(),
                         suffixIcon: Icon(
@@ -830,7 +823,7 @@ class _StaffNursesDailyMonthlyScreenState
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
 
                 ElevatedButton(
                   onPressed:
@@ -838,7 +831,7 @@ class _StaffNursesDailyMonthlyScreenState
                       ? null
                       : _showData,
                   child: loadingAttendance
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 18,
                     height: 18,
                     child:
@@ -846,12 +839,12 @@ class _StaffNursesDailyMonthlyScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text('Show'),
+                      : Text(AppTranslations.tr('Show')),
                 ),
               ],
             ),
 
-            const SizedBox(height: 25),
+            SizedBox(height: 25),
 
             // SHIFT A
             _buildShiftTable(

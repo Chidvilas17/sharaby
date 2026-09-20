@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/hdan_devices_api_service.dart';
 
 class DevicesScreen extends StatefulWidget {
@@ -143,13 +144,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -162,11 +159,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hdan Devices'),
+        title: Text(AppTranslations.tr('Hdan Devices')),
       ),
 
       body: loading
-          ? const Center(
+          ? Center(
         child: CircularProgressIndicator(),
       )
           : SingleChildScrollView(
@@ -182,8 +179,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
             // DEVICES LIST
             // =========================
 
-            const Text(
-              'Devices List',
+            Text(AppTranslations.tr('Devices List'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -191,7 +187,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
               ),
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             SizedBox(
               height: 300,
@@ -237,13 +233,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
                       ),
 
                       child:
-                      const Row(
+                      Row(
                         children: [
 
                           Expanded(
                             child:
-                            Text(
-                              'Type',
+                            Text(AppTranslations.tr('Type'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -255,8 +250,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
                           Expanded(
                             child:
-                            Text(
-                              'Price',
+                            Text(AppTranslations.tr('Price'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -274,10 +268,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     Expanded(
                       child:
                       devices.isEmpty
-                          ? const Center(
+                          ? Center(
                         child:
-                        Text(
-                          'No data',
+                        Text(AppTranslations.tr('No data'),
                           style:
                           TextStyle(
                             color:
@@ -351,7 +344,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // =========================
             // ADD NEW BUTTON
@@ -376,14 +369,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
                   },
 
                   child:
-                  const Text(
-                    'Add New',
+                  Text(AppTranslations.tr('Add New'),
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // =========================
             // NEW DEVICE
@@ -413,8 +405,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
                 children: [
 
-                  const Text(
-                    'New Device',
+                  Text(AppTranslations.tr('New Device'),
                     style:
                     TextStyle(
                       fontSize: 18,
@@ -423,19 +414,18 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
 
-                  const Text(
-                    'Type',
+                  Text(AppTranslations.tr('Type'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -444,25 +434,24 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     typeController,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'Price For Hdan',
+                  Text(AppTranslations.tr('Price For Hdan'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -475,13 +464,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
                         .number,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
 

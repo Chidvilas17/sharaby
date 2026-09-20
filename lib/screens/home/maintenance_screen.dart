@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'faults_screen.dart';
 import 'faults_archive_screen.dart';
 
@@ -9,8 +11,7 @@ class MaintenanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Maintenance',
+        title: Text(AppTranslations.tr('Maintenance'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -80,7 +81,7 @@ class MaintenanceScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
             Text(
               title,
               style: const TextStyle(
@@ -89,8 +90,7 @@ class MaintenanceScreen extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

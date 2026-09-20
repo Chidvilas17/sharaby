@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/household_expenses_api_service.dart';
 
 class HouseholdExpensesScreen extends StatefulWidget {
@@ -391,14 +392,9 @@ class _HouseholdExpensesScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -472,7 +468,7 @@ class _HouseholdExpensesScreenState
             const Icon(
               Icons.calendar_today_outlined,
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Text(
                 _formatDate(selectedDate),
@@ -755,8 +751,7 @@ class _HouseholdExpensesScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Household Expenses',
+        title: Text(AppTranslations.tr('Household Expenses'),
         ),
       ),
 
@@ -772,9 +767,8 @@ class _HouseholdExpensesScreenState
               // ==================================================
 
               Row(
-                children: const [
-                  Text(
-                    'Current User: ',
+                children: [
+                  Text(AppTranslations.tr('Current User: '),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -783,7 +777,7 @@ class _HouseholdExpensesScreenState
                 ],
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // ==================================================
               // SEARCH BY DATE
@@ -793,11 +787,11 @@ class _HouseholdExpensesScreenState
                 'Search by Date',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _dateField(),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               SizedBox(
                 height: 48,
@@ -807,7 +801,7 @@ class _HouseholdExpensesScreenState
                       ? null
                       : _search,
                   child: loadingExpenses
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 22,
                     height: 22,
                     child:
@@ -815,8 +809,7 @@ class _HouseholdExpensesScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Search',
+                      : Text(AppTranslations.tr('Search'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight:
@@ -826,13 +819,12 @@ class _HouseholdExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               if (!loadingExpenses &&
                   expenses.isEmpty)
-                const Center(
-                  child: Text(
-                    'No operations this day',
+                Center(
+                  child: Text(AppTranslations.tr('No operations this day'),
                     style: TextStyle(
                       fontWeight:
                       FontWeight.bold,
@@ -840,7 +832,7 @@ class _HouseholdExpensesScreenState
                   ),
                 ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // ADD EXPENSE
@@ -850,7 +842,7 @@ class _HouseholdExpensesScreenState
                 'Add Expense',
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               _textField(
                 controller:
@@ -860,7 +852,7 @@ class _HouseholdExpensesScreenState
                 TextInputType.number,
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller: costController,
@@ -872,14 +864,14 @@ class _HouseholdExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller: notesController,
                 label: 'Notes',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               SizedBox(
                 height: 48,
@@ -889,7 +881,7 @@ class _HouseholdExpensesScreenState
                       ? null
                       : _saveExpense,
                   child: saving
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 22,
                     height: 22,
                     child:
@@ -897,8 +889,7 @@ class _HouseholdExpensesScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Save',
+                      : Text(AppTranslations.tr('Save'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight:
@@ -908,7 +899,7 @@ class _HouseholdExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ==================================================
               // EXPENSE DATA
@@ -919,7 +910,7 @@ class _HouseholdExpensesScreenState
               ),
 
               if (loadingExpenses)
-                const Padding(
+                Padding(
                   padding:
                   EdgeInsets.all(20),
                   child: Center(
@@ -930,7 +921,7 @@ class _HouseholdExpensesScreenState
               else
                 _buildTable(),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // DELETE
@@ -944,7 +935,7 @@ class _HouseholdExpensesScreenState
                       ? null
                       : _deleteExpense,
                   child: deleting
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 22,
                     height: 22,
                     child:
@@ -952,8 +943,7 @@ class _HouseholdExpensesScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Delete',
+                      : Text(AppTranslations.tr('Delete'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight:
@@ -963,7 +953,7 @@ class _HouseholdExpensesScreenState
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ==================================================
               // TOTAL
@@ -973,8 +963,7 @@ class _HouseholdExpensesScreenState
                 mainAxisAlignment:
                 MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Total Expenses: ',
+                  Text(AppTranslations.tr('Total Expenses: '),
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight:

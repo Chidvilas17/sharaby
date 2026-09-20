@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/hdan_patients_api_service.dart';
 
 class NurseryNewScreen extends StatefulWidget {
@@ -517,12 +518,9 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -567,16 +565,16 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         bottom: 12,
       ),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         isExpanded: true,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
         ),
-        items: const [
+        items: [
           DropdownMenuItem(
             value: 'SELECT',
-            child: Text('Select'),
+            child: Text(AppTranslations.tr('Select')),
           ),
         ],
         onChanged: onChanged,
@@ -607,13 +605,13 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         bottom: 12,
       ),
       child: DropdownButtonFormField<String>(
-        value: validValue,
+        initialValue: validValue,
         isExpanded: true,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
           suffixIcon: loading
-              ? const Padding(
+              ? Padding(
             padding: EdgeInsets.all(12),
             child: SizedBox(
               width: 16,
@@ -649,7 +647,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
     required ValueChanged<int?> onChanged,
   }) {
     return DropdownButtonFormField<int>(
-      value: value,
+      initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(
         labelText: label,
@@ -729,7 +727,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           Row(
             children: [
@@ -745,7 +743,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
                 ),
               ),
 
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
 
               Expanded(
                 child: _numberDropdown(
@@ -759,26 +757,26 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
                 ),
               ),
 
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
 
               Expanded(
                 child: DropdownButtonFormField<int>(
-                  value: amPm,
+                  initialValue: amPm,
                   isExpanded: true,
                   decoration:
-                  const InputDecoration(
-                    labelText: 'AM / PM',
+                  InputDecoration(
+                    labelText: AppTranslations.tr('AM / PM'),
                     border:
                     OutlineInputBorder(),
                   ),
-                  items: const [
+                  items: [
                     DropdownMenuItem(
                       value: 0,
-                      child: Text('AM'),
+                      child: Text(AppTranslations.tr('AM')),
                     ),
                     DropdownMenuItem(
                       value: 1,
-                      child: Text('PM'),
+                      child: Text(AppTranslations.tr('PM')),
                     ),
                   ],
                   onChanged:
@@ -798,7 +796,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
 
   Widget _buildTable() {
     if (loadingPatients) {
-      return const SizedBox(
+      return SizedBox(
         height: 250,
         child: Center(
           child: CircularProgressIndicator(),
@@ -871,8 +869,8 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
                         color: selectedRow ==
                             rowIndex
                             ? Colors.blue
-                            .withOpacity(
-                          0.12,
+                            .withValues(
+                          alpha: 0.12,
                         )
                             : Colors
                             .transparent,
@@ -1075,7 +1073,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         alignment: Alignment.center,
         padding: const EdgeInsets.all(5),
         color: selected
-            ? Colors.blue.withOpacity(0.12)
+            ? Colors.blue.withValues(alpha: 0.12)
             : Colors.transparent,
         child: Text(
           text,
@@ -1094,7 +1092,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text('Add Nursery Case'),
+        Text(AppTranslations.tr('Add Nursery Case')),
       ),
 
       body: SingleChildScrollView(
@@ -1110,8 +1108,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
             // PATIENT INFORMATION
             // ==================================================
 
-            const Text(
-              'Patient Information',
+            Text(AppTranslations.tr('Patient Information'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight:
@@ -1119,7 +1116,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             _textField(
               label: 'Name',
@@ -1171,14 +1168,13 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               cardHolderController,
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             // ==================================================
             // DOCTOR INFORMATION
             // ==================================================
 
-            const Text(
-              'Doctor Information',
+            Text(AppTranslations.tr('Doctor Information'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight:
@@ -1186,7 +1182,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             _databaseDropdown(
               label:
@@ -1258,14 +1254,13 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               },
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             // ==================================================
             // BIRTH INFORMATION
             // ==================================================
 
-            const Text(
-              'Birth Information',
+            Text(AppTranslations.tr('Birth Information'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight:
@@ -1273,7 +1268,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             _dateField(
               label: 'Birth Date',
@@ -1313,14 +1308,13 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               },
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             // ==================================================
             // ADMISSION INFORMATION
             // ==================================================
 
-            const Text(
-              'Admission Information',
+            Text(AppTranslations.tr('Admission Information'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight:
@@ -1328,7 +1322,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             _dateField(
               label:
@@ -1399,7 +1393,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               maxLines: 3,
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             // ==================================================
             // SAVE
@@ -1414,7 +1408,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
                     ? null
                     : _save,
                 icon: saving
-                    ? const SizedBox(
+                    ? SizedBox(
                   width: 20,
                   height: 20,
                   child:
@@ -1434,14 +1428,13 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // ==================================================
             // NURSERY CASES
             // ==================================================
 
-            const Text(
-              'Nursery Cases',
+            Text(AppTranslations.tr('Nursery Cases'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight:
@@ -1449,11 +1442,11 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
               ),
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             _buildTable(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // ==================================================
             // DELETE
@@ -1469,13 +1462,12 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
                   Icons.delete_outline,
                 ),
                 label:
-                const Text(
-                  'Delete Selected',
+                Text(AppTranslations.tr('Delete Selected'),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
         ),
       ),

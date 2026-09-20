@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/user_api_service.dart';
 
 class DoctorScreen extends StatefulWidget {
@@ -60,18 +61,18 @@ class _DoctorScreenState extends State<DoctorScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Users Details'),
+        title: Text(AppTranslations.tr('Users Details')),
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(text: 'All'),
-              Tab(text: 'Add'),
-              Tab(text: 'Edit'),
+            tabs: [
+              Tab(text: AppTranslations.tr('All')),
+              Tab(text: AppTranslations.tr('Add')),
+              Tab(text: AppTranslations.tr('Edit')),
             ],
           ),
 
@@ -96,7 +97,7 @@ class _DoctorScreenState extends State<DoctorScreen>
 
   Widget _buildAllTab() {
     if (loadingUsers) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     }
@@ -106,17 +107,16 @@ class _DoctorScreenState extends State<DoctorScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'No doctor users found.',
+            Text(AppTranslations.tr('No doctor users found.'),
               style: TextStyle(
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _loadAllDoctors,
               icon: const Icon(Icons.refresh),
-              label: const Text('Refresh'),
+              label: Text(AppTranslations.tr('Refresh')),
             ),
           ],
         ),
@@ -136,19 +136,17 @@ class _DoctorScreenState extends State<DoctorScreen>
                   color: Colors.grey.shade300,
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      'Log in ID',
+                    child: Text(AppTranslations.tr('Log in ID'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   Expanded(
-                    child: Text(
-                      'Password',
+                    child: Text(AppTranslations.tr('Password'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -168,8 +166,7 @@ class _DoctorScreenState extends State<DoctorScreen>
                     title: Text(
                       user['log_id']?.toString() ?? '',
                     ),
-                    subtitle: const Text(
-                      'Password hidden',
+                    subtitle: Text(AppTranslations.tr('Password hidden'),
                     ),
                   );
                 },
@@ -190,14 +187,14 @@ class _DoctorScreenState extends State<DoctorScreen>
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           _buildTextField(
             controller: loginController,
             label: 'Log In',
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           _buildTextField(
             controller: passwordController,
@@ -205,7 +202,7 @@ class _DoctorScreenState extends State<DoctorScreen>
             obscureText: true,
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           _buildTextField(
             controller: confirmPasswordController,
@@ -213,15 +210,14 @@ class _DoctorScreenState extends State<DoctorScreen>
             obscureText: true,
           ),
 
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
 
           SizedBox(
             width: 130,
             height: 50,
             child: ElevatedButton(
               onPressed: _saveUser,
-              child: const Text(
-                'Save',
+              child: Text(AppTranslations.tr('Save'),
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -240,39 +236,38 @@ class _DoctorScreenState extends State<DoctorScreen>
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
 
           Row(
             children: [
-              const Text(
-                'Search By Log in Id :',
+              Text(AppTranslations.tr('Search By Log in Id :'),
                 style: TextStyle(fontSize: 16),
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               Expanded(
                 child: TextField(
                   controller: searchController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: OutlineInputBorder(),
                   ),
                 ),
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
 
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _loadUser,
-                  child: const Text('Load'),
+                  child: Text(AppTranslations.tr('Load')),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 30),
+          SizedBox(height: 30),
 
           if (loadedUserId != null) ...[
             _buildTextField(
@@ -280,7 +275,7 @@ class _DoctorScreenState extends State<DoctorScreen>
               label: 'Log In',
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             _buildTextField(
               controller: passwordController,
@@ -288,7 +283,7 @@ class _DoctorScreenState extends State<DoctorScreen>
               obscureText: true,
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             _buildTextField(
               controller: confirmPasswordController,
@@ -296,15 +291,14 @@ class _DoctorScreenState extends State<DoctorScreen>
               obscureText: true,
             ),
 
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
 
             SizedBox(
               width: 130,
               height: 50,
               child: ElevatedButton(
                 onPressed: _updateUser,
-                child: const Text(
-                  'Save',
+                child: Text(AppTranslations.tr('Save'),
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -546,7 +540,7 @@ class _DoctorScreenState extends State<DoctorScreen>
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/nursery_edit_data_api_service.dart';
 
@@ -121,12 +122,9 @@ class _NurseryEditDataScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -137,7 +135,7 @@ class _NurseryEditDataScreenState
 
   Widget _buildTable() {
     if (loading) {
-      return const SizedBox(
+      return SizedBox(
         height: 300,
         child: Center(
           child: CircularProgressIndicator(),
@@ -222,7 +220,7 @@ class _NurseryEditDataScreenState
                     alignment: Alignment.center,
                     color: selectedRow == index
                         ? Colors.blue
-                        .withOpacity(0.12)
+                        .withValues(alpha: 0.12)
                         : Colors.transparent,
                     padding:
                     const EdgeInsets.all(6),
@@ -248,8 +246,7 @@ class _NurseryEditDataScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Edit Nursery Data',
+        title: Text(AppTranslations.tr('Edit Nursery Data'),
         ),
       ),
       body: SingleChildScrollView(
@@ -258,8 +255,7 @@ class _NurseryEditDataScreenState
           crossAxisAlignment:
           CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Edit Nursery Data',
+            Text(AppTranslations.tr('Edit Nursery Data'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
@@ -267,7 +263,7 @@ class _NurseryEditDataScreenState
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             _buildTable(),
           ],

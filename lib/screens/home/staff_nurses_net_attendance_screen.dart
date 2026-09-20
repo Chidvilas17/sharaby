@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/nurse_attendance_api_service.dart';
 
 class StaffNursesNetAttendanceScreen extends StatefulWidget {
@@ -81,8 +82,7 @@ class _StaffNursesNetAttendanceScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to load nurses.\n$e',
+          content: Text(AppTranslations.tr('Failed to load nurses.\n$e'),
           ),
         ),
       );
@@ -102,18 +102,17 @@ class _StaffNursesNetAttendanceScreenState
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text(
-                'Select Month',
+              title: Text(AppTranslations.tr('Select Month'),
                 textAlign: TextAlign.center,
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<int>(
-                    value: tempMonth,
+                    initialValue: tempMonth,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Month',
+                    decoration: InputDecoration(
+                      labelText: AppTranslations.tr('Month'),
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(
@@ -140,13 +139,13 @@ class _StaffNursesNetAttendanceScreenState
                     },
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
 
                   DropdownButtonFormField<int>(
-                    value: tempYear,
+                    initialValue: tempYear,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Year',
+                    decoration: InputDecoration(
+                      labelText: AppTranslations.tr('Year'),
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(
@@ -175,7 +174,7 @@ class _StaffNursesNetAttendanceScreenState
                   onPressed: () {
                     Navigator.pop(dialogContext);
                   },
-                  child: const Text('Cancel'),
+                  child: Text(AppTranslations.tr('Cancel')),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -187,7 +186,7 @@ class _StaffNursesNetAttendanceScreenState
                       ),
                     );
                   },
-                  child: const Text('Select'),
+                  child: Text(AppTranslations.tr('Select')),
                 ),
               ],
             );
@@ -250,8 +249,8 @@ class _StaffNursesNetAttendanceScreenState
 
     if (empId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a nurse.'),
+        SnackBar(
+          content: Text(AppTranslations.tr('Please select a nurse.')),
         ),
       );
       return;
@@ -367,9 +366,7 @@ class _StaffNursesNetAttendanceScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Attendance loaded for '
-                '${_getSelectedNurseName()} '
-                'for $_monthText().',
+            '${AppTranslations.tr('Attendance loaded for')} ${_getSelectedNurseName()} (${_monthText()}).',
           ),
         ),
       );
@@ -382,8 +379,7 @@ class _StaffNursesNetAttendanceScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to load attendance.\n$e',
+          content: Text(AppTranslations.tr('Failed to load attendance.\n$e'),
           ),
         ),
       );
@@ -420,9 +416,9 @@ class _StaffNursesNetAttendanceScreenState
   // ============================================================
   Widget _nurseDropdown() {
     if (loadingNurses) {
-      return const InputDecorator(
+      return InputDecorator(
         decoration: InputDecoration(
-          labelText: 'Select Name',
+          labelText: AppTranslations.tr('Select Name'),
           border: OutlineInputBorder(),
         ),
         child: Center(
@@ -439,16 +435,16 @@ class _StaffNursesNetAttendanceScreenState
     }
 
     return DropdownButtonFormField<String>(
-      value: selectedNurse,
+      initialValue: selectedNurse,
       isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Select Name',
+      decoration: InputDecoration(
+        labelText: AppTranslations.tr('Select Name'),
         border: OutlineInputBorder(),
       ),
       items: [
-        const DropdownMenuItem<String>(
+        DropdownMenuItem<String>(
           value: 'SELECT',
-          child: Text('Select'),
+          child: Text(AppTranslations.tr('Select')),
         ),
         ...nurses.map(
               (nurse) {
@@ -496,7 +492,7 @@ class _StaffNursesNetAttendanceScreenState
           ),
         ),
 
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
 
         Text(
           time,
@@ -507,7 +503,7 @@ class _StaffNursesNetAttendanceScreenState
           ),
         ),
 
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
 
         Container(
           decoration: BoxDecoration(
@@ -625,7 +621,7 @@ class _StaffNursesNetAttendanceScreenState
           ),
         ),
 
-        const SizedBox(height: 25),
+        SizedBox(height: 25),
       ],
     );
   }
@@ -667,8 +663,8 @@ class _StaffNursesNetAttendanceScreenState
         padding:
         const EdgeInsets.all(5),
         color: selected
-            ? Colors.blue.withOpacity(
-          0.12,
+            ? Colors.blue.withValues(
+          alpha: 0.12,
         )
             : Colors.transparent,
         child: Text(
@@ -744,8 +740,7 @@ class _StaffNursesNetAttendanceScreenState
         crossAxisAlignment:
         CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Net Salary',
+          Text(AppTranslations.tr('Net Salary'),
             textAlign:
             TextAlign.center,
             style: TextStyle(
@@ -755,7 +750,7 @@ class _StaffNursesNetAttendanceScreenState
             ),
           ),
 
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
 
           _summaryRow(
             title: 'Shift A',
@@ -818,8 +813,7 @@ class _StaffNursesNetAttendanceScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Nurses Net Attendance',
+        title: Text(AppTranslations.tr('Nurses Net Attendance'),
         ),
       ),
       body: SingleChildScrollView(
@@ -832,15 +826,15 @@ class _StaffNursesNetAttendanceScreenState
             // NURSE
             _nurseDropdown(),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // MONTH
             InkWell(
               onTap: _selectMonth,
               child: InputDecorator(
                 decoration:
-                const InputDecoration(
-                  labelText: 'Month',
+                InputDecoration(
+                  labelText: AppTranslations.tr('Month'),
                   border:
                   OutlineInputBorder(),
                   suffixIcon: Icon(
@@ -855,7 +849,7 @@ class _StaffNursesNetAttendanceScreenState
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // SHOW
             ElevatedButton.icon(
@@ -864,7 +858,7 @@ class _StaffNursesNetAttendanceScreenState
                   ? null
                   : _show,
               icon: loadingAttendance
-                  ? const SizedBox(
+                  ? SizedBox(
                 width: 18,
                 height: 18,
                 child:
@@ -891,7 +885,7 @@ class _StaffNursesNetAttendanceScreenState
               ),
             ),
 
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
 
             // SHIFT A
             _buildShiftTable(
@@ -947,7 +941,7 @@ class _StaffNursesNetAttendanceScreenState
             // SALARY SUMMARY
             _buildSalarySummary(),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
         ),
       ),

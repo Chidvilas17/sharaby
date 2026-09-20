@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/indoor_view_current_api_service.dart';
 
@@ -85,7 +86,7 @@ class _IndoorViewCurrentScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('InternalCheck'),
+        title: Text(AppTranslations.tr('InternalCheck')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -116,15 +117,14 @@ class _IndoorViewCurrentScreenState
                   crossAxisAlignment:
                   CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Current Patients',
+                    Text(AppTranslations.tr('Current Patients'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ==========================================
                     // PATIENT TABLE
@@ -159,7 +159,7 @@ class _IndoorViewCurrentScreenState
                                     ),
                                   ),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     _HeaderCell(
                                       title: 'Name',
@@ -182,7 +182,7 @@ class _IndoorViewCurrentScreenState
                               // ==================================
 
                               if (isLoading)
-                                const SizedBox(
+                                SizedBox(
                                   height: 480,
                                   child: Center(
                                     child:
@@ -208,8 +208,7 @@ class _IndoorViewCurrentScreenState
                                       MainAxisAlignment
                                           .center,
                                       children: [
-                                        const Text(
-                                          'Failed to load patients.',
+                                        Text(AppTranslations.tr('Failed to load patients.'),
                                           textAlign:
                                           TextAlign.center,
                                           style: TextStyle(
@@ -219,7 +218,7 @@ class _IndoorViewCurrentScreenState
                                           ),
                                         ),
 
-                                        const SizedBox(
+                                        SizedBox(
                                           height: 10,
                                         ),
 
@@ -229,7 +228,7 @@ class _IndoorViewCurrentScreenState
                                           TextAlign.center,
                                         ),
 
-                                        const SizedBox(
+                                        SizedBox(
                                           height: 16,
                                         ),
 
@@ -237,8 +236,7 @@ class _IndoorViewCurrentScreenState
                                           onPressed:
                                           _loadPatients,
                                           child:
-                                          const Text(
-                                            'Retry',
+                                          Text(AppTranslations.tr('Retry'),
                                           ),
                                         ),
                                       ],
@@ -302,7 +300,7 @@ class _IndoorViewCurrentScreenState
                 ),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 _EmptyCell(flex: 3),
                 _EmptyCell(flex: 2),

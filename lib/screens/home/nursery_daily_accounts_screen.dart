@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/nursery_daily_accounts_api_service.dart';
 
@@ -371,7 +372,7 @@ class _NurseryDailyAccountsScreenState
                     color:
                     selectedRow == index
                         ? Colors.blue
-                        .withOpacity(0.12)
+                        .withValues(alpha: 0.12)
                         : Colors.transparent,
                     padding:
                     const EdgeInsets.all(4),
@@ -415,7 +416,7 @@ class _NurseryDailyAccountsScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         Text(
           records.isEmpty
@@ -430,7 +431,7 @@ class _NurseryDailyAccountsScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -439,7 +440,7 @@ class _NurseryDailyAccountsScreenState
           ),
         ),
 
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
 
         Align(
           alignment: Alignment.center,
@@ -464,7 +465,7 @@ class _NurseryDailyAccountsScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         Text(
           income
@@ -508,12 +509,9 @@ class _NurseryDailyAccountsScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -526,8 +524,7 @@ class _NurseryDailyAccountsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Daily Nursery Accounts',
+        title: Text(AppTranslations.tr('Daily Nursery Accounts'),
         ),
       ),
       body: SingleChildScrollView(
@@ -536,8 +533,7 @@ class _NurseryDailyAccountsScreenState
           crossAxisAlignment:
           CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Search by Date',
+            Text(AppTranslations.tr('Search by Date'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
@@ -545,14 +541,14 @@ class _NurseryDailyAccountsScreenState
               ),
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             InkWell(
               onTap: _selectDate,
               child: InputDecorator(
                 decoration:
-                const InputDecoration(
-                  labelText: 'Date',
+                InputDecoration(
+                  labelText: AppTranslations.tr('Date'),
                   border:
                   OutlineInputBorder(),
                   suffixIcon: Icon(
@@ -565,13 +561,13 @@ class _NurseryDailyAccountsScreenState
               ),
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             ElevatedButton.icon(
               onPressed:
               loading ? null : _search,
               icon: loading
-                  ? const SizedBox(
+                  ? SizedBox(
                 width: 18,
                 height: 18,
                 child:
@@ -589,7 +585,7 @@ class _NurseryDailyAccountsScreenState
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             _buildAccountSection(
               title: 'Nursery Income',
@@ -597,7 +593,7 @@ class _NurseryDailyAccountsScreenState
               onDelete: _deleteIncome,
             ),
 
-            const SizedBox(height: 35),
+            SizedBox(height: 35),
 
             _buildAccountSection(
               title: 'Nursery Expenses',

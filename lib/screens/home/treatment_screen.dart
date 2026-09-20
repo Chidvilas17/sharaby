@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/treatment_api_service.dart';
 
@@ -125,13 +126,9 @@ class _TreatmentScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppTranslations.tr(message)),
         ),
       );
   }
@@ -185,8 +182,7 @@ class _TreatmentScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Treatment Details',
+        title: Text(AppTranslations.tr('Treatment Details'),
         ),
       ),
       body: Padding(
@@ -213,8 +209,7 @@ class _TreatmentScreenState
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Add',
+                  Text(AppTranslations.tr('Add'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight:
@@ -222,18 +217,17 @@ class _TreatmentScreenState
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'Treatment Name',
+                  Text(AppTranslations.tr('Treatment Name'),
                     style: TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -253,14 +247,13 @@ class _TreatmentScreenState
                     InputDecoration(
                       border:
                       const OutlineInputBorder(),
-                      hintText:
-                      'Enter treatment name',
+                      hintText: AppTranslations.tr('Enter treatment name'),
                       errorText:
                       treatmentError,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
@@ -274,7 +267,7 @@ class _TreatmentScreenState
                             ? null
                             : _addTreatment,
                         child: adding
-                            ? const SizedBox(
+                            ? SizedBox(
                           width: 20,
                           height: 20,
                           child:
@@ -282,8 +275,7 @@ class _TreatmentScreenState
                             strokeWidth: 2,
                           ),
                         )
-                            : const Text(
-                          'Add',
+                            : Text(AppTranslations.tr('Add'),
                         ),
                       ),
                     ),
@@ -292,7 +284,7 @@ class _TreatmentScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
 
@@ -300,8 +292,7 @@ class _TreatmentScreenState
             // DATABASE LIST
             // =====================================================
 
-            const Text(
-              'Treatment List',
+            Text(AppTranslations.tr('Treatment List'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -309,7 +300,7 @@ class _TreatmentScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 8,
             ),
 
@@ -351,12 +342,11 @@ class _TreatmentScreenState
                           ),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           SizedBox(
                             width: 60,
-                            child: Text(
-                              'No.',
+                            child: Text(AppTranslations.tr('No.'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -366,8 +356,7 @@ class _TreatmentScreenState
                             ),
                           ),
                           Expanded(
-                            child: Text(
-                              'Name',
+                            child: Text(AppTranslations.tr('Name'),
                               style:
                               TextStyle(
                                 fontWeight:
@@ -386,15 +375,14 @@ class _TreatmentScreenState
 
                     Expanded(
                       child: loading
-                          ? const Center(
+                          ? Center(
                         child:
                         CircularProgressIndicator(),
                       )
                           : treatmentList
                           .isEmpty
-                          ? const Center(
-                        child: Text(
-                          'No data',
+                          ? Center(
+                        child: Text(AppTranslations.tr('No data'),
                           style:
                           TextStyle(
                             color:

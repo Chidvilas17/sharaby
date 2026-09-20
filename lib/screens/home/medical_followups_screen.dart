@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
+import '../../theme/app_theme.dart';
 import 'incubator_screen.dart';
 import 'detection_screen.dart';
 import 'indoor_screen.dart';
@@ -10,9 +12,9 @@ class MedicalFollowupsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Medical Follow-ups',
-          style: TextStyle(
+        title: Text(
+          AppTranslations.tr('Medical Follow-ups'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -28,7 +30,7 @@ class MedicalFollowupsScreen extends StatelessWidget {
 
               // Incubator
               _menuButton(
-                title: 'Incubator',
+                title: AppTranslations.tr('Incubator'),
                 icon: Icons.child_care_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -42,7 +44,7 @@ class MedicalFollowupsScreen extends StatelessWidget {
 
               // Detection
               _menuButton(
-                title: 'Detection',
+                title: AppTranslations.tr('Detection'),
                 icon: Icons.search_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -56,7 +58,7 @@ class MedicalFollowupsScreen extends StatelessWidget {
 
               // Indoor
               _menuButton(
-                title: 'Indoor',
+                title: AppTranslations.tr('Indoor'),
                 icon: Icons.local_hospital_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -116,7 +118,7 @@ class MedicalFollowupsScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 18),
+                SizedBox(width: 18),
 
                 Text(
                   title,
@@ -129,10 +131,12 @@ class MedicalFollowupsScreen extends StatelessWidget {
 
                 const Spacer(),
 
-                const Icon(
-                  Icons.arrow_forward_ios,
+                Icon(
+                  ThemeController.instance.isArabic
+                      ? Icons.arrow_back_ios
+                      : Icons.arrow_forward_ios,
                   size: 18,
-                  color: Color(0xFF0EA5E9),
+                  color: const Color(0xFF0EA5E9),
                 ),
               ],
             ),

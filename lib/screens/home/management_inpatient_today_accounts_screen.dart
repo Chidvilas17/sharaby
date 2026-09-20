@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/internal_accounts_api_service.dart';
 
 class ManagementInpatientTodayAccountsScreen
@@ -193,16 +194,9 @@ class _ManagementInpatientTodayAccountsScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -639,12 +633,9 @@ class _ManagementInpatientTodayAccountsScreenState
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            'Confirm Delete',
+          title: Text(AppTranslations.tr('Confirm Delete'),
           ),
-          content: const Text(
-            'Are you sure you want to delete '
-                'this record?',
+          content: Text(AppTranslations.tr('Are you sure you want to delete this record?'),
           ),
           actions: [
             TextButton(
@@ -654,8 +645,7 @@ class _ManagementInpatientTodayAccountsScreenState
                   false,
                 );
               },
-              child: const Text(
-                'Cancel',
+              child: Text(AppTranslations.tr('Cancel'),
               ),
             ),
             ElevatedButton(
@@ -665,8 +655,7 @@ class _ManagementInpatientTodayAccountsScreenState
                   true,
                 );
               },
-              child: const Text(
-                'Delete',
+              child: Text(AppTranslations.tr('Delete'),
               ),
             ),
           ],
@@ -716,7 +705,7 @@ class _ManagementInpatientTodayAccountsScreenState
             isIncome: isIncome,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 12,
           ),
 
@@ -735,14 +724,13 @@ class _ManagementInpatientTodayAccountsScreenState
                     ? _deleteIncome
                     : _deleteExpense,
 
-                child: const Text(
-                  'Delete',
+                child: Text(AppTranslations.tr('Delete'),
                 ),
               ),
             ),
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
 
@@ -809,8 +797,7 @@ class _ManagementInpatientTodayAccountsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Daily Inpatient Accounts',
+        title: Text(AppTranslations.tr('Daily Inpatient Accounts'),
         ),
       ),
 
@@ -828,8 +815,7 @@ class _ManagementInpatientTodayAccountsScreenState
               // SEARCH BY DATE
               // =================================================
 
-              const Text(
-                'Search by Date',
+              Text(AppTranslations.tr('Search by Date'),
 
                 textAlign:
                 TextAlign.center,
@@ -841,7 +827,7 @@ class _ManagementInpatientTodayAccountsScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -879,7 +865,7 @@ class _ManagementInpatientTodayAccountsScreenState
                             .calendar_today_outlined,
                       ),
 
-                      const SizedBox(
+                      SizedBox(
                         width: 10,
                       ),
 
@@ -904,7 +890,7 @@ class _ManagementInpatientTodayAccountsScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -923,7 +909,7 @@ class _ManagementInpatientTodayAccountsScreenState
                       : _search,
 
                   child: loading
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 22,
                     height: 22,
                     child:
@@ -931,8 +917,7 @@ class _ManagementInpatientTodayAccountsScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Search',
+                      : Text(AppTranslations.tr('Search'),
                     style:
                     TextStyle(
                       fontSize: 16,
@@ -941,7 +926,7 @@ class _ManagementInpatientTodayAccountsScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 18,
               ),
 
@@ -952,8 +937,7 @@ class _ManagementInpatientTodayAccountsScreenState
               if (!loading &&
                   incomeData.isEmpty &&
                   expenseData.isEmpty)
-                const Text(
-                  'No operations for this day',
+                Text(AppTranslations.tr('No operations for this day'),
 
                   textAlign:
                   TextAlign.center,
@@ -975,7 +959,7 @@ class _ManagementInpatientTodayAccountsScreenState
                 isIncome: true,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 24,
               ),
 
@@ -990,7 +974,7 @@ class _ManagementInpatientTodayAccountsScreenState
                 isIncome: false,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 24,
               ),
 
@@ -1017,9 +1001,7 @@ class _ManagementInpatientTodayAccountsScreenState
 
                 child: Column(
                   children: [
-                    Text(
-                      'Total Income: '
-                          '${incomeTotal.toStringAsFixed(2)}',
+                    Text('${AppTranslations.tr('Total Income:')} ${incomeTotal.toStringAsFixed(2)}',
 
                       style:
                       const TextStyle(
@@ -1029,13 +1011,11 @@ class _ManagementInpatientTodayAccountsScreenState
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 8,
                     ),
 
-                    Text(
-                      'Total Expenses: '
-                          '${expenseTotal.toStringAsFixed(2)}',
+                    Text('${AppTranslations.tr('Total Expenses:')} ${expenseTotal.toStringAsFixed(2)}',
 
                       style:
                       const TextStyle(
@@ -1045,13 +1025,11 @@ class _ManagementInpatientTodayAccountsScreenState
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 8,
                     ),
 
-                    Text(
-                      'Net Total: '
-                          '${(incomeTotal - expenseTotal).toStringAsFixed(2)}',
+                    Text('${AppTranslations.tr('Net Total:')} ${(incomeTotal - expenseTotal).toStringAsFixed(2)}',
 
                       style:
                       const TextStyle(
@@ -1064,7 +1042,7 @@ class _ManagementInpatientTodayAccountsScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
             ],

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'current_doctors_screen.dart';
 import 'current_nurses_screen.dart';
 import 'discounts_screen.dart';
@@ -12,8 +14,7 @@ class SalariesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Salaries',
+        title: Text(AppTranslations.tr('Salaries'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -129,7 +130,7 @@ class SalariesScreen extends StatelessWidget {
               size: 32,
             ),
 
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
 
             Text(
               title,
@@ -141,8 +142,7 @@ class SalariesScreen extends StatelessWidget {
 
             const Spacer(),
 
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

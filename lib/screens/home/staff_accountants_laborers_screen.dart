@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/staff_salary_api_service.dart';
 
 class StaffAccountantsLaborersScreen extends StatefulWidget {
@@ -142,8 +143,7 @@ class _StaffAccountantsLaborersScreenState
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text(
-                'Select Month',
+              title: Text(AppTranslations.tr('Select Month'),
                 textAlign: TextAlign.center,
               ),
               content: Column(
@@ -153,8 +153,8 @@ class _StaffAccountantsLaborersScreenState
                   DropdownButtonFormField<int>(
                     initialValue: tempMonth,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Month',
+                    decoration: InputDecoration(
+                      labelText: AppTranslations.tr('Month'),
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(
@@ -181,14 +181,14 @@ class _StaffAccountantsLaborersScreenState
                     },
                   ),
 
-                  const SizedBox(height: 15),
+                  SizedBox(height: 15),
 
                   // YEAR
                   DropdownButtonFormField<int>(
                     initialValue: tempYear,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Year',
+                    decoration: InputDecoration(
+                      labelText: AppTranslations.tr('Year'),
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(
@@ -217,7 +217,7 @@ class _StaffAccountantsLaborersScreenState
                   onPressed: () {
                     Navigator.pop(dialogContext);
                   },
-                  child: const Text('Cancel'),
+                  child: Text(AppTranslations.tr('Cancel')),
                 ),
 
                 ElevatedButton(
@@ -230,7 +230,7 @@ class _StaffAccountantsLaborersScreenState
                       ),
                     );
                   },
-                  child: const Text('Select'),
+                  child: Text(AppTranslations.tr('Select')),
                 ),
               ],
             );
@@ -468,7 +468,7 @@ class _StaffAccountantsLaborersScreenState
           labelText: label,
           border: const OutlineInputBorder(),
         ),
-        child: const Center(
+        child: Center(
           child: Padding(
             padding: EdgeInsets.symmetric(
               vertical: 8,
@@ -487,9 +487,9 @@ class _StaffAccountantsLaborersScreenState
         border: const OutlineInputBorder(),
       ),
       items: [
-        const DropdownMenuItem<String>(
+        DropdownMenuItem<String>(
           value: 'SELECT',
-          child: Text('Select'),
+          child: Text(AppTranslations.tr('Select')),
         ),
         ...people.map(
               (person) {
@@ -589,7 +589,7 @@ class _StaffAccountantsLaborersScreenState
             ),
           ),
 
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
 
           // DROPDOWN
           _personDropdown(
@@ -600,14 +600,14 @@ class _StaffAccountantsLaborersScreenState
             onChanged: onChanged,
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // SHOW
           ElevatedButton(
             onPressed:
             loadingSalary ? null : onShow,
             child: loadingSalary
-                ? const SizedBox(
+                ? SizedBox(
               height: 20,
               width: 20,
               child:
@@ -615,10 +615,10 @@ class _StaffAccountantsLaborersScreenState
                 strokeWidth: 2,
               ),
             )
-                : const Text('Show'),
+                : Text(AppTranslations.tr('Show')),
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // SELECTED PERSON
           Text(
@@ -635,7 +635,7 @@ class _StaffAccountantsLaborersScreenState
             ),
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // TOTAL SALARY
           _summaryRow(
@@ -694,8 +694,7 @@ class _StaffAccountantsLaborersScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Accountants and Laborers',
+        title: Text(AppTranslations.tr('Accountants and Laborers'),
         ),
       ),
 
@@ -716,8 +715,8 @@ class _StaffAccountantsLaborersScreenState
 
               child: InputDecorator(
                 decoration:
-                const InputDecoration(
-                  labelText: 'Month',
+                InputDecoration(
+                  labelText: AppTranslations.tr('Month'),
                   border:
                   OutlineInputBorder(),
                   suffixIcon: Icon(
@@ -733,7 +732,7 @@ class _StaffAccountantsLaborersScreenState
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // ====================================================
             // ACCOUNTANTS
@@ -784,7 +783,7 @@ class _StaffAccountantsLaborersScreenState
               accountantNetSalary,
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // ====================================================
             // LABORERS
@@ -835,7 +834,7 @@ class _StaffAccountantsLaborersScreenState
               laborerNetSalary,
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
         ),
       ),

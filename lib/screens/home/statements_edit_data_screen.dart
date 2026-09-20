@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/patiants_api_service.dart';
 
@@ -262,10 +263,9 @@ class _StatementsEditDataScreenState
       builder: (dialogContext) {
         return AlertDialog(
           title:
-          const Text('Delete Patient'),
+          Text(AppTranslations.tr('Delete Patient')),
 
-          content: Text(
-            'Are you sure you want to delete "$name"?',
+          content: Text(AppTranslations.tr('Are you sure you want to delete "$name"?'),
           ),
 
           actions: [
@@ -277,7 +277,7 @@ class _StatementsEditDataScreenState
                 );
               },
               child:
-              const Text('Cancel'),
+              Text(AppTranslations.tr('Cancel')),
             ),
 
             ElevatedButton(
@@ -288,7 +288,7 @@ class _StatementsEditDataScreenState
                 );
               },
               child:
-              const Text('Delete'),
+              Text(AppTranslations.tr('Delete')),
             ),
           ],
         );
@@ -500,8 +500,7 @@ class _StatementsEditDataScreenState
               ) {
             return AlertDialog(
               title:
-              const Text(
-                'Patient Details / Edit',
+              Text(AppTranslations.tr('Patient Details / Edit'),
               ),
 
               content: SizedBox(
@@ -518,15 +517,14 @@ class _StatementsEditDataScreenState
                         controller:
                         nameController,
                         decoration:
-                        const InputDecoration(
-                          labelText:
-                          'Name',
+                        InputDecoration(
+                          labelText: AppTranslations.tr('Name'),
                           border:
                           OutlineInputBorder(),
                         ),
                       ),
 
-                      const SizedBox(
+                      SizedBox(
                         height: 12,
                       ),
 
@@ -534,15 +532,14 @@ class _StatementsEditDataScreenState
                         controller:
                         phoneController,
                         decoration:
-                        const InputDecoration(
-                          labelText:
-                          'Phone',
+                        InputDecoration(
+                          labelText: AppTranslations.tr('Phone'),
                           border:
                           OutlineInputBorder(),
                         ),
                       ),
 
-                      const SizedBox(
+                      SizedBox(
                         height: 12,
                       ),
 
@@ -550,15 +547,14 @@ class _StatementsEditDataScreenState
                         controller:
                         addressController,
                         decoration:
-                        const InputDecoration(
-                          labelText:
-                          'Address',
+                        InputDecoration(
+                          labelText: AppTranslations.tr('Address'),
                           border:
                           OutlineInputBorder(),
                         ),
                       ),
 
-                      const SizedBox(
+                      SizedBox(
                         height: 12,
                       ),
 
@@ -598,9 +594,8 @@ class _StatementsEditDataScreenState
                         child:
                         InputDecorator(
                           decoration:
-                          const InputDecoration(
-                            labelText:
-                            'Date of Birth',
+                          InputDecoration(
+                            labelText: AppTranslations.tr('Date of Birth'),
                             border:
                             OutlineInputBorder(),
                             suffixIcon:
@@ -622,7 +617,7 @@ class _StatementsEditDataScreenState
                         ),
                       ),
 
-                      const SizedBox(
+                      SizedBox(
                         height: 12,
                       ),
 
@@ -631,15 +626,14 @@ class _StatementsEditDataScreenState
                         importantNoteController,
                         maxLines: 2,
                         decoration:
-                        const InputDecoration(
-                          labelText:
-                          'Important Note',
+                        InputDecoration(
+                          labelText: AppTranslations.tr('Important Note'),
                           border:
                           OutlineInputBorder(),
                         ),
                       ),
 
-                      const SizedBox(
+                      SizedBox(
                         height: 12,
                       ),
 
@@ -648,9 +642,8 @@ class _StatementsEditDataScreenState
                         noteForScController,
                         maxLines: 2,
                         decoration:
-                        const InputDecoration(
-                          labelText:
-                          'Notes',
+                        InputDecoration(
+                          labelText: AppTranslations.tr('Notes'),
                           border:
                           OutlineInputBorder(),
                         ),
@@ -670,7 +663,7 @@ class _StatementsEditDataScreenState
                     );
                   },
                   child:
-                  const Text('Cancel'),
+                  Text(AppTranslations.tr('Cancel')),
                 ),
 
                 ElevatedButton(
@@ -686,10 +679,9 @@ class _StatementsEditDataScreenState
                           .of(
                         context,
                       ).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content:
-                          Text(
-                            'Name is required.',
+                          Text(AppTranslations.tr('Name is required.'),
                           ),
                         ),
                       );
@@ -765,8 +757,7 @@ class _StatementsEditDataScreenState
                       ).showSnackBar(
                         SnackBar(
                           content:
-                          Text(
-                            'Update failed.\n$e',
+                          Text(AppTranslations.tr('Update failed.\n$e'),
                           ),
                         ),
                       );
@@ -774,7 +765,7 @@ class _StatementsEditDataScreenState
                   },
 
                   child: saving
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 20,
                     height: 20,
                     child:
@@ -782,8 +773,7 @@ class _StatementsEditDataScreenState
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Save',
+                      : Text(AppTranslations.tr('Save'),
                   ),
                 ),
               ],
@@ -855,8 +845,8 @@ class _StatementsEditDataScreenState
         selectedRow ==
             rowIndex
             ? Colors.blue
-            .withOpacity(
-          0.12,
+            .withValues(
+          alpha: 0.12,
         )
             : const Color(
           0xFFD3DFE9,
@@ -889,8 +879,8 @@ class _StatementsEditDataScreenState
       selectedRow ==
           rowIndex
           ? Colors.blue
-          .withOpacity(
-        0.12,
+          .withValues(
+        alpha: 0.12,
       )
           : const Color(
         0xFFD3DFE9,
@@ -948,7 +938,7 @@ class _StatementsEditDataScreenState
   Widget _buildTable() {
     if (loading &&
         displayedPatients.isEmpty) {
-      return const Padding(
+      return Padding(
         padding:
         EdgeInsets.all(30),
 
@@ -961,13 +951,12 @@ class _StatementsEditDataScreenState
 
     if (displayedPatients
         .isEmpty) {
-      return const Padding(
+      return Padding(
         padding:
         EdgeInsets.all(30),
 
         child: Center(
-          child: Text(
-            'No patients found.',
+          child: Text(AppTranslations.tr('No patients found.'),
             style:
             TextStyle(
               fontSize: 16,
@@ -1127,8 +1116,7 @@ class _StatementsEditDataScreenState
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text(
-          'Edit Data',
+        Text(AppTranslations.tr('Edit Data'),
         ),
       ),
 
@@ -1142,8 +1130,7 @@ class _StatementsEditDataScreenState
               .stretch,
 
           children: [
-            const Text(
-              'Search by Name',
+            Text(AppTranslations.tr('Search by Name'),
 
               textAlign:
               TextAlign.center,
@@ -1156,7 +1143,7 @@ class _StatementsEditDataScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 12,
             ),
 
@@ -1168,8 +1155,8 @@ class _StatementsEditDataScreenState
               TextInputAction.search,
 
               decoration:
-              const InputDecoration(
-                labelText: 'Name',
+              InputDecoration(
+                labelText: AppTranslations.tr('Name'),
                 border:
                 OutlineInputBorder(),
                 prefixIcon:
@@ -1183,7 +1170,7 @@ class _StatementsEditDataScreenState
               },
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 12,
             ),
 
@@ -1199,12 +1186,11 @@ class _StatementsEditDataScreenState
               ),
 
               label:
-              const Text(
-                'Search',
+              Text(AppTranslations.tr('Search'),
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 

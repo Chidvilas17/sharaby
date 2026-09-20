@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/internal_patients_api_service.dart';
 
 class ManagementInpatientAdmissionAccountsScreen
@@ -278,8 +279,7 @@ class _ManagementInpatientAdmissionAccountsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Current Inpatient Cases',
+        title: Text(AppTranslations.tr('Current Inpatient Cases'),
         ),
       ),
 
@@ -303,7 +303,7 @@ class _ManagementInpatientAdmissionAccountsScreenState
                 // =================================================
 
                 if (loadingPatients)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(
                       bottom: 16,
                     ),
@@ -344,7 +344,7 @@ class _ManagementInpatientAdmissionAccountsScreenState
                           ),
                         ),
 
-                        const SizedBox(
+                        SizedBox(
                           height: 10,
                         ),
 
@@ -352,7 +352,7 @@ class _ManagementInpatientAdmissionAccountsScreenState
                           onPressed:
                           _loadPatients,
                           child:
-                          const Text('Retry'),
+                          Text(AppTranslations.tr('Retry')),
                         ),
                       ],
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/nursery_daily_accounts_api_service.dart';
 
@@ -497,8 +498,8 @@ class _NurseryTodayAccountsScreenState
                             index
                             ? Colors
                             .blue
-                            .withOpacity(
-                          0.12,
+                            .withValues(
+                          alpha: 0.12,
                         )
                             : Colors
                             .transparent,
@@ -576,7 +577,7 @@ class _NurseryTodayAccountsScreenState
             ),
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
 
@@ -596,7 +597,7 @@ class _NurseryTodayAccountsScreenState
             ),
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
 
@@ -604,7 +605,7 @@ class _NurseryTodayAccountsScreenState
             income: income,
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 10,
           ),
 
@@ -634,7 +635,7 @@ class _NurseryTodayAccountsScreenState
             ),
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 8,
           ),
 
@@ -693,8 +694,7 @@ class _NurseryTodayAccountsScreenState
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text(
-          'Today\'s Account',
+        Text(AppTranslations.tr("Today's Account"),
         ),
       ),
       body:
@@ -709,8 +709,7 @@ class _NurseryTodayAccountsScreenState
           CrossAxisAlignment
               .stretch,
           children: [
-            const Text(
-              'Search by Date',
+            Text(AppTranslations.tr('Search by Date'),
               textAlign:
               TextAlign.center,
               style:
@@ -721,7 +720,7 @@ class _NurseryTodayAccountsScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 12,
             ),
 
@@ -731,9 +730,8 @@ class _NurseryTodayAccountsScreenState
               child:
               InputDecorator(
                 decoration:
-                const InputDecoration(
-                  labelText:
-                  'Date',
+                InputDecoration(
+                  labelText: AppTranslations.tr('Date'),
                   border:
                   OutlineInputBorder(),
                   suffixIcon:
@@ -751,7 +749,7 @@ class _NurseryTodayAccountsScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 10,
             ),
 
@@ -762,7 +760,7 @@ class _NurseryTodayAccountsScreenState
                   : _search,
               icon:
               loading
-                  ? const SizedBox(
+                  ? SizedBox(
                 width: 18,
                 height: 18,
                 child:
@@ -782,7 +780,7 @@ class _NurseryTodayAccountsScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -798,7 +796,7 @@ class _NurseryTodayAccountsScreenState
               _deleteIncome,
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 30,
             ),
 

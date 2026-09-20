@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'detection_new_screen.dart';
 import 'detection_history_screen.dart';
 
@@ -9,8 +11,7 @@ class DetectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Detection',
+        title: Text(AppTranslations.tr('Detection'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -83,7 +84,7 @@ class DetectionScreen extends StatelessWidget {
               size: 32,
             ),
 
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
 
             Text(
               title,
@@ -95,8 +96,7 @@ class DetectionScreen extends StatelessWidget {
 
             const Spacer(),
 
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

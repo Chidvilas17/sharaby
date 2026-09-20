@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'oxygen_intake_screen.dart';
 import 'oxygen_calculation_screen.dart';
 
@@ -9,8 +11,7 @@ class OxygenScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Oxygen',
+        title: Text(AppTranslations.tr('Oxygen'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -84,7 +85,7 @@ class OxygenScreen extends StatelessWidget {
               icon,
               size: 32,
             ),
-            const SizedBox(width: 18),
+            SizedBox(width: 18),
             Expanded(
               child: Text(
                 title,
@@ -94,8 +95,7 @@ class OxygenScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
+            Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 18,
             ),
           ],

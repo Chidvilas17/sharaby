@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
+import '../../l10n/app_translations.dart';
 import 'staff_doctors_screen.dart';
 import 'staff_nurses_screen.dart';
 import 'staff_accountants_laborers_screen.dart';
@@ -12,8 +14,7 @@ class StaffScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Staff',
+        title: Text(AppTranslations.tr('Staff'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -154,7 +155,7 @@ class StaffScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 18),
+                SizedBox(width: 18),
 
                 Expanded(
                   child: Text(
@@ -167,8 +168,7 @@ class StaffScreen extends StatelessWidget {
                   ),
                 ),
 
-                const Icon(
-                  Icons.arrow_forward_ios,
+                Icon(ThemeController.instance.isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
                   size: 18,
                   color: Color(0xFF0EA5E9),
                 ),

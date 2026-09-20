@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/doctor_monthly_net_api_service.dart';
 
 class StaffDoctorsMonthlyNetScreen
@@ -148,8 +149,7 @@ class _StaffDoctorsMonthlyNetScreenState
           builder:
               (context, setDialogState) {
             return AlertDialog(
-              title: const Text(
-                'Select Month',
+              title: Text(AppTranslations.tr('Select Month'),
                 textAlign:
                 TextAlign.center,
               ),
@@ -159,11 +159,10 @@ class _StaffDoctorsMonthlyNetScreenState
                 children: [
                   DropdownButtonFormField<
                       int>(
-                    value: tempMonth,
+                    initialValue: tempMonth,
                     decoration:
-                    const InputDecoration(
-                      labelText:
-                      'Month',
+                    InputDecoration(
+                      labelText: AppTranslations.tr('Month'),
                       border:
                       OutlineInputBorder(),
                     ),
@@ -202,17 +201,16 @@ class _StaffDoctorsMonthlyNetScreenState
                     },
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 12,
                   ),
 
                   DropdownButtonFormField<
                       int>(
-                    value: tempYear,
+                    initialValue: tempYear,
                     decoration:
-                    const InputDecoration(
-                      labelText:
-                      'Year',
+                    InputDecoration(
+                      labelText: AppTranslations.tr('Year'),
                       border:
                       OutlineInputBorder(),
                     ),
@@ -256,8 +254,7 @@ class _StaffDoctorsMonthlyNetScreenState
                     );
                   },
                   child:
-                  const Text(
-                    'Cancel',
+                  Text(AppTranslations.tr('Cancel'),
                   ),
                 ),
                 ElevatedButton(
@@ -271,8 +268,7 @@ class _StaffDoctorsMonthlyNetScreenState
                     );
                   },
                   child:
-                  const Text(
-                    'Select',
+                  Text(AppTranslations.tr('Select'),
                   ),
                 ),
               ],
@@ -402,7 +398,7 @@ class _StaffDoctorsMonthlyNetScreenState
 
   Widget _doctorDropdown() {
     if (loadingDoctors) {
-      return const SizedBox(
+      return SizedBox(
         height: 56,
         child: Center(
           child:
@@ -431,8 +427,7 @@ class _StaffDoctorsMonthlyNetScreenState
             4,
           ),
         ),
-        child: const Text(
-          'No doctors found in EmpsData.',
+        child: Text(AppTranslations.tr('No doctors found in EmpsData.'),
           style: TextStyle(
             color: Colors.red,
           ),
@@ -441,11 +436,11 @@ class _StaffDoctorsMonthlyNetScreenState
     }
 
     return DropdownButtonFormField<int>(
-      value: selectedDoctorId,
+      initialValue: selectedDoctorId,
       isExpanded: true,
       decoration:
-      const InputDecoration(
-        labelText: 'Select Name',
+      InputDecoration(
+        labelText: AppTranslations.tr('Select Name'),
         border:
         OutlineInputBorder(),
       ),
@@ -522,7 +517,7 @@ class _StaffDoctorsMonthlyNetScreenState
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 4,
         ),
 
@@ -538,7 +533,7 @@ class _StaffDoctorsMonthlyNetScreenState
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 10,
         ),
 
@@ -607,7 +602,7 @@ class _StaffDoctorsMonthlyNetScreenState
                         .generate(
                       headers.length,
                           (_) =>
-                      const SizedBox(
+                      SizedBox(
                         height: 42,
                         child:
                         Center(
@@ -713,8 +708,8 @@ class _StaffDoctorsMonthlyNetScreenState
                                 isSelected
                                     ? Colors
                                     .blue
-                                    .withOpacity(
-                                  0.12,
+                                    .withValues(
+                                  alpha: 0.12,
                                 )
                                     : Colors
                                     .transparent,
@@ -737,7 +732,7 @@ class _StaffDoctorsMonthlyNetScreenState
           ),
         ),
 
-        const SizedBox(
+        SizedBox(
           height: 24,
         ),
       ],
@@ -807,8 +802,7 @@ class _StaffDoctorsMonthlyNetScreenState
       ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Doctors Monthly Net',
+        title: Text(AppTranslations.tr('Doctors Monthly Net'),
         ),
       ),
       body:
@@ -826,7 +820,7 @@ class _StaffDoctorsMonthlyNetScreenState
 
             _doctorDropdown(),
 
-            const SizedBox(
+            SizedBox(
               height: 12,
             ),
 
@@ -840,9 +834,8 @@ class _StaffDoctorsMonthlyNetScreenState
               child:
               InputDecorator(
                 decoration:
-                const InputDecoration(
-                  labelText:
-                  'Month',
+                InputDecoration(
+                  labelText: AppTranslations.tr('Month'),
                   border:
                   OutlineInputBorder(),
                   suffixIcon:
@@ -859,7 +852,7 @@ class _StaffDoctorsMonthlyNetScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 12,
             ),
 
@@ -878,8 +871,7 @@ class _StaffDoctorsMonthlyNetScreenState
                     .visibility_outlined,
               ),
               label:
-              const Text(
-                'Show',
+              Text(AppTranslations.tr('Show'),
               ),
               style:
               ElevatedButton
@@ -892,7 +884,7 @@ class _StaffDoctorsMonthlyNetScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 28,
             ),
 

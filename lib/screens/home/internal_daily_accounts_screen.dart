@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/internal_daily_accounts_api_service.dart';
 
 class InternalDailyAccountsScreen extends StatefulWidget {
@@ -144,8 +145,9 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppTranslations.tr(message))));
   }
 
   double _calculateTotal(List<Map<String, dynamic>> list) {
@@ -213,7 +215,7 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
       child: Container(
         height: 40,
         alignment: Alignment.center,
-        color: isSelected ? Colors.blue.withOpacity(0.2) : Colors.transparent,
+        color: isSelected ? Colors.blue.withValues(alpha: 0.2) : Colors.transparent,
         child: Text(text, textAlign: TextAlign.center),
       ),
     );
@@ -241,7 +243,7 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             records.isEmpty ? 'لا يوجد عمليات لهذا اليوم / No operations this day' : '${records.length} operation(s)',
             textAlign: TextAlign.center,
@@ -250,16 +252,16 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _buildTable(isIncome: isIncome),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: onDelete,
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700, foregroundColor: Colors.white),
             icon: const Icon(Icons.delete),
-            label: const Text('Delete / حذف'),
+            label: Text(AppTranslations.tr('Delete / حذف')),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -282,7 +284,7 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الحسابات اليومية للداخلي / Internal Daily Accounts'),
+        title: Text(AppTranslations.tr('الحسابات اليومية للداخلي / Internal Daily Accounts')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -299,15 +301,14 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
                 ),
                 child: Column(
                   children: [
-                    const Text(
-                      'بحث بالتاريخ / Search By Date',
+                    Text(AppTranslations.tr('بحث بالتاريخ / Search By Date'),
                       style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     InkWell(
                       onTap: _selectDate,
                       child: InputDecorator(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           suffixIcon: Icon(Icons.calendar_today),
                         ),
@@ -317,22 +318,22 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       height: 46,
                       child: ElevatedButton.icon(
                         onPressed: loading ? null : _search,
                         icon: const Icon(Icons.search),
-                        label: const Text('Search / بحث', style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: Text(AppTranslations.tr('Search / بحث'), style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               if (loading)
-                const Center(child: Padding(padding: EdgeInsets.all(30), child: CircularProgressIndicator()))
+                Center(child: Padding(padding: EdgeInsets.all(30), child: CircularProgressIndicator()))
               else ...[
                 // Right Panel: Internal Income
                 _buildAccountPanel(
@@ -340,7 +341,7 @@ class _InternalDailyAccountsScreenState extends State<InternalDailyAccountsScree
                   isIncome: true,
                   onDelete: _deleteIncome,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 // Left Panel: Internal Expenses
                 _buildAccountPanel(
                   title: 'مصروفات الداخلي / Internal Expenses',

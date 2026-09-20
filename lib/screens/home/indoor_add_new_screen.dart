@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/indoor_add_new_api_service.dart';
 
@@ -121,8 +122,7 @@ class _IndoorAddNewScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'MedicalInternal',
+        title: Text(AppTranslations.tr('MedicalInternal'),
         ),
       ),
 
@@ -164,8 +164,7 @@ class _IndoorAddNewScreenState
                     // SECTION TITLE
                     // ==========================================
 
-                    const Text(
-                      'New Patient',
+                    Text(AppTranslations.tr('New Patient'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight:
@@ -173,7 +172,7 @@ class _IndoorAddNewScreenState
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 16,
                     ),
 
@@ -224,7 +223,7 @@ class _IndoorAddNewScreenState
                                 ),
 
                                 child:
-                                const Row(
+                                Row(
                                   children: [
 
                                     _HeaderCell(
@@ -245,7 +244,7 @@ class _IndoorAddNewScreenState
                               // =================================
 
                               if (isLoading)
-                                const SizedBox(
+                                SizedBox(
                                   height: 480,
 
                                   child: Center(
@@ -329,7 +328,7 @@ class _IndoorAddNewScreenState
                 color: Colors.red,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -340,7 +339,7 @@ class _IndoorAddNewScreenState
                 TextAlign.center,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 16,
               ),
 
@@ -351,8 +350,7 @@ class _IndoorAddNewScreenState
                   Icons.refresh,
                 ),
 
-                label: const Text(
-                  'Retry',
+                label: Text(AppTranslations.tr('Retry'),
                 ),
               ),
             ],
@@ -384,7 +382,7 @@ class _IndoorAddNewScreenState
               ),
             ),
 
-            child: const Row(
+            child: Row(
               children: [
 
                 _EmptyCell(

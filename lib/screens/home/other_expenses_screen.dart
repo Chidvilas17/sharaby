@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/other_expenses_api_service.dart';
 
 class OtherExpensesScreen extends StatefulWidget {
@@ -93,9 +94,9 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(AppTranslations.tr(message))),
     );
   }
 
@@ -126,7 +127,7 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
         child: Row(
           children: [
             const Icon(Icons.calendar_today_outlined),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Text(
                 _formatDate(selectedDate),
@@ -241,7 +242,7 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Other Expenses / مصروفات اخرى'),
+        title: Text(AppTranslations.tr('Other Expenses / مصروفات اخرى')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -249,65 +250,60 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Text(
-                    'Current User / محاسب: ',
+                  Text(AppTranslations.tr('Current User / محاسب: '),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text('admin'),
+                  Text(AppTranslations.tr('admin')),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _sectionTitle('Search by Date / بحث بالتاريخ'),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _dateField(),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               SizedBox(
                 height: 48,
                 child: ElevatedButton.icon(
                   onPressed: isLoading ? null : _search,
                   icon: const Icon(Icons.search),
-                  label: const Text(
-                    'Search / بحث',
+                  label: Text(AppTranslations.tr('Search / بحث'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               if (expenses.isEmpty && !isLoading)
-                const Center(
+                Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      'لا يوجد عمليات لهذا اليوم / No operations this day',
+                    child: Text(AppTranslations.tr('لا يوجد عمليات لهذا اليوم / No operations this day'),
                       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
                     ),
                   ),
                 ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               _sectionTitle('Expense Data / بيانات المصروفات'),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildTable(),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               SizedBox(
                 height: 48,
                 child: ElevatedButton.icon(
                   onPressed: _deleteExpense,
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade700, foregroundColor: Colors.white),
                   icon: const Icon(Icons.delete),
-                  label: const Text(
-                    'Delete / حذف',
+                  label: Text(AppTranslations.tr('Delete / حذف'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'إجمالي المصروفات / Total Expenses: ',
+                  Text(AppTranslations.tr('إجمالي المصروفات / Total Expenses: '),
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   Text(
@@ -322,4 +318,4 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
       ),
     );
   }
-}
+}

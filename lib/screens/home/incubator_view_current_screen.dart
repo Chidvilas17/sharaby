@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/incubator_current_patients_api_service.dart';
 
 class IncubatorViewCurrentScreen extends StatefulWidget {
@@ -71,7 +72,7 @@ class _IncubatorViewCurrentScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Current Patients'),
+        title: Text(AppTranslations.tr('Current Patients')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -107,15 +108,14 @@ class _IncubatorViewCurrentScreenState
                     // TITLE
                     // ==================================================
 
-                    const Text(
-                      'Current Patients',
+                    Text(AppTranslations.tr('Current Patients'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ==================================================
                     // TABLE
@@ -154,7 +154,7 @@ class _IncubatorViewCurrentScreenState
                                     ),
                                   ),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     _HeaderCell(
                                       title: 'Name',
@@ -188,7 +188,7 @@ class _IncubatorViewCurrentScreenState
                               // ==================================================
 
                               if (isLoading)
-                                const SizedBox(
+                                SizedBox(
                                   height: 480,
                                   child: Center(
                                     child:
@@ -214,8 +214,7 @@ class _IncubatorViewCurrentScreenState
                                         MainAxisAlignment
                                             .center,
                                         children: [
-                                          const Text(
-                                            'Failed to load current patients.',
+                                          Text(AppTranslations.tr('Failed to load current patients.'),
                                             textAlign:
                                             TextAlign
                                                 .center,
@@ -229,7 +228,7 @@ class _IncubatorViewCurrentScreenState
                                             ),
                                           ),
 
-                                          const SizedBox(
+                                          SizedBox(
                                             height: 10,
                                           ),
 
@@ -240,7 +239,7 @@ class _IncubatorViewCurrentScreenState
                                                 .center,
                                           ),
 
-                                          const SizedBox(
+                                          SizedBox(
                                             height: 16,
                                           ),
 
@@ -248,8 +247,7 @@ class _IncubatorViewCurrentScreenState
                                             onPressed:
                                             _loadPatients,
                                             child:
-                                            const Text(
-                                              'Retry',
+                                            Text(AppTranslations.tr('Retry'),
                                             ),
                                           ),
                                         ],
@@ -264,11 +262,10 @@ class _IncubatorViewCurrentScreenState
 
                               else if (
                                 patients.isEmpty)
-                                  const SizedBox(
+                                  SizedBox(
                                     height: 480,
                                     child: Center(
-                                      child: Text(
-                                        'No current patients found.',
+                                      child: Text(AppTranslations.tr('No current patients found.'),
                                         style: TextStyle(
                                           color:
                                           Colors.grey,

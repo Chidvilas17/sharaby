@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import 'staff_doctors_daily_attendance_screen.dart';
 import 'staff_doctors_monthly_net_screen.dart';
 
@@ -35,7 +36,7 @@ class StaffDoctorsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Doctors'),
+        title: Text(AppTranslations.tr('Doctors')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

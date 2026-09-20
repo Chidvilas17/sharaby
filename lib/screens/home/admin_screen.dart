@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/user_api_service.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -109,7 +110,7 @@ class _AdminScreenState extends State<AdminScreen> {
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -122,20 +123,20 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin'),
+        title: Text(AppTranslations.tr('Admin')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             _buildRow(
               label: 'User name',
               controller: usernameController,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             _buildRowWithSave(
               label: 'Password',
@@ -143,7 +144,7 @@ class _AdminScreenState extends State<AdminScreen> {
               onSave: _savePassword,
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             _buildRowWithSave(
               label: 'Password 2',
@@ -173,12 +174,12 @@ class _AdminScreenState extends State<AdminScreen> {
             style: const TextStyle(fontSize: 16),
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         Expanded(
           child: TextField(
             controller: controller,
             enabled: !_isSaving,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: OutlineInputBorder(),
             ),
           ),
@@ -205,32 +206,32 @@ class _AdminScreenState extends State<AdminScreen> {
             style: const TextStyle(fontSize: 16),
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10),
         Expanded(
           child: TextField(
             controller: controller,
             enabled: !_isSaving,
             obscureText: true,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: OutlineInputBorder(),
             ),
           ),
         ),
-        const SizedBox(width: 44),
+        SizedBox(width: 44),
         SizedBox(
           width: 90,
           height: 45,
           child: ElevatedButton(
             onPressed: _isSaving ? null : onSave,
             child: _isSaving
-                ? const SizedBox(
+                ? SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
               ),
             )
-                : const Text('Save'),
+                : Text(AppTranslations.tr('Save')),
           ),
         ),
       ],

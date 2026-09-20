@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/incubator_add_new_api_service.dart';
 
 class IncubatorAddNewScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _IncubatorAddNewScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Basic Data'),
+        title: Text(AppTranslations.tr('Add Basic Data')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -92,15 +93,14 @@ class _IncubatorAddNewScreenState
                     // SECTION HEADING
                     // ==================================================
 
-                    const Text(
-                      'New Patient',
+                    Text(AppTranslations.tr('New Patient'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ==================================================
                     // TABLE
@@ -133,7 +133,7 @@ class _IncubatorAddNewScreenState
                                     ),
                                   ),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     _HeaderCell(
                                       title: 'Name',
@@ -160,7 +160,7 @@ class _IncubatorAddNewScreenState
                               // ==================================================
 
                               if (isLoading)
-                                const SizedBox(
+                                SizedBox(
                                   height: 480,
                                   child: Center(
                                     child:
@@ -186,8 +186,7 @@ class _IncubatorAddNewScreenState
                                         MainAxisAlignment
                                             .center,
                                         children: [
-                                          const Text(
-                                            'Failed to load patients.',
+                                          Text(AppTranslations.tr('Failed to load patients.'),
                                             textAlign:
                                             TextAlign.center,
                                             style: TextStyle(
@@ -196,7 +195,7 @@ class _IncubatorAddNewScreenState
                                               FontWeight.bold,
                                             ),
                                           ),
-                                          const SizedBox(
+                                          SizedBox(
                                             height: 10,
                                           ),
                                           Text(
@@ -204,15 +203,14 @@ class _IncubatorAddNewScreenState
                                             textAlign:
                                             TextAlign.center,
                                           ),
-                                          const SizedBox(
+                                          SizedBox(
                                             height: 16,
                                           ),
                                           ElevatedButton(
                                             onPressed:
                                             _loadPatients,
                                             child:
-                                            const Text(
-                                              'Retry',
+                                            Text(AppTranslations.tr('Retry'),
                                             ),
                                           ),
                                         ],
@@ -226,11 +224,10 @@ class _IncubatorAddNewScreenState
                               // ==================================================
 
                               else if (patients.isEmpty)
-                                  const SizedBox(
+                                  SizedBox(
                                     height: 480,
                                     child: Center(
-                                      child: Text(
-                                        'No patients found.',
+                                      child: Text(AppTranslations.tr('No patients found.'),
                                         style: TextStyle(
                                           color: Colors.grey,
                                         ),

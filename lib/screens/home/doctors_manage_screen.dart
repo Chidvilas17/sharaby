@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/doctors_manage_api_service.dart';
 
 class DoctorsManageScreen extends StatefulWidget {
@@ -353,18 +354,17 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Medical Record'),
-        content: const Text(
-          'Are you sure you want to delete this medical record?',
+        title: Text(AppTranslations.tr('Delete Medical Record')),
+        content: Text(AppTranslations.tr('Are you sure you want to delete this medical record?'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(AppTranslations.tr('Cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
+            child: Text(AppTranslations.tr('Delete')),
           ),
         ],
       ),
@@ -376,7 +376,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
       await DoctorsManageApiService.deleteMedical(medId!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Medical record deleted.')),
+        SnackBar(content: Text(AppTranslations.tr('Medical record deleted.'))),
       );
       Navigator.pop(context, true);
     } catch (e) {
@@ -482,7 +482,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Doctors Manage'),
+        title: Text(AppTranslations.tr('Doctors Manage')),
         actions: [
           IconButton(
             onPressed: loading ? null : _load,
@@ -491,7 +491,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
         ],
       ),
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(12),
@@ -499,9 +499,9 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildPatientDetails(),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildNewMedical(),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildHistory(),
             ],
           ),
@@ -545,18 +545,18 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _field('Note', noteController, maxLines: 2),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _dateField('Date', selectedDate, () => _pickDate(revision: false)),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _dropdownInt(
             label: 'Type',
             value: selectedTypeId,
             items: types,
             onChanged: (value) => setState(() => selectedTypeId = value),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _infoRow('Added By', _stringValue(medical, 'user_id')),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _fieldRow([
             _field('Age', ageController),
             _field('Weight', weightController),
@@ -564,7 +564,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
             _field('Temperature', temperatureController),
             _field('H.C.', hcController),
           ]),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _masterAddRow(
             label: 'C / O',
             items: coItems,
@@ -573,11 +573,11 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
             onAdd: _addCo,
             controller: coController,
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _field('Investigations', investigationController, maxLines: 2),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _field('Previous TTT', previousTttController, maxLines: 2),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _masterAddRow(
             label: 'Diagnosis',
             items: diagnosisItems,
@@ -586,51 +586,51 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
             onAdd: _addDiagnosis,
             controller: diagnosisController,
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _buildTttSection(),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _field('Notes', notesController, maxLines: 3),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _dateField(
             'Day Of Revision',
             dayOfRevision,
                 () => _pickDate(revision: true),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: ElevatedButton(
                   onPressed: saving ? null : () => _save(),
                   child: saving
-                      ? const SizedBox(
+                      ? SizedBox(
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                      : const Text('Save'),
+                      : Text(AppTranslations.tr('Save')),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton(
                   onPressed: saving ? null : () => _save(recent: true),
-                  child: const Text('Save Recent'),
+                  child: Text(AppTranslations.tr('Save Recent')),
                 ),
               ),
               if (medId != null) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton(
                     onPressed: saving ? null : _deleteMedical,
-                    child: const Text('Delete'),
+                    child: Text(AppTranslations.tr('Delete')),
                   ),
                 ),
               ],
             ],
           ),
           if (message != null) ...[
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Text(
               message!,
               style: TextStyle(
@@ -699,7 +699,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
                   onChanged: (value) => setState(() => selectedTtt = value),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: _dropdownString(
                   label: 'Dose',
@@ -708,14 +708,14 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
                   onChanged: (value) => setState(() => selectedDose = value),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _addTttRow,
-                child: const Text('Add'),
+                child: Text(AppTranslations.tr('Add')),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade500),
@@ -725,7 +725,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
                 Container(
                   height: 44,
                   color: Colors.grey.shade100,
-                  child: const Row(
+                  child: Row(
                     children: [
                       _HeaderCell(title: 'TTT', flex: 3),
                       _HeaderCell(title: 'Dose', flex: 3),
@@ -734,9 +734,9 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
                   ),
                 ),
                 if (tttRows.isEmpty)
-                  const SizedBox(
+                  SizedBox(
                     height: 80,
-                    child: Center(child: Text('No TTT added')),
+                    child: Center(child: Text(AppTranslations.tr('No TTT added'))),
                   )
                 else
                   ...tttRows.asMap().entries.map(
@@ -786,7 +786,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
     return _section(
       title: 'Medical History',
       child: loadingHistory
-          ? const SizedBox(
+          ? SizedBox(
         height: 120,
         child: Center(child: CircularProgressIndicator()),
       )
@@ -799,7 +799,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
               Container(
                 height: 48,
                 color: Colors.grey.shade100,
-                child: const Row(
+                child: Row(
                   children: [
                     _HeaderCell(title: 'Type', flex: 2),
                     _HeaderCell(title: 'Date', flex: 2),
@@ -878,7 +878,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
             title,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           child,
         ],
       ),
@@ -940,7 +940,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
     final validValue = value != null && ids.contains(value) ? value : null;
 
     return DropdownButtonFormField<int>(
-      value: validValue,
+      initialValue: validValue,
       isExpanded: true,
       decoration: InputDecoration(
         labelText: label,
@@ -968,7 +968,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
     final validValue = value != null && names.contains(value) ? value : null;
 
     return DropdownButtonFormField<String>(
-      value: validValue,
+      initialValue: validValue,
       isExpanded: true,
       decoration: InputDecoration(
         labelText: label,
@@ -1008,14 +1008,14 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
                 onChanged: onChanged,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             ElevatedButton(
               onPressed: onAdd,
-              child: const Text('Add'),
+              child: Text(AppTranslations.tr('Add')),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         _field(label, controller, maxLines: 2),
       ],
     );

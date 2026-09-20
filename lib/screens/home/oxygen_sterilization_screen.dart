@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/oxygen_sterilization_api_service.dart';
 
 class OxygenSterilizationScreen extends StatefulWidget {
@@ -242,13 +243,9 @@ class _OxygenSterilizationScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -285,7 +282,7 @@ class _OxygenSterilizationScreenState
               FontWeight.w500,
             ),
           ),
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
           child,
@@ -304,13 +301,12 @@ class _OxygenSterilizationScreenState
       ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Oxygen & Sterilization Data',
+        title: Text(AppTranslations.tr('Oxygen & Sterilization Data'),
         ),
       ),
 
       body: loading
-          ? const Center(
+          ? Center(
         child:
         CircularProgressIndicator(),
       )
@@ -340,15 +336,14 @@ class _OxygenSterilizationScreenState
 
                 children: [
 
-                  const Text(
-                    'Price',
+                  Text(AppTranslations.tr('Price'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -361,16 +356,15 @@ class _OxygenSterilizationScreenState
                         .number,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
 
-                      hintText:
-                      'Enter oxygen cylinder price',
+                      hintText: AppTranslations.tr('Enter oxygen cylinder price'),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
@@ -400,7 +394,7 @@ class _OxygenSterilizationScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -419,15 +413,14 @@ class _OxygenSterilizationScreenState
 
                 children: [
 
-                  const Text(
-                    'Type',
+                  Text(AppTranslations.tr('Type'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -436,28 +429,26 @@ class _OxygenSterilizationScreenState
                     materialTypeController,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
 
-                      hintText:
-                      'Enter material type',
+                      hintText: AppTranslations.tr('Enter material type'),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'Unit Price',
+                  Text(AppTranslations.tr('Unit Price'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -470,16 +461,15 @@ class _OxygenSterilizationScreenState
                         .number,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
 
-                      hintText:
-                      'Enter unit price',
+                      hintText: AppTranslations.tr('Enter unit price'),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
@@ -509,7 +499,7 @@ class _OxygenSterilizationScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 24,
             ),
 
@@ -517,8 +507,7 @@ class _OxygenSterilizationScreenState
             // CURRENT STERILIZATION MATERIALS
             // ==========================================
 
-            const Text(
-              'Current Sterilization Materials',
+            Text(AppTranslations.tr('Current Sterilization Materials'),
 
               style:
               TextStyle(
@@ -528,7 +517,7 @@ class _OxygenSterilizationScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 8,
             ),
 
@@ -584,13 +573,12 @@ class _OxygenSterilizationScreenState
                       ),
 
                       child:
-                      const Row(
+                      Row(
                         children: [
 
                           Expanded(
                             child:
-                            Text(
-                              'Type',
+                            Text(AppTranslations.tr('Type'),
 
                               style:
                               TextStyle(
@@ -603,8 +591,7 @@ class _OxygenSterilizationScreenState
 
                           Expanded(
                             child:
-                            Text(
-                              'Unit Price',
+                            Text(AppTranslations.tr('Unit Price'),
 
                               style:
                               TextStyle(
@@ -623,10 +610,9 @@ class _OxygenSterilizationScreenState
                     Expanded(
                       child:
                       materials.isEmpty
-                          ? const Center(
+                          ? Center(
                         child:
-                        Text(
-                          'No data',
+                        Text(AppTranslations.tr('No data'),
                           style:
                           TextStyle(
                             color:

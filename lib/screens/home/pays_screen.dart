@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/pays_api_service.dart';
 
@@ -234,13 +235,9 @@ class _PaysScreenState extends State<PaysScreen>
   // ============================================================
 
   void _showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppTranslations.tr(message)),
         ),
       );
   }
@@ -280,12 +277,11 @@ class _PaysScreenState extends State<PaysScreen>
                   ),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   SizedBox(
                     width: 80,
-                    child: Text(
-                      'Pay ID',
+                    child: Text(AppTranslations.tr('Pay ID'),
                       style: TextStyle(
                         fontWeight:
                         FontWeight.bold,
@@ -293,8 +289,7 @@ class _PaysScreenState extends State<PaysScreen>
                     ),
                   ),
                   Expanded(
-                    child: Text(
-                      'Type',
+                    child: Text(AppTranslations.tr('Type'),
                       style: TextStyle(
                         fontWeight:
                         FontWeight.bold,
@@ -303,8 +298,7 @@ class _PaysScreenState extends State<PaysScreen>
                   ),
                   SizedBox(
                     width: 80,
-                    child: Text(
-                      'Price',
+                    child: Text(AppTranslations.tr('Price'),
                       style: TextStyle(
                         fontWeight:
                         FontWeight.bold,
@@ -321,14 +315,13 @@ class _PaysScreenState extends State<PaysScreen>
 
             Expanded(
               child: loadingAll
-                  ? const Center(
+                  ? Center(
                 child:
                 CircularProgressIndicator(),
               )
                   : payList.isEmpty
-                  ? const Center(
-                child: Text(
-                  'No data',
+                  ? Center(
+                child: Text(AppTranslations.tr('No data'),
                   style:
                   TextStyle(
                     color:
@@ -420,7 +413,7 @@ class _PaysScreenState extends State<PaysScreen>
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
 
@@ -432,14 +425,13 @@ class _PaysScreenState extends State<PaysScreen>
             crossAxisAlignment:
             CrossAxisAlignment.center,
             children: [
-              const Text(
-                'Search By Pay Id :',
+              Text(AppTranslations.tr('Search By Pay Id :'),
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 width: 20,
               ),
 
@@ -450,16 +442,15 @@ class _PaysScreenState extends State<PaysScreen>
                   keyboardType:
                   TextInputType.number,
                   decoration:
-                  const InputDecoration(
+                  InputDecoration(
                     border:
                     OutlineInputBorder(),
-                    hintText:
-                    'Enter Pay ID',
+                    hintText: AppTranslations.tr('Enter Pay ID'),
                   ),
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 width: 20,
               ),
 
@@ -472,7 +463,7 @@ class _PaysScreenState extends State<PaysScreen>
                       ? null
                       : _loadPay,
                   child: loadingPay
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 20,
                     height: 20,
                     child:
@@ -480,15 +471,14 @@ class _PaysScreenState extends State<PaysScreen>
                       strokeWidth: 2,
                     ),
                   )
-                      : const Text(
-                    'Load',
+                      : Text(AppTranslations.tr('Load'),
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(
+          SizedBox(
             height: 40,
           ),
 
@@ -513,10 +503,9 @@ class _PaysScreenState extends State<PaysScreen>
 
                 Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                       width: 90,
-                      child: Text(
-                        'Type :',
+                      child: Text(AppTranslations.tr('Type :'),
                         style:
                         TextStyle(
                           fontSize: 16,
@@ -529,7 +518,7 @@ class _PaysScreenState extends State<PaysScreen>
                         controller:
                         typeController,
                         decoration:
-                        const InputDecoration(
+                        InputDecoration(
                           border:
                           OutlineInputBorder(),
                         ),
@@ -538,7 +527,7 @@ class _PaysScreenState extends State<PaysScreen>
                   ],
                 ),
 
-                const SizedBox(
+                SizedBox(
                   height: 20,
                 ),
 
@@ -548,10 +537,9 @@ class _PaysScreenState extends State<PaysScreen>
 
                 Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                       width: 90,
-                      child: Text(
-                        'Price :',
+                      child: Text(AppTranslations.tr('Price :'),
                         style:
                         TextStyle(
                           fontSize: 16,
@@ -566,7 +554,7 @@ class _PaysScreenState extends State<PaysScreen>
                         keyboardType:
                         TextInputType.number,
                         decoration:
-                        const InputDecoration(
+                        InputDecoration(
                           border:
                           OutlineInputBorder(),
                         ),
@@ -575,7 +563,7 @@ class _PaysScreenState extends State<PaysScreen>
                   ],
                 ),
 
-                const SizedBox(
+                SizedBox(
                   height: 30,
                 ),
 
@@ -592,7 +580,7 @@ class _PaysScreenState extends State<PaysScreen>
                         ? null
                         : _savePay,
                     child: saving
-                        ? const SizedBox(
+                        ? SizedBox(
                       width: 20,
                       height: 20,
                       child:
@@ -600,8 +588,7 @@ class _PaysScreenState extends State<PaysScreen>
                         strokeWidth: 2,
                       ),
                     )
-                        : const Text(
-                      'Save',
+                        : Text(AppTranslations.tr('Save'),
                     ),
                   ),
                 ),
@@ -621,8 +608,7 @@ class _PaysScreenState extends State<PaysScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Pays Details',
+        title: Text(AppTranslations.tr('Pays Details'),
         ),
       ),
       body: Column(
@@ -630,7 +616,7 @@ class _PaysScreenState extends State<PaysScreen>
           TabBar(
             controller:
             _tabController,
-            tabs: const [
+            tabs: [
               Tab(
                 text: 'All',
               ),

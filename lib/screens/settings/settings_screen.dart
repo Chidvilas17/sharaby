@@ -58,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           isArabic ? 'مظهر أزرق ملكي فاخر مع تأثيرات زجاجية' : 'Deep royal blue glassmorphism theme',
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                         value: ThemeMode.dark,
@@ -90,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           isArabic ? 'مظهر أزرق سماوي هادئ وفاتح' : 'Subtle light blue healthcare theme',
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                         value: ThemeMode.light,
@@ -201,7 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.1),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -226,7 +226,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             isArabic ? 'الإصدار 1.0.0' : 'Version 1.0.0',
                             style: TextStyle(
                               fontSize: 13,
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],

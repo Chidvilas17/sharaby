@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/screen_data_api_service.dart';
 
@@ -271,13 +272,9 @@ class _StatementsScreenDataScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -338,7 +335,7 @@ class _StatementsScreenDataScreenState
           ),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
 
         _textField(
           label: 'Title',
@@ -356,7 +353,7 @@ class _StatementsScreenDataScreenState
           },
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
       ],
     );
   }
@@ -369,14 +366,13 @@ class _StatementsScreenDataScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Screen Data',
+        title: Text(AppTranslations.tr('Screen Data'),
         ),
       ),
       body: SafeArea(
         child:
         isLoading
-            ? const Center(
+            ? Center(
           child:
           CircularProgressIndicator(),
         )
@@ -411,7 +407,7 @@ class _StatementsScreenDataScreenState
                 thickness: 1,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -436,7 +432,7 @@ class _StatementsScreenDataScreenState
                 thickness: 1,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -457,7 +453,7 @@ class _StatementsScreenDataScreenState
                 ],
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 8,
               ),
 
@@ -472,7 +468,7 @@ class _StatementsScreenDataScreenState
                     : _save,
                 icon:
                 isSaving
-                    ? const SizedBox(
+                    ? SizedBox(
                   width: 20,
                   height: 20,
                   child:
@@ -500,7 +496,7 @@ class _StatementsScreenDataScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
             ],

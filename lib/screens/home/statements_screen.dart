@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import 'statements_today_account_screen.dart';
 import 'statements_edit_data_screen.dart';
 import 'statements_delete_list_screen.dart';
@@ -13,7 +14,7 @@ class StatementsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statements'),
+        title: Text(AppTranslations.tr('Statements')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -118,8 +119,8 @@ class StatementsScreen extends StatelessWidget {
 
   void _showComingSoon(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('This section will be added next.'),
+      SnackBar(
+        content: Text(AppTranslations.tr('This section will be added next.')),
       ),
     );
   }

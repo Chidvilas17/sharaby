@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/other_income_api_service.dart';
 
 class OtherIncomeScreen extends StatefulWidget {
@@ -291,11 +292,9 @@ class _OtherIncomeScreenState
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text(
-            'Delete Income',
+          title: Text(AppTranslations.tr('Delete Income'),
           ),
-          content: const Text(
-            'Are you sure you want to delete this income record?',
+          content: Text(AppTranslations.tr('Are you sure you want to delete this income record?'),
           ),
           actions: [
             TextButton(
@@ -305,8 +304,7 @@ class _OtherIncomeScreenState
                   false,
                 );
               },
-              child: const Text(
-                'Cancel',
+              child: Text(AppTranslations.tr('Cancel'),
               ),
             ),
             ElevatedButton(
@@ -316,8 +314,7 @@ class _OtherIncomeScreenState
                   true,
                 );
               },
-              child: const Text(
-                'Delete',
+              child: Text(AppTranslations.tr('Delete'),
               ),
             ),
           ],
@@ -502,7 +499,7 @@ class _OtherIncomeScreenState
         const EdgeInsets.all(5),
         color: selected
             ? Colors.blue
-            .withOpacity(0.15)
+            .withValues(alpha: 0.15)
             : Colors.transparent,
         child: Text(
           text,
@@ -519,7 +516,7 @@ class _OtherIncomeScreenState
 
   Widget _buildTable() {
     if (loading) {
-      return const SizedBox(
+      return SizedBox(
         height: 300,
         child: Center(
           child:
@@ -560,7 +557,7 @@ class _OtherIncomeScreenState
                 color:
                 Color(0xFF4D88B5),
               ),
-              children: const [
+              children: [
                 _HeaderCell(
                   'Type',
                 ),
@@ -716,8 +713,7 @@ class _OtherIncomeScreenState
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text(
-          'Other Income',
+        Text(AppTranslations.tr('Other Income'),
         ),
       ),
 
@@ -739,8 +735,7 @@ class _OtherIncomeScreenState
               // ADD SECTION
               // ==================================================
 
-              const Text(
-                'Add New Income',
+              Text(AppTranslations.tr('Add New Income'),
                 textAlign:
                 TextAlign.center,
                 style: TextStyle(
@@ -750,7 +745,7 @@ class _OtherIncomeScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 16,
               ),
 
@@ -761,7 +756,7 @@ class _OtherIncomeScreenState
                 typeController,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -777,7 +772,7 @@ class _OtherIncomeScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -789,7 +784,7 @@ class _OtherIncomeScreenState
                 maxLines: 2,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -803,7 +798,7 @@ class _OtherIncomeScreenState
                       ? null
                       : _addIncome,
                   icon: adding
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 18,
                     height: 18,
                     child:
@@ -823,7 +818,7 @@ class _OtherIncomeScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 28,
               ),
 
@@ -831,8 +826,7 @@ class _OtherIncomeScreenState
               // SEARCH SECTION
               // ==================================================
 
-              const Text(
-                'Search by Date',
+              Text(AppTranslations.tr('Search by Date'),
                 textAlign:
                 TextAlign.center,
                 style: TextStyle(
@@ -842,7 +836,7 @@ class _OtherIncomeScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -853,9 +847,8 @@ class _OtherIncomeScreenState
                 child:
                 InputDecorator(
                   decoration:
-                  const InputDecoration(
-                    labelText:
-                    'Date',
+                  InputDecoration(
+                    labelText: AppTranslations.tr('Date'),
                     border:
                     OutlineInputBorder(),
                     suffixIcon:
@@ -874,7 +867,7 @@ class _OtherIncomeScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 12,
               ),
 
@@ -892,13 +885,12 @@ class _OtherIncomeScreenState
                     Icons.search,
                   ),
                   label:
-                  const Text(
-                    'Search',
+                  Text(AppTranslations.tr('Search'),
                   ),
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 16,
               ),
 
@@ -908,13 +900,12 @@ class _OtherIncomeScreenState
 
               if (!loading &&
                   incomeRecords.isEmpty)
-                const Padding(
+                Padding(
                   padding:
                   EdgeInsets.all(
                     12,
                   ),
-                  child: Text(
-                    'No income for this date',
+                  child: Text(AppTranslations.tr('No income for this date'),
                     textAlign:
                     TextAlign.center,
                     style: TextStyle(
@@ -930,7 +921,7 @@ class _OtherIncomeScreenState
 
               _buildTable(),
 
-              const SizedBox(
+              SizedBox(
                 height: 16,
               ),
 
@@ -949,7 +940,7 @@ class _OtherIncomeScreenState
                       ? null
                       : _deleteIncome,
                   icon: deleting
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 18,
                     height: 18,
                     child:
@@ -970,7 +961,7 @@ class _OtherIncomeScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 16,
               ),
 
@@ -983,8 +974,7 @@ class _OtherIncomeScreenState
                 MainAxisAlignment
                     .center,
                 children: [
-                  const Text(
-                    'Total:',
+                  Text(AppTranslations.tr('Total:'),
                     style:
                     TextStyle(
                       fontSize: 19,
@@ -993,7 +983,7 @@ class _OtherIncomeScreenState
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     width: 15,
                   ),
 
@@ -1012,7 +1002,7 @@ class _OtherIncomeScreenState
                 ],
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
             ],

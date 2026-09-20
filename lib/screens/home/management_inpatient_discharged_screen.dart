@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/internal_discharged_api_service.dart';
 
 class ManagementInpatientDischargedScreen
@@ -140,16 +141,9 @@ class _ManagementInpatientDischargedScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -335,8 +329,7 @@ class _ManagementInpatientDischargedScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Discharged Cases',
+        title: Text(AppTranslations.tr('Discharged Cases'),
         ),
       ),
 
@@ -369,8 +362,7 @@ class _ManagementInpatientDischargedScreenState
                   CrossAxisAlignment.stretch,
 
                   children: [
-                    const Text(
-                      'Search by Name',
+                    Text(AppTranslations.tr('Search by Name'),
 
                       textAlign:
                       TextAlign.center,
@@ -382,7 +374,7 @@ class _ManagementInpatientDischargedScreenState
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 14,
                     ),
 
@@ -397,14 +389,14 @@ class _ManagementInpatientDischargedScreenState
                           _search(),
 
                       decoration:
-                      const InputDecoration(
-                        labelText: 'Name',
+                      InputDecoration(
+                        labelText: AppTranslations.tr('Name'),
                         border:
                         OutlineInputBorder(),
                       ),
                     ),
 
-                    const SizedBox(
+                    SizedBox(
                       height: 14,
                     ),
 
@@ -418,7 +410,7 @@ class _ManagementInpatientDischargedScreenState
                             : _search,
 
                         child: loading
-                            ? const SizedBox(
+                            ? SizedBox(
                           width: 22,
                           height: 22,
                           child:
@@ -426,8 +418,7 @@ class _ManagementInpatientDischargedScreenState
                             strokeWidth: 2,
                           ),
                         )
-                            : const Text(
-                          'Search',
+                            : Text(AppTranslations.tr('Search'),
                           style:
                           TextStyle(
                             fontSize: 16,
@@ -439,7 +430,7 @@ class _ManagementInpatientDischargedScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 24,
               ),
 

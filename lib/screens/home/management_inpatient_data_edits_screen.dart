@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/internal_patients_edit_api_service.dart';
 
 class ManagementInpatientDataEditsScreen
@@ -76,17 +77,9 @@ class _ManagementInpatientDataEditsScreenState
   // =========================================================
 
   void _showMessage(String message) {
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -280,8 +273,7 @@ class _ManagementInpatientDataEditsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Edit Inpatient Data',
+        title: Text(AppTranslations.tr('Edit Inpatient Data'),
         ),
       ),
 
@@ -296,7 +288,7 @@ class _ManagementInpatientDataEditsScreenState
 
             children: [
               if (loading)
-                const Padding(
+                Padding(
                   padding:
                   EdgeInsets.all(12),
                   child: Center(

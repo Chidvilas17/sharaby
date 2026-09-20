@@ -5,7 +5,7 @@ class ThemeController extends ChangeNotifier {
   ThemeController._();
 
   ThemeMode _themeMode = ThemeMode.light; // Default to Light Mode
-  Locale _locale = const Locale('en');
+  Locale _locale = const Locale('ar'); // Default to Arabic with RTL
 
   ThemeMode get themeMode => _themeMode;
   Locale get locale => _locale;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/staff_discounts_api_service.dart';
 
 class DiscountsScreen extends StatefulWidget {
@@ -153,7 +154,7 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -238,36 +239,32 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
                 ),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Expanded(
                   flex: 2,
-                  child: Text(
-                    'Name',
+                  child: Text(AppTranslations.tr('Name'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    'Deductions',
+                  child: Text(AppTranslations.tr('Deductions'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    'Advances',
+                  child: Text(AppTranslations.tr('Advances'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    'Bonuses',
+                  child: Text(AppTranslations.tr('Bonuses'),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -282,16 +279,15 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
           // ======================================================
 
           if (loading)
-            const Expanded(
+            Expanded(
               child: Center(
                 child: CircularProgressIndicator(),
               ),
             )
           else if (employees.isEmpty)
-            const Expanded(
+            Expanded(
               child: Center(
-                child: Text(
-                  'No data',
+                child: Text(AppTranslations.tr('No data'),
                   style: TextStyle(
                     color: Colors.grey,
                   ),
@@ -359,8 +355,7 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Deductions',
+        title: Text(AppTranslations.tr('Deductions'),
         ),
       ),
 
@@ -376,42 +371,39 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
             // MONTH
             // ====================================================
 
-            const Text(
-              'Month',
+            Text(AppTranslations.tr('Month'),
               style: TextStyle(
                 fontSize: 16,
               ),
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             TextField(
               controller: monthController,
 
               decoration:
-              const InputDecoration(
+              InputDecoration(
                 border:
                 OutlineInputBorder(),
-                hintText:
-                'MM/YYYY',
+                hintText: AppTranslations.tr('MM/YYYY'),
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // ====================================================
             // EMPLOYEE TYPE
             // ====================================================
 
-            const Text(
-              'Select Type',
+            Text(AppTranslations.tr('Select Type'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             _buildTypeRadio(
               title: 'Nurses',
@@ -425,7 +417,7 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
               title: 'Workers',
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // ====================================================
             // SHOW
@@ -438,27 +430,25 @@ class _DiscountsScreenState extends State<DiscountsScreen> {
                 onPressed:
                 loading ? null : _loadData,
 
-                child: const Text(
-                  'Show',
+                child: Text(AppTranslations.tr('Show'),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // ====================================================
             // DATA TABLE
             // ====================================================
 
-            const Text(
-              'Salary Details',
+            Text(AppTranslations.tr('Salary Details'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
 
             _buildTable(),
           ],

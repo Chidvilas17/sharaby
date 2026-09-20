@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/oxygen_calculation_api_service.dart';
 
 class OxygenCalculationScreen extends StatefulWidget {
@@ -833,7 +834,7 @@ class _OxygenCalculationScreenState
                   .calendar_today_outlined,
               size: 20,
             ),
-            const SizedBox(
+            SizedBox(
               width: 8,
             ),
             Expanded(
@@ -888,13 +889,12 @@ class _OxygenCalculationScreenState
       ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Oxygen Calculation',
+        title: Text(AppTranslations.tr('Oxygen Calculation'),
         ),
       ),
       body: SafeArea(
         child: loading
-            ? const Center(
+            ? Center(
           child:
           CircularProgressIndicator(),
         )
@@ -919,7 +919,7 @@ class _OxygenCalculationScreenState
 
               _buildOldAccountTable(),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -928,8 +928,7 @@ class _OxygenCalculationScreenState
                 MainAxisAlignment
                     .center,
                 children: [
-                  const Text(
-                    'Old Account: ',
+                  Text(AppTranslations.tr('Old Account: '),
                     style:
                     TextStyle(
                       color:
@@ -958,7 +957,7 @@ class _OxygenCalculationScreenState
                 ],
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 28,
               ),
 
@@ -975,7 +974,7 @@ class _OxygenCalculationScreenState
                 false,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 28,
               ),
 
@@ -992,7 +991,7 @@ class _OxygenCalculationScreenState
                 true,
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
 
@@ -1005,8 +1004,7 @@ class _OxygenCalculationScreenState
                 MainAxisAlignment
                     .center,
                 children: [
-                  const Text(
-                    'Total Account: ',
+                  Text(AppTranslations.tr('Total Account: '),
                     style:
                     TextStyle(
                       color:
@@ -1035,7 +1033,7 @@ class _OxygenCalculationScreenState
                 ],
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 24,
               ),
 
@@ -1055,7 +1053,7 @@ class _OxygenCalculationScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -1066,7 +1064,7 @@ class _OxygenCalculationScreenState
                 'Receipt Number',
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -1094,7 +1092,7 @@ class _OxygenCalculationScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 28,
               ),
 
@@ -1106,7 +1104,7 @@ class _OxygenCalculationScreenState
                 'Cost Date Range',
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 14,
               ),
 
@@ -1118,13 +1116,12 @@ class _OxygenCalculationScreenState
                     ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 10,
               ),
 
-              const Center(
-                child: Text(
-                  'To',
+              Center(
+                child: Text(AppTranslations.tr('To'),
                   style:
                   TextStyle(
                     fontWeight:
@@ -1134,7 +1131,7 @@ class _OxygenCalculationScreenState
                 ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 10,
               ),
 
@@ -1146,7 +1143,7 @@ class _OxygenCalculationScreenState
                     ),
               ),
 
-              const SizedBox(
+              SizedBox(
                 height: 16,
               ),
 
@@ -1155,8 +1152,7 @@ class _OxygenCalculationScreenState
                 MainAxisAlignment
                     .center,
                 children: [
-                  const Text(
-                    'Cost: ',
+                  Text(AppTranslations.tr('Cost: '),
                     style:
                     TextStyle(
                       color:

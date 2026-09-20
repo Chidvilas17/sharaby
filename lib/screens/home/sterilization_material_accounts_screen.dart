@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/sterilization_material_accounts_api_service.dart';
 
 class SterilizationMaterialAccountsScreen
@@ -355,12 +356,9 @@ class _SterilizationMaterialAccountsScreenState
   // ============================================================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -419,7 +417,7 @@ class _SterilizationMaterialAccountsScreenState
               Icons.calendar_today_outlined,
               size: 20,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 _formatDate(date),
@@ -951,8 +949,7 @@ class _SterilizationMaterialAccountsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Sterilization Material Accounts',
+        title: Text(AppTranslations.tr('Sterilization Material Accounts'),
         ),
       ),
       body: SafeArea(
@@ -966,15 +963,14 @@ class _SterilizationMaterialAccountsScreenState
 
               _buildOldAccountTable(),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Center(
                 child: Row(
                   mainAxisAlignment:
                   MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Old Account: ',
+                    Text(AppTranslations.tr('Old Account: '),
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight:
@@ -995,7 +991,7 @@ class _SterilizationMaterialAccountsScreenState
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               _sectionTitle(
                 'Old Account Details',
@@ -1003,7 +999,7 @@ class _SterilizationMaterialAccountsScreenState
 
               _buildDetailsTable(),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               _sectionTitle(
                 'Purchases Since Last Payment',
@@ -1011,14 +1007,13 @@ class _SterilizationMaterialAccountsScreenState
 
               _buildPurchaseTable(),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               Row(
                 mainAxisAlignment:
                 MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Total Account: ',
+                  Text(AppTranslations.tr('Total Account: '),
                     style: TextStyle(
                       color: Colors.blue,
                       fontSize: 17,
@@ -1038,7 +1033,7 @@ class _SterilizationMaterialAccountsScreenState
                 ],
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               _textField(
                 controller:
@@ -1051,7 +1046,7 @@ class _SterilizationMaterialAccountsScreenState
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _textField(
                 controller:
@@ -1059,7 +1054,7 @@ class _SterilizationMaterialAccountsScreenState
                 label: 'Receipt Number',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               SizedBox(
                 height: 48,
@@ -1080,13 +1075,13 @@ class _SterilizationMaterialAccountsScreenState
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               _sectionTitle(
                 'Cost Date Range',
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _dateBox(
                 date: fromDate,
@@ -1094,11 +1089,10 @@ class _SterilizationMaterialAccountsScreenState
                     _pickDate(true),
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
-              const Center(
-                child: Text(
-                  'To',
+              Center(
+                child: Text(AppTranslations.tr('To'),
                   style: TextStyle(
                     fontWeight:
                     FontWeight.bold,
@@ -1106,7 +1100,7 @@ class _SterilizationMaterialAccountsScreenState
                 ),
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               _dateBox(
                 date: toDate,
@@ -1114,14 +1108,13 @@ class _SterilizationMaterialAccountsScreenState
                     _pickDate(false),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               Row(
                 mainAxisAlignment:
                 MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Cost: ',
+                  Text(AppTranslations.tr('Cost: '),
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: 17,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/staff_employees_api_service.dart';
 
 class StaffAddEditScreen extends StatefulWidget {
@@ -529,8 +530,7 @@ class _StaffAddEditScreenState
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text(
-            'Delete Employee',
+          title: Text(AppTranslations.tr('Delete Employee'),
           ),
           content: Text(
             employeeName.isEmpty
@@ -545,8 +545,7 @@ class _StaffAddEditScreenState
                   false,
                 );
               },
-              child: const Text(
-                'Cancel',
+              child: Text(AppTranslations.tr('Cancel'),
               ),
             ),
             ElevatedButton(
@@ -556,8 +555,7 @@ class _StaffAddEditScreenState
                   true,
                 );
               },
-              child: const Text(
-                'Delete',
+              child: Text(AppTranslations.tr('Delete'),
               ),
             ),
           ],
@@ -716,7 +714,7 @@ class _StaffAddEditScreenState
             border:
             const OutlineInputBorder(),
           ),
-          child: const Center(
+          child: Center(
             child: Padding(
               padding:
               EdgeInsets.symmetric(
@@ -746,9 +744,9 @@ class _StaffAddEditScreenState
           const OutlineInputBorder(),
         ),
         items: [
-          const DropdownMenuItem<String>(
+          DropdownMenuItem<String>(
             value: 'SELECT',
-            child: Text('Select'),
+            child: Text(AppTranslations.tr('Select')),
           ),
 
           ...categories.map(
@@ -803,7 +801,7 @@ class _StaffAddEditScreenState
 
   Widget _employeeTable() {
     if (loadingEmployees) {
-      return const SizedBox(
+      return SizedBox(
         height: 300,
         child: Center(
           child:
@@ -832,7 +830,7 @@ class _StaffAddEditScreenState
               color:
               Color(0xFF4D88B5),
             ),
-            children: const [
+            children: [
               _HeaderCell('ID'),
               _HeaderCell('Name'),
               _HeaderCell('Phone 1'),
@@ -979,7 +977,7 @@ class _StaffAddEditScreenState
         const EdgeInsets.all(5),
         color: selected
             ? Colors.blue
-            .withOpacity(0.15)
+            .withValues(alpha: 0.15)
             : Colors.transparent,
         child: Text(
           text,
@@ -1000,8 +998,7 @@ class _StaffAddEditScreenState
       ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Add / Edit Employee',
+        title: Text(AppTranslations.tr('Add / Edit Employee'),
         ),
       ),
 
@@ -1078,7 +1075,7 @@ class _StaffAddEditScreenState
                   ? null
                   : _saveEmployee,
               icon: savingEmployee
-                  ? const SizedBox(
+                  ? SizedBox(
                 width: 18,
                 height: 18,
                 child:
@@ -1098,7 +1095,7 @@ class _StaffAddEditScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 30,
             ),
 
@@ -1135,13 +1132,12 @@ class _StaffAddEditScreenState
                       Icons.search,
                     ),
                     label:
-                    const Text(
-                      'Search',
+                    Text(AppTranslations.tr('Search'),
                     ),
                   ),
                 ),
 
-                const SizedBox(
+                SizedBox(
                   width: 10,
                 ),
 
@@ -1151,15 +1147,14 @@ class _StaffAddEditScreenState
                     onPressed:
                     _loadAllEmployees,
                     child:
-                    const Text(
-                      'All',
+                    Text(AppTranslations.tr('All'),
                     ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
 
@@ -1180,7 +1175,7 @@ class _StaffAddEditScreenState
               _employeeTable(),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 16,
             ),
 
@@ -1215,13 +1210,12 @@ class _StaffAddEditScreenState
                           .edit_outlined,
                     ),
                     label:
-                    const Text(
-                      'Edit',
+                    Text(AppTranslations.tr('Edit'),
                     ),
                   ),
                 ),
 
-                const SizedBox(
+                SizedBox(
                   width: 12,
                 ),
 
@@ -1234,7 +1228,7 @@ class _StaffAddEditScreenState
                         : _deleteSelected,
                     icon:
                     deletingEmployee
-                        ? const SizedBox(
+                        ? SizedBox(
                       width: 18,
                       height: 18,
                       child:
@@ -1258,7 +1252,7 @@ class _StaffAddEditScreenState
               ],
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
           ],

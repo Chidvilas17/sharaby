@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 import '../../services/damages_api_service.dart';
 
 class FaultsScreen extends StatefulWidget {
@@ -370,12 +371,9 @@ class _FaultsScreenState extends State<FaultsScreen> {
   // =========================
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -488,7 +486,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
 
   Widget _table() {
     if (isLoadingFaults) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.all(30),
         child: Center(
           child: CircularProgressIndicator(),
@@ -505,9 +503,8 @@ class _FaultsScreenState extends State<FaultsScreen> {
             color: Colors.grey.shade400,
           ),
         ),
-        child: const Center(
-          child: Text(
-            'No faults found.',
+        child: Center(
+          child: Text(AppTranslations.tr('No faults found.'),
             style: TextStyle(
               color: Colors.grey,
             ),
@@ -530,42 +527,37 @@ class _FaultsScreenState extends State<FaultsScreen> {
           headingRowHeight: 52,
           dataRowMinHeight: 48,
           dataRowMaxHeight: 56,
-          columns: const [
+          columns: [
             DataColumn(
-              label: Text(
-                'No.',
+              label: Text(AppTranslations.tr('No.'),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             DataColumn(
-              label: Text(
-                'Device Name',
+              label: Text(AppTranslations.tr('Device Name'),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             DataColumn(
-              label: Text(
-                'Fault Details',
+              label: Text(AppTranslations.tr('Fault Details'),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             DataColumn(
-              label: Text(
-                'Date Added',
+              label: Text(AppTranslations.tr('Date Added'),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             DataColumn(
-              label: Text(
-                'Accountant',
+              label: Text(AppTranslations.tr('Accountant'),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -632,7 +624,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
       children: [
         _sectionTitle('Add Fault'),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         _textField(
           controller: deviceNameController,
@@ -640,7 +632,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
           enabled: !isAddingFault,
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         _textField(
           controller: faultDetailsController,
@@ -648,7 +640,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
           enabled: !isAddingFault,
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         SizedBox(
           height: 48,
@@ -658,7 +650,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                 ? null
                 : _addFault,
             child: isAddingFault
-                ? const SizedBox(
+                ? SizedBox(
               width: 22,
               height: 22,
               child:
@@ -666,8 +658,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                 strokeWidth: 2,
               ),
             )
-                : const Text(
-              'Add',
+                : Text(AppTranslations.tr('Add'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight:
@@ -689,7 +680,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
       crossAxisAlignment:
       CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
 
         Row(
           children: [
@@ -706,7 +697,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
               ),
             ),
 
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
 
             SizedBox(
               width: 110,
@@ -719,7 +710,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                     : _maintainFault,
                 child:
                 isLoadingMaintenanceFault
-                    ? const SizedBox(
+                    ? SizedBox(
                   width: 22,
                   height: 22,
                   child:
@@ -727,8 +718,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                     strokeWidth: 2,
                   ),
                 )
-                    : const Text(
-                  'Maintain',
+                    : Text(AppTranslations.tr('Maintain'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight:
@@ -755,13 +745,13 @@ class _FaultsScreenState extends State<FaultsScreen> {
       crossAxisAlignment:
       CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
 
         _sectionTitle(
           'Maintain Current Fault',
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         _textField(
           controller:
@@ -770,7 +760,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
           enabled: !isSavingMaintenance,
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         _textField(
           controller:
@@ -779,7 +769,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
           enabled: !isSavingMaintenance,
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         _textField(
           controller:
@@ -790,7 +780,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
           enabled: !isSavingMaintenance,
         ),
 
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         _textField(
           controller:
@@ -799,7 +789,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
           enabled: !isSavingMaintenance,
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
 
         SizedBox(
           height: 48,
@@ -809,7 +799,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                 ? null
                 : _saveMaintenance,
             child: isSavingMaintenance
-                ? const SizedBox(
+                ? SizedBox(
               width: 22,
               height: 22,
               child:
@@ -817,8 +807,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                 strokeWidth: 2,
               ),
             )
-                : const Text(
-              'Save',
+                : Text(AppTranslations.tr('Save'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight:
@@ -839,7 +828,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Faults'),
+        title: Text(AppTranslations.tr('Faults')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -857,7 +846,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
                     _showAddFaultMode,
                   ),
 
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
 
                   _topButton(
                     title:
@@ -870,14 +859,14 @@ class _FaultsScreenState extends State<FaultsScreen> {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               if (isAddFaultMode)
                 _addFaultSection()
               else
                 _maintainFaultSection(),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               _sectionTitle(
                 'Current Faults',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/inpatient_rates_api_service.dart';
 
@@ -297,9 +298,8 @@ class _InpatientRatesScreenState
 
   Widget _buildTable() {
     if (rates.isEmpty) {
-      return const Center(
-        child: Text(
-          'No data',
+      return Center(
+        child: Text(AppTranslations.tr('No data'),
           style: TextStyle(
             color: Colors.grey,
           ),
@@ -328,7 +328,7 @@ class _InpatientRatesScreenState
             decoration: BoxDecoration(
               color: selected
                   ? Colors.blue
-                  .withOpacity(0.12)
+                  .withValues(alpha: 0.12)
                   : Colors.transparent,
               border: Border(
                 bottom: BorderSide(
@@ -380,13 +380,12 @@ class _InpatientRatesScreenState
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text(
-          'Internal Device',
+        Text(AppTranslations.tr('Internal Device'),
         ),
       ),
 
       body: loading
-          ? const Center(
+          ? Center(
         child:
         CircularProgressIndicator(),
       )
@@ -406,8 +405,7 @@ class _InpatientRatesScreenState
             // LIST
             // =================================================
 
-            const Text(
-              'Internal Devices List',
+            Text(AppTranslations.tr('Internal Devices List'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight:
@@ -415,7 +413,7 @@ class _InpatientRatesScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 8,
             ),
 
@@ -469,14 +467,13 @@ class _InpatientRatesScreenState
                       ),
 
                       child:
-                      const Row(
+                      Row(
                         children: [
                           Expanded(
                             child:
                             Center(
                               child:
-                              Text(
-                                'Type',
+                              Text(AppTranslations.tr('Type'),
                                 style:
                                 TextStyle(
                                   fontWeight:
@@ -490,8 +487,7 @@ class _InpatientRatesScreenState
                             child:
                             Center(
                               child:
-                              Text(
-                                'Price',
+                              Text(AppTranslations.tr('Price'),
                                 style:
                                 TextStyle(
                                   fontWeight:
@@ -517,7 +513,7 @@ class _InpatientRatesScreenState
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 16,
             ),
 
@@ -538,14 +534,13 @@ class _InpatientRatesScreenState
                   _addNew,
 
                   child:
-                  const Text(
-                    'Add New',
+                  Text(AppTranslations.tr('Add New'),
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(
+            SizedBox(
               height: 20,
             ),
 
@@ -597,19 +592,18 @@ class _InpatientRatesScreenState
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
 
-                  const Text(
-                    'Type',
+                  Text(AppTranslations.tr('Type'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -618,25 +612,24 @@ class _InpatientRatesScreenState
                     typeController,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 16,
                   ),
 
-                  const Text(
-                    'Price For Internal',
+                  Text(AppTranslations.tr('Price For Internal'),
                     style:
                     TextStyle(
                       fontSize: 15,
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 8,
                   ),
 
@@ -649,13 +642,13 @@ class _InpatientRatesScreenState
                         .number,
 
                     decoration:
-                    const InputDecoration(
+                    InputDecoration(
                       border:
                       OutlineInputBorder(),
                     ),
                   ),
 
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
 

@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                       fit: BoxFit.contain,
                     ),
 
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     const Text(
                       'Sharaby Center',
@@ -73,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
 
                     const Text(
                       'Patient Management System',
@@ -226,7 +226,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
               Row(
                 children: [
@@ -247,7 +247,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15),
 
                   // Management Follow-ups
                   Expanded(
@@ -268,7 +268,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 30),
+              SizedBox(height: 30),
 
               // ==========================================
               // MANAGEMENT
@@ -282,7 +282,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
 
               // User
               _menuButton(
@@ -460,7 +460,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
 
                 Text(
                   title,
@@ -525,7 +525,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
 
                 Text(
                   title,

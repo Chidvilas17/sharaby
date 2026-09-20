@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 import '../../services/daily_movement_api_service.dart';
 import 'faults_screen.dart';
@@ -194,7 +195,7 @@ class _DailyMovementScreenState
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text('Close'),
+              child: Text(AppTranslations.tr('Close')),
             ),
           ],
         );
@@ -210,8 +211,7 @@ class _DailyMovementScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Daily Movement',
+        title: Text(AppTranslations.tr('Daily Movement'),
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -236,10 +236,10 @@ class _DailyMovementScreenState
 
                 _buildDateSection(),
 
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 if (isLoading)
-                  const Padding(
+                  Padding(
                     padding:
                     EdgeInsets.all(40),
                     child: Center(
@@ -256,7 +256,7 @@ class _DailyMovementScreenState
 
                     _buildPlaceholderSection(),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // ================================================
                     // INCOME
@@ -264,7 +264,7 @@ class _DailyMovementScreenState
 
                     _buildIncomeSection(),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // ================================================
                     // EXPENSES
@@ -272,7 +272,7 @@ class _DailyMovementScreenState
 
                     _buildExpenseSection(),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // ================================================
                     // OXYGEN
@@ -283,7 +283,7 @@ class _DailyMovementScreenState
                       'Oxygen Pipe Income',
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // ================================================
                     // STERILIZATION
@@ -294,7 +294,7 @@ class _DailyMovementScreenState
                       'Sterilization Income',
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // ================================================
                     // MAINTENANCE
@@ -370,13 +370,12 @@ class _DailyMovementScreenState
                   isLoading
                       ? null
                       : _previousDay,
-                  child: const Text(
-                    'Previous Day',
+                  child: Text(AppTranslations.tr('Previous Day'),
                   ),
                 ),
               ),
 
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
 
               Expanded(
                 child: ElevatedButton(
@@ -384,15 +383,14 @@ class _DailyMovementScreenState
                   isLoading
                       ? null
                       : _today,
-                  child: const Text(
-                    'Today',
+                  child: Text(AppTranslations.tr('Today'),
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           InkWell(
             onTap: isLoading
@@ -400,9 +398,8 @@ class _DailyMovementScreenState
                 : _selectDate,
             child: InputDecorator(
               decoration:
-              const InputDecoration(
-                labelText:
-                'Search By Date',
+              InputDecoration(
+                labelText: AppTranslations.tr('Search By Date'),
                 border:
                 OutlineInputBorder(),
                 suffixIcon: Icon(
@@ -419,7 +416,7 @@ class _DailyMovementScreenState
             ),
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           SizedBox(
             height: 46,
@@ -431,8 +428,7 @@ class _DailyMovementScreenState
               icon: const Icon(
                 Icons.search,
               ),
-              label: const Text(
-                'Search',
+              label: Text(AppTranslations.tr('Search'),
               ),
             ),
           ),
@@ -458,8 +454,7 @@ class _DailyMovementScreenState
       ),
       child: Column(
         children: [
-          const Text(
-            'Failed to load Daily Movement.',
+          Text(AppTranslations.tr('Failed to load Daily Movement.'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight:
@@ -468,7 +463,7 @@ class _DailyMovementScreenState
             ),
           ),
 
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           Text(
             errorMessage ?? '',
@@ -476,13 +471,12 @@ class _DailyMovementScreenState
             TextAlign.center,
           ),
 
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
 
           ElevatedButton(
             onPressed:
             _loadDailyMovement,
-            child: const Text(
-              'Retry',
+            child: Text(AppTranslations.tr('Retry'),
             ),
           ),
         ],
@@ -745,7 +739,7 @@ class _DailyMovementScreenState
             color: Colors.red,
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           _buildTotalRow(
             title: 'Daily Net',
@@ -770,14 +764,13 @@ class _DailyMovementScreenState
     return _buildSectionContainer(
       title: title,
       titleColor: Colors.black87,
-      child: const Padding(
+      child: Padding(
         padding:
         EdgeInsets.symmetric(
           vertical: 28,
         ),
         child: Center(
-          child: Text(
-            'No Data',
+          child: Text(AppTranslations.tr('No Data'),
             style: TextStyle(
               color: Colors.red,
               fontSize: 17,
@@ -875,8 +868,7 @@ class _DailyMovementScreenState
                     vertical: 10,
                   ),
                 ),
-                child: const Text(
-                  'Details',
+                child: Text(AppTranslations.tr('Details'),
                   style: TextStyle(
                     fontSize: 12,
                   ),
@@ -884,11 +876,11 @@ class _DailyMovementScreenState
               ),
             )
           else
-            const SizedBox(
+            SizedBox(
               width: 82,
             ),
 
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
 
           SizedBox(
             width: 55,
@@ -904,7 +896,7 @@ class _DailyMovementScreenState
             ),
           ),
 
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
 
           Expanded(
             child: Text(
@@ -954,7 +946,7 @@ class _DailyMovementScreenState
             ),
           ),
 
-          const SizedBox(width: 20),
+          SizedBox(width: 20),
 
           SizedBox(
             width: 70,
@@ -974,4 +966,4 @@ class _DailyMovementScreenState
       ),
     );
   }
-}
+}
