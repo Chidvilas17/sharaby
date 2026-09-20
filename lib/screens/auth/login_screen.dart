@@ -161,20 +161,39 @@ class _LoginScreenState extends State<LoginScreen> {
               constraints: const BoxConstraints(
                 maxWidth: 420,
               ),
-              child: Card(
-                elevation: 4,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0x400EA5E9), width: 1.5),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x1F0284C7),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(28),
+                  padding: const EdgeInsets.all(32),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(
-                        'assets/images/logo.png',
-                        height: 100,
-                        fit: BoxFit.contain,
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0F9FF),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0x330EA5E9)),
+                        ),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          height: 90,
+                          fit: BoxFit.contain,
+                        ),
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
                       const Text(
                         'Sharaby Center',
@@ -182,19 +201,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F172A),
+                          letterSpacing: 0.5,
                         ),
                       ),
 
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
 
                       const Text(
                         'Login',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF0284C7),
                         ),
                       ),
 
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 32),
 
                       TextField(
                         controller: _usernameController,
@@ -202,11 +225,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         enabled: !_isLoggingIn,
                         decoration: const InputDecoration(
                           labelText: 'Username',
-                          prefixIcon: Icon(Icons.person),
+                          prefixIcon: Icon(Icons.person, color: Color(0xFF0284C7)),
                         ),
                       ),
 
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 20),
 
                       TextField(
                         controller: _passwordController,
@@ -216,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onSubmitted: (_) => _login(),
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          prefixIcon: const Icon(Icons.lock),
+                          prefixIcon: const Icon(Icons.lock, color: Color(0xFF0284C7)),
                           suffixIcon: IconButton(
                             onPressed: _isLoggingIn
                                 ? null
@@ -230,31 +253,58 @@ class _LoginScreenState extends State<LoginScreen> {
                               _obscurePassword
                                   ? Icons.visibility
                                   : Icons.visibility_off,
+                              color: const Color(0xFF64748B),
                             ),
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 30),
 
                       SizedBox(
                         width: double.infinity,
                         height: 52,
-                        child: ElevatedButton(
-                          onPressed:
-                          _isLoggingIn ? null : _login,
-                          child: _isLoggingIn
-                              ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child:
-                            CircularProgressIndicator(),
-                          )
-                              : const Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF0284C7), Color(0xFF0EA5E9)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x400EA5E9),
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: _isLoggingIn ? null : _login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: _isLoggingIn
+                                ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                                : const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -266,12 +316,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 48,
                         child: OutlinedButton(
-                          onPressed:
-                          _isLoggingIn ? null : _bypassLogin,
+                          onPressed: _isLoggingIn ? null : _bypassLogin,
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFBAE6FD), width: 1.5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
                           child: const Text(
                             'Bypass Login (Development)',
                             style: TextStyle(
                               fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF0284C7),
                             ),
                           ),
                         ),

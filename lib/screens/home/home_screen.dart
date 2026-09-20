@@ -42,35 +42,44 @@ class HomeScreen extends StatelessWidget {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
-                  vertical: 30,
+                  vertical: 28,
                   horizontal: 20,
+                ),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFE0F2FE), Color(0xFFF0F9FF)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Image.asset(
                       'assets/images/logo.png',
                       height: 60,
                       fit: BoxFit.contain,
                     ),
 
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
-                    Text(
+                    const Text(
                       'Sharaby Center',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
                       ),
                     ),
 
-                    SizedBox(height: 5),
+                    const SizedBox(height: 4),
 
-                    Text(
+                    const Text(
                       'Patient Management System',
                       style: TextStyle(
                         fontSize: 14,
+                        color: Color(0xFF0284C7),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -386,35 +395,60 @@ class HomeScreen extends StatelessWidget {
     required IconData icon,
     required VoidCallback onPressed,
   }) {
-    return SizedBox(
+    return Container(
       height: 150,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0284C7), Color(0xFF0EA5E9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 42,
-            ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x330EA5E9),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration(
+                    color: Color(0x33FFFFFF),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 38,
+                    color: Colors.white,
+                  ),
+                ),
 
-            const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -432,42 +466,61 @@ class HomeScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       height: 65,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0x330EA5E9), width: 1.2),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1A0EA5E9),
+            blurRadius: 8,
+            offset: Offset(0, 3),
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F9FF),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 24,
+                    color: const Color(0xFF0284C7),
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+
+                const Spacer(),
+
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: Color(0xFF0EA5E9),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-
-            Icon(
-              icon,
-              size: 28,
-            ),
-
-            const SizedBox(width: 16),
-
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-            const Spacer(),
-
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-            ),
-          ],
         ),
       ),
     );
