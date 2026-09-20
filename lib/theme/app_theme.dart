@@ -9,6 +9,8 @@ class ThemeController extends ChangeNotifier {
 
   ThemeMode get themeMode => _themeMode;
   Locale get locale => _locale;
+  bool get isArabic => _locale.languageCode == 'ar';
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   void setThemeMode(ThemeMode mode) {
     if (_themeMode != mode) {
