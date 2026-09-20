@@ -202,7 +202,7 @@ class _AdminScreenState extends State<AdminScreen> {
         SizedBox(
           width: 90,
           child: Text(
-            label,
+            AppTranslations.tr(label),
             style: const TextStyle(fontSize: 16),
           ),
         ),

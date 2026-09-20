@@ -346,7 +346,7 @@ class _OxygenCalculationScreenState
     ScaffoldMessenger.of(context)
         .showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -415,7 +415,7 @@ class _OxygenCalculationScreenState
         ),
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style:
         const TextStyle(
           fontSize: 16,
@@ -440,7 +440,7 @@ class _OxygenCalculationScreenState
       alignment:
       Alignment.center,
       child: Text(
-        text,
+        AppTranslations.tr(text),
         textAlign:
         TextAlign.center,
         style:
@@ -477,7 +477,7 @@ class _OxygenCalculationScreenState
         alignment:
         Alignment.center,
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign:
           TextAlign.center,
         ),
@@ -872,7 +872,7 @@ class _OxygenCalculationScreenState
       keyboardType,
       decoration:
       InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border:
         const OutlineInputBorder(),
       ),

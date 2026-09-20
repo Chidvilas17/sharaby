@@ -298,7 +298,7 @@ class _StatementsDeleteListScreenState
       padding: const EdgeInsets.all(6),
       color: const Color(0xFF4D88B5),
       child: Text(
-        text,
+        AppTranslations.tr(text),
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Colors.white,

@@ -459,7 +459,7 @@ class _OtherIncomeScreenState
       keyboardType: keyboardType,
       maxLines: maxLines,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border:
         const OutlineInputBorder(),
       ),

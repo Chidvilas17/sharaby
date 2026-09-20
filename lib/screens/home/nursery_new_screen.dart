@@ -544,7 +544,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         keyboardType: keyboardType,
         maxLines: maxLines,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
       ),
@@ -568,7 +568,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         initialValue: value,
         isExpanded: true,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
         items: [
@@ -608,7 +608,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         initialValue: validValue,
         isExpanded: true,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
           suffixIcon: loading
               ? Padding(
@@ -650,7 +650,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
       initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
       items: items.map((item) {
@@ -682,7 +682,7 @@ class _NurseryNewScreenState extends State<NurseryNewScreen> {
         onTap: onTap,
         child: InputDecorator(
           decoration: InputDecoration(
-            labelText: label,
+            labelText: AppTranslations.tr(label),
             border: const OutlineInputBorder(),
             suffixIcon: const Icon(
               Icons.calendar_month,

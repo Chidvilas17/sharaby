@@ -678,7 +678,7 @@ class _NurseryTodayAccountsScreenState
     ).showSnackBar(
       SnackBar(
         content:
-        Text(message),
+        Text(AppTranslations.tr(message)),
       ),
     );
   }

@@ -380,7 +380,7 @@ class _SterilizationMaterialAccountsScreenState
         ),
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -449,7 +449,7 @@ class _SterilizationMaterialAccountsScreenState
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
     );
@@ -468,7 +468,7 @@ class _SterilizationMaterialAccountsScreenState
       height: 48,
       alignment: Alignment.center,
       child: Text(
-        text,
+        AppTranslations.tr(text),
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontWeight: FontWeight.bold,

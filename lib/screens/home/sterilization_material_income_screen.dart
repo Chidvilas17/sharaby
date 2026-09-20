@@ -384,7 +384,7 @@ class _SterilizationMaterialIncomeScreenState
         ),
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -407,7 +407,7 @@ class _SterilizationMaterialIncomeScreenState
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
     );
@@ -457,7 +457,7 @@ class _SterilizationMaterialIncomeScreenState
       height: 52,
       child: Center(
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 14,
@@ -497,7 +497,7 @@ class _SterilizationMaterialIncomeScreenState
             : Colors.transparent,
         alignment: Alignment.center,
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign: TextAlign.center,
         ),
       ),

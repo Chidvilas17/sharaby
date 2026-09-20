@@ -108,7 +108,7 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
         border: Border.all(color: Colors.grey.shade400),
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
@@ -147,7 +147,7 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
       height: 52,
       child: Center(
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
@@ -168,7 +168,7 @@ class _OtherExpensesScreenState extends State<OtherExpensesScreen> {
         color: selectedRow == row ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
         alignment: Alignment.center,
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign: TextAlign.center,
         ),
       ),

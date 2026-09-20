@@ -683,7 +683,7 @@ class _StaffAddEditScreenState
         keyboardType: keyboardType,
         decoration:
         InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border:
           const OutlineInputBorder(),
         ),
@@ -710,7 +710,7 @@ class _StaffAddEditScreenState
         child: InputDecorator(
           decoration:
           InputDecoration(
-            labelText: label,
+            labelText: AppTranslations.tr(label),
             border:
             const OutlineInputBorder(),
           ),
@@ -739,7 +739,7 @@ class _StaffAddEditScreenState
         isExpanded: true,
         decoration:
         InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border:
           const OutlineInputBorder(),
         ),
@@ -783,7 +783,7 @@ class _StaffAddEditScreenState
         bottom: 12,
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         textAlign:
         TextAlign.center,
         style: const TextStyle(
@@ -980,7 +980,7 @@ class _StaffAddEditScreenState
             .withValues(alpha: 0.15)
             : Colors.transparent,
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign:
           TextAlign.center,
         ),

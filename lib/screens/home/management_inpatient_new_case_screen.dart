@@ -417,7 +417,7 @@ class _ManagementInpatientNewCaseScreenState
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
     );
@@ -435,7 +435,7 @@ class _ManagementInpatientNewCaseScreenState
     if (loadingData) {
       return InputDecorator(
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
         child: SizedBox(
@@ -458,7 +458,7 @@ class _ManagementInpatientNewCaseScreenState
       initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
       items: doctors.map((doctor) {
@@ -548,7 +548,7 @@ class _ManagementInpatientNewCaseScreenState
         bottom: 12,
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,

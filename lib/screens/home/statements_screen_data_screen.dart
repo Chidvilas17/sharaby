@@ -297,7 +297,7 @@ class _StatementsScreenDataScreenState
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.right,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
           filled: true,
           fillColor: Colors.white,

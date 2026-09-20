@@ -789,7 +789,7 @@ class _StaffDoctorsDailyAttendanceScreenState
         .showSnackBar(
       SnackBar(
         content:
-        Text(message),
+        Text(AppTranslations.tr(message)),
       ),
     );
   }

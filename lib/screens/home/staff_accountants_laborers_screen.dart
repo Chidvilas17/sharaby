@@ -465,7 +465,7 @@ class _StaffAccountantsLaborersScreenState
     if (loading) {
       return InputDecorator(
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
         child: Center(
@@ -483,7 +483,7 @@ class _StaffAccountantsLaborersScreenState
       initialValue: value,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
       items: [

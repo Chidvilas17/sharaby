@@ -124,7 +124,7 @@ class _ElectricityWaterExpensesScreenState
         ),
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -142,7 +142,7 @@ class _ElectricityWaterExpensesScreenState
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
     );
@@ -183,7 +183,7 @@ class _ElectricityWaterExpensesScreenState
       height: 52,
       child: Center(
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 14,
@@ -213,7 +213,7 @@ class _ElectricityWaterExpensesScreenState
             : Colors.transparent,
         alignment: Alignment.center,
         child: Text(
-          text,
+          AppTranslations.tr(text),
           textAlign: TextAlign.center,
         ),
       ),

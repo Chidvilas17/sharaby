@@ -363,7 +363,7 @@ class _CurrentNursesScreenState
     ScaffoldMessenger.of(context)
         .showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }

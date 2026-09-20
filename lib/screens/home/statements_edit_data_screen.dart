@@ -150,7 +150,7 @@ class _StatementsEditDataScreenState
     ScaffoldMessenger.of(context)
         .showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
@@ -807,7 +807,7 @@ class _StatementsEditDataScreenState
       const Color(0xFF4D88B5),
 
       child: Text(
-        text,
+        AppTranslations.tr(text),
         textAlign:
         TextAlign.center,
 

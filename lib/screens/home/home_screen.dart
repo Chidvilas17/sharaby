@@ -10,6 +10,8 @@ import 'inpatient_rates_screen.dart';
 import 'screening_time_screen.dart';
 import 'screen_data_edit_screen.dart';
 import '../settings/settings_screen.dart';
+import '../../l10n/app_translations.dart';
+import '../../theme/app_theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,7 +19,7 @@ class HomeScreen extends StatelessWidget {
   void _showComingSoon(BuildContext context, String screenName) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$screenName will be built next.'),
+        content: Text(AppTranslations.tr('$screenName will be built next.')),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -26,20 +28,16 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       // ============================================================
-      // NEW: HAMBURGER SIDE MENU
+      // HAMBURGER SIDE MENU
       // ============================================================
-
       drawer: Drawer(
         child: SafeArea(
           child: Column(
             children: [
-
               // ----------------------------------------------------
               // Drawer Header
               // ----------------------------------------------------
-
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
@@ -61,23 +59,19 @@ class HomeScreen extends StatelessWidget {
                       height: 60,
                       fit: BoxFit.contain,
                     ),
-
-                    SizedBox(height: 12),
-
-                    const Text(
-                      'Sharaby Center',
-                      style: TextStyle(
+                    const SizedBox(height: 12),
+                    Text(
+                      AppTranslations.tr('Sharaby Center'),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF0F172A),
                       ),
                     ),
-
-                    SizedBox(height: 4),
-
-                    const Text(
-                      'Patient Management System',
-                      style: TextStyle(
+                    const SizedBox(height: 4),
+                    Text(
+                      AppTranslations.tr('Patient Management System'),
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Color(0xFF0284C7),
                         fontWeight: FontWeight.w500,
@@ -92,14 +86,13 @@ class HomeScreen extends StatelessWidget {
               // ----------------------------------------------------
               // Doctor Screen
               // ----------------------------------------------------
-
               ListTile(
                 leading: const Icon(
                   Icons.medical_services_outlined,
                 ),
-                title: const Text(
-                  'Doctor Screen',
-                  style: TextStyle(
+                title: Text(
+                  AppTranslations.tr('Doctor Screen'),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -118,14 +111,13 @@ class HomeScreen extends StatelessWidget {
               // ----------------------------------------------------
               // Reception Screen
               // ----------------------------------------------------
-
               ListTile(
                 leading: const Icon(
                   Icons.person_outline,
                 ),
-                title: const Text(
-                  'Reception Screen',
-                  style: TextStyle(
+                title: Text(
+                  AppTranslations.tr('Reception Screen'),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -144,14 +136,13 @@ class HomeScreen extends StatelessWidget {
               // ----------------------------------------------------
               // Settings
               // ----------------------------------------------------
-
               ListTile(
                 leading: const Icon(
                   Icons.settings_outlined,
                 ),
-                title: const Text(
-                  'Settings',
-                  style: TextStyle(
+                title: Text(
+                  AppTranslations.tr('Settings'),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -170,14 +161,13 @@ class HomeScreen extends StatelessWidget {
               // ----------------------------------------------------
               // About
               // ----------------------------------------------------
-
               ListTile(
                 leading: const Icon(
                   Icons.info_outline,
                 ),
-                title: const Text(
-                  'About',
-                  style: TextStyle(
+                title: Text(
+                  AppTranslations.tr('About'),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -190,13 +180,12 @@ class HomeScreen extends StatelessWidget {
       ),
 
       // ============================================================
-      // EXISTING APP BAR - UNCHANGED
+      // APP BAR
       // ============================================================
-
       appBar: AppBar(
-        title: const Text(
-          'Sharaby Center',
-          style: TextStyle(
+        title: Text(
+          AppTranslations.tr('Sharaby Center'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -204,37 +193,33 @@ class HomeScreen extends StatelessWidget {
       ),
 
       // ============================================================
-      // EXISTING BODY - UNCHANGED
+      // BODY
       // ============================================================
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
               // ==========================================
               // FOLLOW-UPS
               // ==========================================
-
-              const Text(
-                'Follow-ups',
-                style: TextStyle(
+              Text(
+                AppTranslations.tr('Follow-ups'),
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               Row(
                 children: [
-
                   // Medical Follow-ups
                   Expanded(
                     child: _mainButton(
-                      title: 'Medical\nFollow-ups',
+                      title: AppTranslations.tr('Medical\nFollow-ups'),
                       icon: Icons.medical_services_outlined,
                       onPressed: () {
                         Navigator.push(
@@ -247,12 +232,12 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
 
                   // Management Follow-ups
                   Expanded(
                     child: _mainButton(
-                      title: 'Management\nFollow-ups',
+                      title: AppTranslations.tr('Management\nFollow-ups'),
                       icon: Icons.manage_accounts_outlined,
                       onPressed: () {
                         Navigator.push(
@@ -268,25 +253,24 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // ==========================================
               // MANAGEMENT
               // ==========================================
-
-              const Text(
-                'Management',
-                style: TextStyle(
+              Text(
+                AppTranslations.tr('Management'),
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               // User
               _menuButton(
-                title: 'User',
+                title: AppTranslations.tr('User'),
                 icon: Icons.person_outline,
                 onPressed: () {
                   Navigator.push(
@@ -300,7 +284,7 @@ class HomeScreen extends StatelessWidget {
 
               // Screening Data
               _menuButton(
-                title: 'Screening Data',
+                title: AppTranslations.tr('Screening Data'),
                 icon: Icons.screen_search_desktop_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -314,7 +298,7 @@ class HomeScreen extends StatelessWidget {
 
               // Nursery Rates
               _menuButton(
-                title: 'Nursery Rates',
+                title: AppTranslations.tr('Nursery Rates'),
                 icon: Icons.child_care_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -328,7 +312,7 @@ class HomeScreen extends StatelessWidget {
 
               // Inpatient Rates
               _menuButton(
-                title: 'Inpatient Rates',
+                title: AppTranslations.tr('Inpatient Rates'),
                 icon: Icons.local_hospital_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -342,7 +326,7 @@ class HomeScreen extends StatelessWidget {
 
               // Salaries
               _menuButton(
-                title: 'Salaries',
+                title: AppTranslations.tr('Salaries'),
                 icon: Icons.payments_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -356,7 +340,7 @@ class HomeScreen extends StatelessWidget {
 
               // Other
               _menuButton(
-                title: 'Other',
+                title: AppTranslations.tr('Other'),
                 icon: Icons.more_horiz,
                 onPressed: () {
                   Navigator.push(
@@ -370,7 +354,7 @@ class HomeScreen extends StatelessWidget {
 
               // Screening Time
               _menuButton(
-                title: 'Screening Time',
+                title: AppTranslations.tr('Screening Time'),
                 icon: Icons.access_time_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -384,16 +368,16 @@ class HomeScreen extends StatelessWidget {
 
               // Backup
               _menuButton(
-                title: 'Backup',
+                title: AppTranslations.tr('Backup'),
                 icon: Icons.backup_outlined,
                 onPressed: () {
-                  _showComingSoon(context, 'Backup');
+                  _showComingSoon(context, AppTranslations.tr('Backup'));
                 },
               ),
 
               // Screen Data
               _menuButton(
-                title: 'Screen Data',
+                title: AppTranslations.tr('Screen Data'),
                 icon: Icons.edit_note_outlined,
                 onPressed: () {
                   Navigator.push(
@@ -414,7 +398,6 @@ class HomeScreen extends StatelessWidget {
   // =====================================================
   // LARGE FOLLOW-UP BUTTON
   // =====================================================
-
   Widget _mainButton({
     required String title,
     required IconData icon,
@@ -459,9 +442,7 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-
-                SizedBox(height: 10),
-
+                const SizedBox(height: 10),
                 Text(
                   title,
                   textAlign: TextAlign.center,
@@ -482,12 +463,12 @@ class HomeScreen extends StatelessWidget {
   // =====================================================
   // NORMAL MENU BUTTON
   // =====================================================
-
   Widget _menuButton({
     required String title,
     required IconData icon,
     required VoidCallback onPressed,
   }) {
+    final isArabic = ThemeController.instance.isArabic;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       height: 65,
@@ -524,9 +505,7 @@ class HomeScreen extends StatelessWidget {
                     color: const Color(0xFF0284C7),
                   ),
                 ),
-
-                SizedBox(width: 16),
-
+                const SizedBox(width: 16),
                 Text(
                   title,
                   style: const TextStyle(
@@ -535,13 +514,11 @@ class HomeScreen extends StatelessWidget {
                     color: Color(0xFF0F172A),
                   ),
                 ),
-
                 const Spacer(),
-
-                const Icon(
-                  Icons.arrow_forward_ios,
+                Icon(
+                  isArabic ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
                   size: 16,
-                  color: Color(0xFF0EA5E9),
+                  color: const Color(0xFF0EA5E9),
                 ),
               ],
             ),

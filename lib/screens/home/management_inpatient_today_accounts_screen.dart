@@ -217,7 +217,7 @@ class _ManagementInpatientTodayAccountsScreenState
         color: Colors.grey.shade200,
       ),
       child: Text(
-        text,
+        AppTranslations.tr(text),
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
@@ -767,7 +767,7 @@ class _ManagementInpatientTodayAccountsScreenState
       ),
 
       child: Text(
-        title,
+        AppTranslations.tr(title),
 
         textAlign:
         TextAlign.center,

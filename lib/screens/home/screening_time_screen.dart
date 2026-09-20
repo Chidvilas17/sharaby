@@ -477,7 +477,7 @@ class _ScreeningTimeScreenState
     ScaffoldMessenger.of(context)
         .showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }

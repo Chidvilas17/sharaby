@@ -90,7 +90,7 @@ class _ManagementInpatientAdmissionAccountsScreenState
         horizontal: 6,
       ),
       child: Text(
-        text,
+        AppTranslations.tr(text),
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontSize: 14,

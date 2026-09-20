@@ -321,7 +321,7 @@ class _SecretaryScreenState extends State<SecretaryScreen>
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
       ),

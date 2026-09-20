@@ -448,7 +448,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
         ),
       ),
       child: Text(
-        title,
+        AppTranslations.tr(title),
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -473,7 +473,7 @@ class _FaultsScreenState extends State<FaultsScreen> {
       keyboardType: keyboardType,
       enabled: enabled,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
         isDense: true,
       ),

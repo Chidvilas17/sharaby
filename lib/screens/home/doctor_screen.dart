@@ -324,7 +324,7 @@ class _DoctorScreenState extends State<DoctorScreen>
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
       ),

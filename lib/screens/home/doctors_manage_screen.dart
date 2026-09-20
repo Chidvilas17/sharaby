@@ -911,7 +911,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
       controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
     );
@@ -922,7 +922,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
       onTap: onTap,
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: label,
+          labelText: AppTranslations.tr(label),
           border: const OutlineInputBorder(),
         ),
         child: Text(_formatDate(date)),
@@ -943,7 +943,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
       initialValue: validValue,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
       items: items.map((item) {
@@ -971,7 +971,7 @@ class _DoctorsManageScreenState extends State<DoctorsManageScreen> {
       initialValue: validValue,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: AppTranslations.tr(label),
         border: const OutlineInputBorder(),
       ),
       items: names

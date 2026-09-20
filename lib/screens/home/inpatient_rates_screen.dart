@@ -287,7 +287,7 @@ class _InpatientRatesScreenState
     ScaffoldMessenger.of(context)
         .showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(AppTranslations.tr(message)),
       ),
     );
   }
